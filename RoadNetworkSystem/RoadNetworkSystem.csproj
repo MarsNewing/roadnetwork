@@ -1,0 +1,355 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{C254D73A-3BC8-460E-9EE6-AB5D58F699E8}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>RoadNetworkSystem</RootNamespace>
+    <AssemblyName>RoadNetworkSystem</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SccProjectName>
+    </SccProjectName>
+    <SccLocalPath>
+    </SccLocalPath>
+    <SccAuxPath>
+    </SccAuxPath>
+    <SccProvider>
+    </SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="ESRI.ArcGIS.Version, Version=10.0.0.0, Culture=neutral, PublicKeyToken=8fc3cc631e44ad86, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\..\Windows\assembly\GAC_32\ESRI.ArcGIS.Version\10.0.0.0__8fc3cc631e44ad86\ESRI.ArcGIS.Version.dll</HintPath>
+    </Reference>
+    <Reference Include="GISHelper">
+      <HintPath>..\..\GISHelper\GISHelper\bin\Debug\GISHelper.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ADO\Access\AccessHelper.cs" />
+    <Compile Include="Database\DatabaseDesigner.cs" />
+    <Compile Include="DataModel\GuideSignNetwork\Arc1Entity.cs" />
+    <Compile Include="DataModel\GuideSignNetwork\Node1Entity.cs" />
+    <Compile Include="DataModel\LaneBasedNetwork\ArcEntity.cs" />
+    <Compile Include="DataModel\LaneBasedNetwork\LaneConnectorEntity.cs" />
+    <Compile Include="DataModel\LaneBasedNetwork\LaneEntity.cs" />
+    <Compile Include="DataModel\LaneBasedNetwork\LinkEntity.cs" />
+    <Compile Include="DataModel\LaneBasedNetwork\NodeEntity.cs" />
+    <Compile Include="DataModel\LaneBasedNetwork\SegmentEntity.cs" />
+    <Compile Include="DataModel\LaneBasedNetwork\SegmentNodeEntity.cs" />
+    <Compile Include="DataModel\RoadSign\BoundaryEntity.cs" />
+    <Compile Include="DataModel\RoadSign\KerbEntity.cs" />
+    <Compile Include="DataModel\RoadSign\StopLineEntity.cs" />
+    <Compile Include="DataModel\RoadSign\SurfaceEntity.cs" />
+    <Compile Include="DataModel\RoadSign\TurnArrowEntity.cs" />
+    <Compile Include="DataModel\Road\LinkMasterEntity.cs" />
+    <Compile Include="DataModel\Road\NodeMasterEntity.cs" />
+    <Compile Include="DataModel\Road\RoadEntity.cs" />
+    <Compile Include="DataModel\SignRule\BoundaryRule.cs" />
+    <Compile Include="DataModel\SignRule\Rule.cs" />
+    <Compile Include="DataTransform\ParamicsDataTransform\Basic2Paramics.cs" />
+    <Compile Include="DataTransform\ParamicsDataTransform\ParamicsDataTrans.cs" />
+    <Compile Include="DataTransform\TransmodelerDataTransform\Basic2TransModeler.cs" />
+    <Compile Include="DataTransform\TransmodelerDataTransform\Connector_Entity.cs" />
+    <Compile Include="DataTransform\TransmodelerDataTransform\TMDataTrans.cs" />
+    <Compile Include="DataTransform\TransmodelerDataTransform\TransmodelerNetworkBuilder.cs" />
+    <Compile Include="DataTransform\VissimDataTransform\Basic2Vissim.cs" />
+    <Compile Include="DataTransform\VissimDataTransform\VissimDataTrans.cs" />
+    <Compile Include="EditorTool\IntersectionTool.cs" />
+    <Compile Include="EditorTool\MergeTool.cs" />
+    <Compile Include="FileDirectory\FileHelper.cs" />
+    <Compile Include="Form1.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form1.Designer.cs">
+      <DependentUpon>Form1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GIS\GeoDatabase\Dataset\DatasetHelper.cs" />
+    <Compile Include="GIS\GeoDatabase\Dataset\DataTableHelper.cs" />
+    <Compile Include="GIS\GeoDatabase\Dataset\FeatureClassHelper.cs" />
+    <Compile Include="GIS\GeoDatabase\WorkSpace\GeodatabaseHelper.cs" />
+    <Compile Include="GIS\Geometry\LineHelper.cs" />
+    <Compile Include="GIS\Geometry\PhysicalTopology.cs" />
+    <Compile Include="GIS\Geometry\PointHelper.cs" />
+    <Compile Include="GIS\Interactive\GeoDisplayHelper.cs" />
+    <Compile Include="GIS\Interactive\GeoDrawingHelper.cs" />
+    <Compile Include="GIS\License\EsriApplicationInit.cs" />
+    <Compile Include="GIS\Component\MapComponent.cs" />
+    <Compile Include="GIS\MapLayer\LayerHelper.cs" />
+    <Compile Include="NetworkEditor\CutHelper.cs" />
+    <Compile Include="NetworkEditor\EditorDatabase\EditorDatabaseDesigner.cs" />
+    <Compile Include="NetworkEditor\EditorFlow\SegmentConstructor.cs" />
+    <Compile Include="NetworkEditor\FeaPair.cs" />
+    <Compile Include="NetworkElement\GuideSignNetwork\Arc1.cs" />
+    <Compile Include="NetworkElement\GuideSignNetwork\Node1.cs" />
+    <Compile Include="NetworkElement\LaneBasedNetwork\Connection\LogicalConnection.cs" />
+    <Compile Include="NetworkElement\LaneBasedNetwork\Connection\PhysicalConnection.cs" />
+    <Compile Include="NetworkElement\LaneBasedNetwork\LaneLayer\LaneConnectorFeature.cs" />
+    <Compile Include="NetworkElement\LaneBasedNetwork\LaneLayer\LaneConnectorTable.cs" />
+    <Compile Include="NetworkElement\LaneBasedNetwork\LaneLayer\LaneFeature.cs" />
+    <Compile Include="NetworkElement\LaneBasedNetwork\LaneLayer\LaneTable.cs" />
+    <Compile Include="NetworkElement\LaneBasedNetwork\LinkLayer\Arc.cs" />
+    <Compile Include="NetworkElement\LaneBasedNetwork\LinkLayer\Link.cs" />
+    <Compile Include="NetworkElement\LaneBasedNetwork\LinkLayer\Node.cs" />
+    <Compile Include="NetworkElement\LaneBasedNetwork\RoadSegmentLayer\Segment.cs" />
+    <Compile Include="NetworkElement\LaneBasedNetwork\RoadSegmentLayer\SegmentNode.cs" />
+    <Compile Include="NetworkElement\MasterLayer\LinkMaster.cs" />
+    <Compile Include="NetworkElement\MasterLayer\NodeMaster.cs" />
+    <Compile Include="NetworkElement\RoadLayer\Road.cs" />
+    <Compile Include="NetworkElement\RoadSignElement\Boundary.cs" />
+    <Compile Include="NetworkElement\RoadSignElement\Kerb.cs" />
+    <Compile Include="NetworkElement\RoadSignElement\StopLine.cs" />
+    <Compile Include="NetworkElement\RoadSignElement\Surface.cs" />
+    <Compile Include="NetworkElement\RoadSignElement\TurnArrow.cs" />
+    <Compile Include="NetworkExtraction\FreeWay\Dao\ArcDao.cs" />
+    <Compile Include="NetworkExtraction\FreeWay\Dao\ConnectorDao.cs" />
+    <Compile Include="NetworkExtraction\FreeWay\Dao\LaneDao.cs" />
+    <Compile Include="NetworkExtraction\FreeWay\Dao\RoadDao.cs" />
+    <Compile Include="NetworkExtraction\FreeWay\Dao\SegmentDao.cs" />
+    <Compile Include="NetworkExtraction\FreeWay\Dao\SegNodeDao.cs" />
+    <Compile Include="NetworkExtraction\FreeWay\Model\Arc.cs" />
+    <Compile Include="NetworkExtraction\FreeWay\Model\Connector.cs" />
+    <Compile Include="NetworkExtraction\FreeWay\Model\Lane.cs" />
+    <Compile Include="NetworkExtraction\FreeWay\Model\Node.cs" />
+    <Compile Include="NetworkExtraction\FreeWay\Model\Road.cs" />
+    <Compile Include="NetworkExtraction\FreeWay\Model\Segment.cs" />
+    <Compile Include="NetworkExtraction\FreeWay\Model\SegNode.cs" />
+    <Compile Include="NetworkExtraction\FreeWay\Service\ConnectorService.cs" />
+    <Compile Include="NetworkExtraction\FreeWay\Service\LaneService.cs" />
+    <Compile Include="NetworkExtraction\FreeWay\Service\NodeSegmetation.cs" />
+    <Compile Include="NetworkExtraction\FreeWay\Service\MileSegmentation.cs" />
+    <Compile Include="NetworkExtraction\FreeWay\Service\OtherRoadSegmentation.cs" />
+    <Compile Include="NetworkExtraction\FreeWay\Service\Segmentation.cs" />
+    <Compile Include="NetworkExtraction\GuideSignNetwork\Arc1LayerFactory.cs" />
+    <Compile Include="NetworkExtraction\GuideSignNetwork\Node1WorkSpace.cs" />
+    <Compile Include="NetworkExtraction\LaneBasedNetwork\LaneLayer\LaneLayerFactory.cs" />
+    <Compile Include="NetworkExtraction\LaneBasedNetwork\LinkLayer\LinkLayerFactory.cs" />
+    <Compile Include="NetworkExtraction\LaneBasedNetwork\SegmentLayer\RoadSegmentLayerFactory.cs" />
+    <Compile Include="NetworkExtraction\LinkMasterExtraction\LinkMasterLayerFactory.cs" />
+    <Compile Include="NetworkExtraction\LinkMasterExtraction\NodeInfor.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TrafficRule\RuleService.cs" />
+    <Compile Include="TrafficRule\SignRule\BoundaryRuleService.cs" />
+    <Compile Include="WinForm\EditTool\EditToolDesigner.cs" />
+    <Compile Include="WinForm\NetworkEditor\ArcEditorDesigner.cs" />
+    <Compile Include="WinForm\NetworkEditor\LinkEditorDesigner.cs" />
+    <Compile Include="WinForm\NetworkEditor\NetworkEditorDesigner.cs" />
+    <Compile Include="WinForm\NetworkEditor\NodeEditorDesigner.cs" />
+    <Compile Include="WinForm\NetworkExtraction\ExtractionDesigner.cs" />
+    <Compile Include="WinForm\RuleSetting\RuleSettingDesigner.cs" />
+    <Compile Include="WinForm\WinFormDesigner.cs" />
+    <EmbeddedResource Include="Form1.resx">
+      <DependentUpon>Form1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <COMReference Include="AxesriControls">
+      <Guid>{033364CA-47F9-4251-98A5-C88CD8D3C808}</Guid>
+      <VersionMajor>10</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>aximp</WrapperTool>
+      <Isolated>False</Isolated>
+    </COMReference>
+    <COMReference Include="esriCarto">
+      <Guid>{45AC68FF-DEFF-4884-B3A9-7D882EDCAEF1}</Guid>
+      <VersionMajor>10</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>primary</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>False</EmbedInteropTypes>
+    </COMReference>
+    <COMReference Include="esriControls">
+      <Guid>{033364CA-47F9-4251-98A5-C88CD8D3C808}</Guid>
+      <VersionMajor>10</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>primary</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </COMReference>
+    <COMReference Include="esriDataSourcesFile">
+      <Guid>{1CE6AC65-43F5-4529-8FC0-D7ED298E4F1A}</Guid>
+      <VersionMajor>10</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>primary</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>False</EmbedInteropTypes>
+    </COMReference>
+    <COMReference Include="esriDataSourcesGDB">
+      <Guid>{4A037613-879A-484D-AF82-0802947C627B}</Guid>
+      <VersionMajor>10</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>primary</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>False</EmbedInteropTypes>
+    </COMReference>
+    <COMReference Include="esriDataSourcesOleDB">
+      <Guid>{04E2822F-C3AE-4FA9-B19B-3512C98F97FB}</Guid>
+      <VersionMajor>10</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>primary</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </COMReference>
+    <COMReference Include="esriDisplay">
+      <Guid>{59FCCD31-434C-4017-BDEF-DB4B7EDC9CE0}</Guid>
+      <VersionMajor>10</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>primary</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>False</EmbedInteropTypes>
+    </COMReference>
+    <COMReference Include="esriGeoDatabase">
+      <Guid>{0475BDB1-E5B2-4CA2-9127-B4B1683E70C2}</Guid>
+      <VersionMajor>10</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>primary</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>False</EmbedInteropTypes>
+    </COMReference>
+    <COMReference Include="esriGeometry">
+      <Guid>{C4B094C2-FF32-4FA1-ABCB-7820F8D6FB68}</Guid>
+      <VersionMajor>10</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>primary</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>False</EmbedInteropTypes>
+    </COMReference>
+    <COMReference Include="esriSystem">
+      <Guid>{5E1F7BC3-67C5-4AEE-8EC6-C4B73AAC42ED}</Guid>
+      <VersionMajor>10</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>primary</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>False</EmbedInteropTypes>
+    </COMReference>
+    <COMReference Include="esriSystemUI">
+      <Guid>{4ECCA6E2-B16B-4ACA-BD17-E74CAE4C150A}</Guid>
+      <VersionMajor>10</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>primary</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </COMReference>
+    <COMReference Include="stdole">
+      <Guid>{00020430-0000-0000-C000-000000000046}</Guid>
+      <VersionMajor>2</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>primary</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </COMReference>
+    <COMReference Include="UICONTROLSLib">
+      <Guid>{77E512AB-FD7D-11D2-9F44-00C04F6BC61A}</Guid>
+      <VersionMajor>1</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>tlbimp</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </COMReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="ADO\Oracle\" />
+    <Folder Include="ADO\SqlServer\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\AddTool.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Break.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\cross.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Merge.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\plus_alt.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\reload.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\ReloadTool.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\save.png" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
