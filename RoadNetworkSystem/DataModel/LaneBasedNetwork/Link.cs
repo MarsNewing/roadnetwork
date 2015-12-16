@@ -9,6 +9,11 @@ namespace RoadNetworkSystem.DataModel.LaneBasedNetwork
     {
 
         public const string LinkName = "Link";
+
+        public const int FLOWDIR_DOUBLE = 0;
+        public const int FLOWDIR_SAME = 1;
+        public const int FLOWDIR_OPPOSITION = -1;
+
         //public int ID { get; set; }
         //public int FNodeID { get; set; }
         //public int TNodeID { get; set; }

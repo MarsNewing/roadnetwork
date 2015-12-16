@@ -85,6 +85,9 @@ namespace RoadNetworkSystem.NetworkElement.RoadSignElement
             queryFilter.WhereClause = String.Format("{0}={1}", KerbIDNm, KerbID);
             IFeatureCursor cursor = FeaClsKerb.Search(queryFilter, false);
             IFeature pFeature = cursor.NextFeature();
+            System.GC.Collect();
+            System.GC.WaitForPendingFinalizers();
+            System.Runtime.InteropServices.Marshal.ReleaseComObject(cursor);
             if (pFeature != null)
             {
                 return pFeature;
@@ -93,6 +96,7 @@ namespace RoadNetworkSystem.NetworkElement.RoadSignElement
             {
                 return null;
             }
+            
         }
 
         public IFeature GetKerbByArcAndSerial(int arcID, int serial)
