@@ -315,7 +315,7 @@ namespace RoadNetworkSystem.WinForm.EditTool
                         _frm1.SlctRoadIndex_EditTool = 0;
                         _frm1.FirstRoadFea = null;
                         _frm1.SecondRoadFea = null;
-                        LayerHelper.SelectLayer(_frm1.axMapControl1, RoadEntity.RoadNm);
+                        LayerHelper.SelectLayer(_frm1.axMapControl1, Road.RoadNm);
                         break;
                     }
                 case (int)编辑图层.Segment打断合并:
@@ -329,7 +329,7 @@ namespace RoadNetworkSystem.WinForm.EditTool
                         _frm1.SlctSegmentIndex_EditTool = 0;
                         _frm1.FirstSegFea = null;
                         _frm1.SecondSegFea = null;
-                        LayerHelper.SelectLayer(_frm1.axMapControl1, SegmentEntity.SegmentName);
+                        LayerHelper.SelectLayer(_frm1.axMapControl1, Segment.SegmentName);
                         break;
                     }
                 case (int)编辑图层.基于SegNode的合并:
@@ -346,7 +346,7 @@ namespace RoadNetworkSystem.WinForm.EditTool
                         _frm1.FirstSegFea = null;
                         _frm1.SecondSegFea = null;
 
-                        LayerHelper.SelectLayer(_frm1.axMapControl1, SegmentNodeEntity.RoadSegmentNodeName);
+                        LayerHelper.SelectLayer(_frm1.axMapControl1, SegmentNode.RoadSegmentNodeName);
                         break;
                     }
                 default:
@@ -367,17 +367,17 @@ namespace RoadNetworkSystem.WinForm.EditTool
 
                 case (int)编辑图层.Road打断:
                     {
-                        LayerHelper.SelectLayer(_frm1.axMapControl1, RoadEntity.RoadNm);
+                        LayerHelper.SelectLayer(_frm1.axMapControl1, Road.RoadNm);
                         break;
                     }
                 case (int)编辑图层.Segment打断合并:
                     {
-                        LayerHelper.SelectLayer(_frm1.axMapControl1, SegmentEntity.SegmentName);
+                        LayerHelper.SelectLayer(_frm1.axMapControl1, Segment.SegmentName);
                         break;
                     }
                 case (int)编辑图层.基于SegNode的合并:
                     {
-                        LayerHelper.SelectLayer(_frm1.axMapControl1, SegmentNodeEntity.RoadSegmentNodeName);
+                        LayerHelper.SelectLayer(_frm1.axMapControl1, SegmentNode.RoadSegmentNodeName);
                         break;
                     }
                 default:

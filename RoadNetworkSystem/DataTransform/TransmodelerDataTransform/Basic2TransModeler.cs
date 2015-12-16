@@ -145,9 +145,9 @@ namespace RoadNetworkSystem.TransmodelerDataTransform
 
 
             //定义Link,Node的featureclass
-            IFeatureClass pFeatClsLink = feaWs.OpenFeatureClass(LinkEntity.LinkName);
+            IFeatureClass pFeatClsLink = feaWs.OpenFeatureClass(Link.LinkName);
 
-            IFeatureClass pFeatClsNode = feaWs.OpenFeatureClass(NodeEntity.NodeName);
+            IFeatureClass pFeatClsNode = feaWs.OpenFeatureClass(Node.NodeName);
 
 
             try
@@ -376,10 +376,10 @@ namespace RoadNetworkSystem.TransmodelerDataTransform
                 int dir, len, lanesAB, lanesBA;
                 m++;
 
-                Link link = new Link(pFeatClsLink, 0);
-                LinkMasterEntity linkMstrEty = link.GetEntity(pFeatLink);
+                LinkService link = new LinkService(pFeatClsLink, 0);
+                LinkMaster linkMstrEty = link.GetEntity(pFeatLink);
 
-                LinkEntity linkEty = new LinkEntity();
+                Link linkEty = new Link();
                 linkEty = linkEty.Copy(linkMstrEty);
 
 
@@ -398,11 +398,11 @@ namespace RoadNetworkSystem.TransmodelerDataTransform
                 if (dir == 2)
                     dir = 0;
 
-                string Str_1 = "select LaneNum from " + ArcEntity.ArcFeatureName + " where " + Arc.LinkIDNm + "=" + linkid + " and " + Arc.FlowDirNm + " =1";
+                string Str_1 = "select LaneNum from " + Arc.ArcFeatureName + " where " + ArcService.LinkIDNm + "=" + linkid + " and " + ArcService.FlowDirNm + " =1";
                 OleDbCommand Com_1 = new OleDbCommand(Str_1, Conn);
                 lanesAB = Convert.ToInt32(Com_1.ExecuteScalar());
 
-                Str_1 = "select LaneNum from " + ArcEntity.ArcFeatureName + " where " + Arc.LinkIDNm + "=" + linkid + " and " + Arc.FlowDirNm + " =-1";
+                Str_1 = "select LaneNum from " + Arc.ArcFeatureName + " where " + ArcService.LinkIDNm + "=" + linkid + " and " + ArcService.FlowDirNm + " =-1";
                 Com_1 = new OleDbCommand(Str_1, Conn);
                 lanesBA = Convert.ToInt32(Com_1.ExecuteScalar());
 
@@ -467,21 +467,21 @@ namespace RoadNetworkSystem.TransmodelerDataTransform
 
 
                 n++;
-                laneid = Convert.ToInt32(reader[LaneFeature.LaneIDNm]);
-                lanearcid = Convert.ToInt32(reader[LaneFeature.ArcIDNm]);
-                lanepos = Convert.ToInt32(reader[LaneFeature.PositionNm]);
+                laneid = Convert.ToInt32(reader[LaneFeatureService.LaneIDNm]);
+                lanearcid = Convert.ToInt32(reader[LaneFeatureService.ArcIDNm]);
+                lanepos = Convert.ToInt32(reader[LaneFeatureService.PositionNm]);
                 //lanepos = lanepos - 1;钮中铭修改于20150109,定义Position从0开始结束
-                lanechange = Convert.ToString(reader[LaneFeature.ChangeNm]);
-                string Str_1 = "select " + Arc.LinkIDNm + " from " + ArcEntity.ArcFeatureName + " where " + Arc.ArcIDNm + "=" + lanearcid;
+                lanechange = Convert.ToString(reader[LaneFeatureService.ChangeNm]);
+                string Str_1 = "select " + ArcService.LinkIDNm + " from " + Arc.ArcFeatureName + " where " + ArcService.ArcIDNm + "=" + lanearcid;
                 OleDbCommand Com_1 = new OleDbCommand(Str_1, Conn);
                 laneseg = Convert.ToInt32(Com_1.ExecuteScalar());
                 Str_1 = "select ID from Transmodeler_Segments where Link=" + laneseg;
                 Com_1 = new OleDbCommand(Str_1, Conn);
                 laneseg = Convert.ToInt32(Com_1.ExecuteScalar());
-                Str_1 = "select " + Arc.FlowDirNm + " from " + ArcEntity.ArcFeatureName + " where " + Arc.ArcIDNm + "=" + lanearcid;
+                Str_1 = "select " + ArcService.FlowDirNm + " from " + Arc.ArcFeatureName + " where " + ArcService.ArcIDNm + "=" + lanearcid;
                 Com_1 = new OleDbCommand(Str_1, Conn);
                 lanedir = Convert.ToInt32(Com_1.ExecuteScalar());
-                Str_1 = "select " + Arc.LaneNumNm + " from " + ArcEntity.ArcFeatureName + " where " + Arc.ArcIDNm + "=" + lanearcid;
+                Str_1 = "select " + ArcService.LaneNumNm + " from " + Arc.ArcFeatureName + " where " + ArcService.ArcIDNm + "=" + lanearcid;
                 Com_1 = new OleDbCommand(Str_1, Conn);
                 lanenum = Convert.ToInt32(Com_1.ExecuteScalar());
                 if (lanepos == 0)
@@ -490,7 +490,7 @@ namespace RoadNetworkSystem.TransmodelerDataTransform
                     laneside = "Right";
                 else
                     laneside = "";
-                string strSql1 = string.Format("select * from " + LaneConnectorEntity.ConnectorName + " where " + LaneConnectorFeature.fromLaneIDNm + " = {0:G}", laneid);
+                string strSql1 = string.Format("select * from " + LaneConnector.ConnectorName + " where " + LaneConnectorFeatureService.fromLaneIDNm + " = {0:G}", laneid);
                 OleDbCommand cmdDB = new OleDbCommand();
                 OleDbDataReader readDB;
                 cmdDB.CommandText = strSql1;
@@ -502,7 +502,7 @@ namespace RoadNetworkSystem.TransmodelerDataTransform
                 {
                     while (readDB.Read())
                     {
-                        turndir = Convert.ToString(readDB[LaneConnectorFeature.TurningDirNm]);
+                        turndir = Convert.ToString(readDB[LaneConnectorFeatureService.TurningDirNm]);
                         listlaneturns.Add(turndir);
                     }
                     if ((listlaneturns.Count == 1) && (Convert.ToString(listlaneturns[0]) == "Left"))
@@ -539,7 +539,7 @@ namespace RoadNetworkSystem.TransmodelerDataTransform
 
             OleDbCommand cmdLC = new OleDbCommand();
             OleDbDataReader readerLC;
-            strSql = "select * from " + LaneConnectorEntity.ConnectorName + " order by " + LaneConnectorFeature.ConnectorIDNm;
+            strSql = "select * from " + LaneConnector.ConnectorName + " order by " + LaneConnectorFeatureService.ConnectorIDNm;
             cmdLC.CommandText = strSql;
             cmdLC.Connection = Conn;
             readerLC = cmdLC.ExecuteReader();
@@ -547,10 +547,10 @@ namespace RoadNetworkSystem.TransmodelerDataTransform
             string dirlc;
             while (readerLC.Read())
             {
-                lcid = Convert.ToInt32(readerLC[LaneConnectorFeature.ConnectorIDNm]);
-                ul = Convert.ToInt32(readerLC[LaneConnectorFeature.fromLaneIDNm]);
-                dl = Convert.ToInt32(readerLC[LaneConnectorFeature.toLaneIDNm]);
-                dirlc = Convert.ToString(readerLC[LaneConnectorFeature.TurningDirNm]);
+                lcid = Convert.ToInt32(readerLC[LaneConnectorFeatureService.ConnectorIDNm]);
+                ul = Convert.ToInt32(readerLC[LaneConnectorFeatureService.fromLaneIDNm]);
+                dl = Convert.ToInt32(readerLC[LaneConnectorFeatureService.toLaneIDNm]);
+                dirlc = Convert.ToString(readerLC[LaneConnectorFeatureService.TurningDirNm]);
 
                 string Str_2 = "select ID from Transmodeler_Lanes where ReLaneID=" + ul;
                 OleDbCommand Com_2 = new OleDbCommand(Str_2, Conn);

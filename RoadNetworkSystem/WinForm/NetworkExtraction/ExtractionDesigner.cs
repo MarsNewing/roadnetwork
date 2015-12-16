@@ -232,7 +232,7 @@ namespace RoadNetworkSystem.WinForm.NetworkExtraction
                 new System.Drawing.Point(listbox_type1_x, listbox_type1_y), System.Windows.Forms.DockStyle.None);
 
 
-            _frm1.listBox_extraction_type1.Items.AddRange(System.Enum.GetNames(typeof(LinkEntity.道路类型)));
+            _frm1.listBox_extraction_type1.Items.AddRange(System.Enum.GetNames(typeof(Link.道路类型)));
 
             #endregion -----------------------------相交第一个路段规则------------------------------------------
             #region -----------------------------相交第二个路段规则------------------------------------------
@@ -246,7 +246,7 @@ namespace RoadNetworkSystem.WinForm.NetworkExtraction
                 new System.Drawing.Point(label_type2_x, listbox_type1_y), System.Windows.Forms.DockStyle.None);
 
             _frm1.listBox_extraction_type2.Width = _frm1.groupBox_extraction_rule.Width / 2 - 30;
-            _frm1.listBox_extraction_type2.Items.AddRange(System.Enum.GetNames(typeof(LinkEntity.道路类型)));
+            _frm1.listBox_extraction_type2.Items.AddRange(System.Enum.GetNames(typeof(Link.道路类型)));
 
 
 
@@ -374,7 +374,7 @@ namespace RoadNetworkSystem.WinForm.NetworkExtraction
                     else
                     {
                         //第二个规则
-                        string originalRule = System.Enum.GetName(typeof(LinkEntity.道路类型), Convert.ToInt32(rules[1]));
+                        string originalRule = System.Enum.GetName(typeof(Link.道路类型), Convert.ToInt32(rules[1]));
                         //选择的第二个规则与刚刚选择那一对中的第二个不同
                         if (!originalRule.Equals(_frm1.listBox_extraction_type2.SelectedItem.ToString()))
                         {
@@ -424,8 +424,8 @@ namespace RoadNetworkSystem.WinForm.NetworkExtraction
                         string[] temrule = _ruleItem.Split('\\');
                         if (temrule.Length == 2)
                         {
-                            string rule1 = System.Enum.GetName(typeof(LinkEntity.道路类型), Convert.ToInt32(temrule[0]));
-                            string rule2 = System.Enum.GetName(typeof(LinkEntity.道路类型), Convert.ToInt32(temrule[1]));
+                            string rule1 = System.Enum.GetName(typeof(Link.道路类型), Convert.ToInt32(temrule[0]));
+                            string rule2 = System.Enum.GetName(typeof(Link.道路类型), Convert.ToInt32(temrule[1]));
                             _ruleItem = temrule[0];
                             MessageBox.Show(rule1 + "+" + rule2 + "已存在");
                         }
@@ -568,7 +568,7 @@ namespace RoadNetworkSystem.WinForm.NetworkExtraction
             _frm1.FeaPairSlctFlag = 1;
             _frm1.ToolBarFlag = false;
             LayerHelper.ClearSelect(_frm1.axMapControl1);
-            LayerHelper.SelectLayer(_frm1.axMapControl1, RoadEntity.RoadNm);
+            LayerHelper.SelectLayer(_frm1.axMapControl1, Road.RoadNm);
 
 
         }
@@ -586,7 +586,7 @@ namespace RoadNetworkSystem.WinForm.NetworkExtraction
                 _frm1.FeaPairSlctFlag = 0;
                 _frm1.ToolBarFlag = false;
                 LayerHelper.ClearSelect(_frm1.axMapControl1);
-                LayerHelper.SelectLayer(_frm1.axMapControl1, RoadEntity.RoadNm);
+                LayerHelper.SelectLayer(_frm1.axMapControl1, Road.RoadNm);
                 IGraphicsContainer pGraphicsContainer = _frm1.axMapControl1.ActiveView as IGraphicsContainer;//把地图的当前view作为图片的容器
                 pGraphicsContainer.DeleteAllElements();
             }
@@ -672,11 +672,11 @@ namespace RoadNetworkSystem.WinForm.NetworkExtraction
 
             foreach (var item in roadFeaPairs)
             {
-                RoadEntity roadEnt1 = new RoadEntity();
-                Road road = new Road(_frm1.FeaClsRoad, 0);
+                Road roadEnt1 = new Road();
+                RoadService road = new RoadService(_frm1.FeaClsRoad, 0);
                 roadEnt1 = road.GetEntity(item.Fea1);
 
-                RoadEntity roadEty2 = new RoadEntity();
+                Road roadEty2 = new Road();
                 roadEty2 = road.GetEntity(item.Fea2);
 
                 IPoint pnt = LineHelper.GetIntersectionPoint(item.Fea1.Shape as IPolyline, item.Fea2.Shape as IPolyline);

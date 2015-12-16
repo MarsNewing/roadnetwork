@@ -89,7 +89,7 @@ namespace RoadNetworkSystem.NetworkExtraction.LaneBasedNetwork.SegmentLayer
             foreach (DictionaryEntry nodeDic in hstNode)
             {
                 //那么就创建一个吧
-                SegmentNodeEntity rdSegNodeEty1 = new SegmentNodeEntity();
+                SegmentNode rdSegNodeEty1 = new SegmentNode();
                 NodeInfor nodeInfor=nodeDic.Value as NodeInfor;
                 rdSegNodeEty1.ID = nodeInfor.NodeID;
 
@@ -110,9 +110,9 @@ namespace RoadNetworkSystem.NetworkExtraction.LaneBasedNetwork.SegmentLayer
                 #endregion <<<<<<<<<<判断是否是平面交叉口>>>>>>>>>>>>>>>>>>>
 
                 rdSegNodeEty1.CompositeType = 1;
-                SegmentNode rdSegNode = new SegmentNode(_pFeaClsRoadSegmentNode, rdSegNodeEty1.ID, nodeInfor.Point);
+                SegmentNodeService rdSegNode = new SegmentNodeService(_pFeaClsRoadSegmentNode, rdSegNodeEty1.ID, nodeInfor.Point);
                 rdSegNode.CreateNode(rdSegNodeEty1);
-                Segment rs = new Segment(_pFeaClsRoadSegment, 0);
+                SegmentService rs = new SegmentService(_pFeaClsRoadSegment, 0);
                 rdSegNode.CreateAdjData(rs);
                 
             }
@@ -143,8 +143,8 @@ namespace RoadNetworkSystem.NetworkExtraction.LaneBasedNetwork.SegmentLayer
             while (pFeature != null)
             {
                 //获取road实体
-                RoadEntity rdEty = new RoadEntity();
-                Road road = new Road(_pFeaClsRoad, 0);
+                Road rdEty = new Road();
+                RoadService road = new RoadService(_pFeaClsRoad, 0);
                 rdEty = road.GetEntity(pFeature);
                 //Road的几何
                 IPolyline roadLine = pFeature.Shape as IPolyline;
@@ -216,7 +216,7 @@ namespace RoadNetworkSystem.NetworkExtraction.LaneBasedNetwork.SegmentLayer
                             IPolyline newSegLine = segCol as IPolyline;
 
                             //新建实体，并应用与要素生成
-                            SegmentEntity rsEty = new SegmentEntity();
+                            Segment rsEty = new Segment();
                             rsEty.RelID = rdEty.RoadID;
                             rsEty.Other = rdEty.RoadID;
                             rsEty.RoadType = rdEty.RoadType;
@@ -228,7 +228,7 @@ namespace RoadNetworkSystem.NetworkExtraction.LaneBasedNetwork.SegmentLayer
                             rsEty.TNodeID = tnodeID;
 
                             //创建新的Roadsegment
-                            Segment roadSeg = new Segment(_pFeaClsRoadSegment, roadSegID);
+                            SegmentService roadSeg = new SegmentService(_pFeaClsRoadSegment, roadSegID);
                             roadSeg.Create(rsEty, newSegLine);
                         #endregion----------------创建新的Segment---------------
 

@@ -119,7 +119,7 @@ namespace RoadNetworkSystem.EditorTool
             IPolyline Line1 = SegFea1.Shape as IPolyline;
             IPolyline Line2 = SegFea2.Shape as IPolyline;
             IPolyline Line11, Line12, Line21, Line22;
-            Segment seg = new Segment(pSegClass, 0);
+            SegmentService seg = new SegmentService(pSegClass, 0);
 
             int NewNodeID;
             int nFNode = pSegClass.Fields.FindField(seg.FNodeIDNm);
@@ -257,7 +257,7 @@ namespace RoadNetworkSystem.EditorTool
 
             IFeature crtPntFeat = pNodeClass.CreateFeature();
             crtPntFeat.Shape = pnt;
-            Node pNode = new Node(pNodeClass, NodeID, pnt);
+            NodeService pNode = new NodeService(pNodeClass, NodeID, pnt);
             if (pNodeClass.FindField(pNode.NodeIDNm) >= 0)
             {
                 crtPntFeat.set_Value(pNodeClass.FindField(pNode.NodeIDNm), NodeID);
@@ -274,8 +274,8 @@ namespace RoadNetworkSystem.EditorTool
         /// <param name="pnt"></param>
         private static void UpdateNodeAttr(int nodeID, IPoint pnt)
         {
-            Node pNode = new Node(pNodeClass, nodeID, pnt);
-            Segment seg = new Segment(pSegClass, 0);
+            NodeService pNode = new NodeService(pNodeClass, nodeID, pnt);
+            SegmentService seg = new SegmentService(pSegClass, 0);
             pNode.CreateAdjData(seg);
 
         }
@@ -284,7 +284,7 @@ namespace RoadNetworkSystem.EditorTool
         /// 更新SegmentID
         /// </summary>
         /// <param name="seg"></param>
-        private static void UpdateSegID(Segment seg)
+        private static void UpdateSegID(SegmentService seg)
         {
             IQueryFilter pQueryFilter = new QueryFilter();
             pQueryFilter.WhereClause = String.Format("{0}={1}", seg.IDNm, -1);
@@ -315,7 +315,7 @@ namespace RoadNetworkSystem.EditorTool
         /// <param name="Line11"></param>
         /// <param name="Line12"></param>
         /// <param name="NewNodeID"></param>
-        private void InsertIntoSeg(Segment seg, IFeature pfeature, IPolyline Line11, IPolyline Line12, int NewNodeID)
+        private void InsertIntoSeg(SegmentService seg, IFeature pfeature, IPolyline Line11, IPolyline Line12, int NewNodeID)
         {
             //查找字段的索引，以便赋值
             int nSegmentID = pSegClass.Fields.FindField(seg.IDNm);
@@ -370,7 +370,7 @@ namespace RoadNetworkSystem.EditorTool
         /// <param name="Line11"></param>
         /// <param name="Line12"></param>
         /// <param name="NewNodeID"></param>
-        private static void UpdateNewSeg(Segment seg, IFeature pfeature, IPolyline Line11, IPolyline Line12, int NewNodeID)
+        private static void UpdateNewSeg(SegmentService seg, IFeature pfeature, IPolyline Line11, IPolyline Line12, int NewNodeID)
         {
             //查找字段的索引，以便赋值
             int nSegmentID = pSegClass.Fields.FindField(seg.IDNm);
@@ -420,7 +420,7 @@ namespace RoadNetworkSystem.EditorTool
         /// <param name="FNodeID"></param>
         /// <param name="TNodeID"></param>
         /// <param name="SegmentID"></param>
-        private static void GetFTSNodeID(Segment seg, IFeature pFeature, out int FNodeID, out int TNodeID, out int SegmentID)
+        private static void GetFTSNodeID(SegmentService seg, IFeature pFeature, out int FNodeID, out int TNodeID, out int SegmentID)
         {
 
             //查找字段的索引，以便赋值

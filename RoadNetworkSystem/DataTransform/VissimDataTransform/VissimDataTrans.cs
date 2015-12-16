@@ -194,7 +194,7 @@ namespace RoadNetworkSystem.VissimDataTransform
                 string Str = "select RoadName from Link where LinkID=" + linkid;
                 OleDbCommand Com_1 = new OleDbCommand(Str, Conn);
                 rodename = Convert.ToString(Com_1.ExecuteScalar());
-                c = pFeatClsArc.FindField(Arc.LaneNumNm);//当前弧段的LaneNum
+                c = pFeatClsArc.FindField(ArcService.LaneNumNm);//当前弧段的LaneNum
                 lanenum = Convert.ToInt32(pFeatQuery.get_Value(c));
                 d = pFeatClsArc.FindField("Shape_Length");//当前弧段的弧段长度
                 len = Convert.ToDouble(pFeatQuery.get_Value(d));

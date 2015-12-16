@@ -122,7 +122,7 @@ namespace RoadNetworkSystem.WinForm.NetworkEditor
 
             //设置默认值
 
-            _selcetLayerNm = NodeEntity.NodeName;
+            _selcetLayerNm = Node.NodeName;
             NodeEditorDesigner.SetNodePalette(_frm1);
             _frm1.comboBox_Layer.SelectedIndex = 0;
 
@@ -192,10 +192,10 @@ namespace RoadNetworkSystem.WinForm.NetworkEditor
         private static void setLayerList()
         {
             List<string> itemList = new List<string>();
-            itemList.Add(NodeEntity.NodeName);
-            itemList.Add(LinkEntity.LinkName);
-            itemList.Add(LaneEntity.LaneName);
-            itemList.Add(LaneConnectorEntity.ConnectorName);
+            itemList.Add(Node.NodeName);
+            itemList.Add(Link.LinkName);
+            itemList.Add(Lane.LaneName);
+            itemList.Add(LaneConnector.ConnectorName);
 
             foreach (string item in itemList)
             {
@@ -213,43 +213,43 @@ namespace RoadNetworkSystem.WinForm.NetworkEditor
 
             switch (str)
             {
-                case LinkEntity.LinkName:
+                case Link.LinkName:
                     {
                         _frm1.button_Save.Tag = 2;
                         _frm1.button_Delete.Tag = 2;
                         _frm1.button_Add.Tag = 2;
                         _frm1.button_Refresh.Tag = 2;
-                        _selcetLayerNm = LinkEntity.LinkName;
+                        _selcetLayerNm = Link.LinkName;
 
                         LayerHelper.ClearSelect(_frm1.axMapControl1);
-                        LayerHelper.SelectLayer(_frm1.axMapControl1, LinkEntity.LinkName);
+                        LayerHelper.SelectLayer(_frm1.axMapControl1, Link.LinkName);
 
                         LinkEditorDesigner.SetLinkPalette(_frm1);
                         break;
                     }
-                case NodeEntity.NodeName:
+                case Node.NodeName:
                     {
                         _frm1.button_Save.Tag = 1;
                         _frm1.button_Delete.Tag = 1;
                         _frm1.button_Add.Tag = 1;
                         _frm1.button_Refresh.Tag = 1;
-                        _selcetLayerNm = NodeEntity.NodeName;
+                        _selcetLayerNm = Node.NodeName;
 
                         LayerHelper.ClearSelect(_frm1.axMapControl1);
-                        LayerHelper.SelectLayer(_frm1.axMapControl1, NodeEntity.NodeName);
+                        LayerHelper.SelectLayer(_frm1.axMapControl1, Node.NodeName);
 
                         NodeEditorDesigner.SetNodePalette(_frm1);
                         break;
                     }
-                case LaneEntity.LaneName:
+                case Lane.LaneName:
                     {
-                        _selcetLayerNm = LaneEntity.LaneName;
+                        _selcetLayerNm = Lane.LaneName;
                         break;
 
                     }
-                case LaneConnectorEntity.ConnectorName:
+                case LaneConnector.ConnectorName:
                     {
-                        _selcetLayerNm = LaneConnectorEntity.ConnectorName;
+                        _selcetLayerNm = LaneConnector.ConnectorName;
                         break;
                     }
                 default:

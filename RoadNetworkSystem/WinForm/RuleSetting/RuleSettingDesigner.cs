@@ -83,7 +83,7 @@ namespace RoadNetworkSystem.WinForm.RuleSetting
 
         void comboBox_Layer_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (_frm1.comboBox_Layer.SelectedText.Equals(ArcEntity.ArcFeatureName))
+            if (_frm1.comboBox_Layer.SelectedText.Equals(Arc.ArcFeatureName))
             {
                 _frm1.button_Add.Tag = 1;
                 _frm1.button_Refresh.Tag = 1;
@@ -283,13 +283,13 @@ namespace RoadNetworkSystem.WinForm.RuleSetting
 
             _frm1.button_Lane_Rule_Modify.Click += button_Lane_Rule_Modify_Click;
 
-            LaneEntity laneEty = getLaneEty();
+            Lane laneEty = getLaneEty();
             if (laneEty == null)
                 return;
             
             //设置连通状态
-            if (laneEty.Change.Equals(Enum.GetName(typeof(LaneFeature.LaneChange), LaneFeature.LaneChange.Both))
-                || laneEty.Change.Equals(Enum.GetName(typeof(LaneFeature.LaneChange), LaneFeature.LaneChange.Left)))
+            if (laneEty.Change.Equals(Enum.GetName(typeof(LaneFeatureService.LaneChange), LaneFeatureService.LaneChange.Both))
+                || laneEty.Change.Equals(Enum.GetName(typeof(LaneFeatureService.LaneChange), LaneFeatureService.LaneChange.Left)))
             {
                 _frm1.checkBox_Lane_Rule_Left_Connnection.Checked = true;
             }
@@ -298,8 +298,8 @@ namespace RoadNetworkSystem.WinForm.RuleSetting
                 _frm1.checkBox_Lane_Rule_Left_Connnection.Checked = false;
             }
 
-            if (laneEty.Change.Equals(Enum.GetName(typeof(LaneFeature.LaneChange), LaneFeature.LaneChange.Both))
-                || laneEty.Change.Equals(Enum.GetName(typeof(LaneFeature.LaneChange), LaneFeature.LaneChange.Right)))
+            if (laneEty.Change.Equals(Enum.GetName(typeof(LaneFeatureService.LaneChange), LaneFeatureService.LaneChange.Both))
+                || laneEty.Change.Equals(Enum.GetName(typeof(LaneFeatureService.LaneChange), LaneFeatureService.LaneChange.Right)))
             {
                 _frm1.checkBox_Lane_Rule_Right_Connnection.Checked = true;
             }
@@ -343,11 +343,11 @@ namespace RoadNetworkSystem.WinForm.RuleSetting
                         
             bool isSideLine_RightBoundary = false;
             bool isCenterLine_RightBoundary = false;
-            LaneEntity laneEty = getLaneEty();
+            Lane laneEty = getLaneEty();
 
-            Arc arc = new Arc(_frm1.FeaClsArc,laneEty.ArcID);
+            ArcService arc = new ArcService(_frm1.FeaClsArc,laneEty.ArcID);
             
-            ArcEntity arcEty =  arc.GetArcEty( arc.GetArcFeature());
+            Arc arcEty =  arc.GetArcEty( arc.GetArcFeature());
             if (laneEty.Position == 1)
             {
                 isCenterLine_LeftBoundary = true;
@@ -368,14 +368,14 @@ namespace RoadNetworkSystem.WinForm.RuleSetting
 
             BoundaryRuleService boundaryRuleService = new BoundaryRuleService(connection);
 
-            Boundary boundary_Left = new Boundary(_frm1.FeaClsBoundary,laneEty.LeftBoundaryID);
-            Boundary boundary_Right=  new Boundary(_frm1.FeaClsBoundary,laneEty.RightBoundaryID);
+            BoundaryService boundary_Left = new BoundaryService(_frm1.FeaClsBoundary,laneEty.LeftBoundaryID);
+            BoundaryService boundary_Right=  new BoundaryService(_frm1.FeaClsBoundary,laneEty.RightBoundaryID);
 
             IFeature boundary_Left_Feature = boundary_Left.GetFeature();
-            BoundaryEntity boundaryEty_Left_Boundary = boundary_Left.GetEntity(boundary_Left_Feature);
+            Boundary boundaryEty_Left_Boundary = boundary_Left.GetEntity(boundary_Left_Feature);
             
             IFeature boundary_Right_Feature = boundary_Right.GetFeature();
-            BoundaryEntity boundaryEty_Right_Boundary = boundary_Right.GetEntity(boundary_Right_Feature);
+            Boundary boundaryEty_Right_Boundary = boundary_Right.GetEntity(boundary_Right_Feature);
 
 
             //当前车道的右侧边界线的规则
@@ -419,13 +419,13 @@ namespace RoadNetworkSystem.WinForm.RuleSetting
             }
         }
 
-        private LaneEntity getLaneEty()
+        private Lane getLaneEty()
         {
             if (_frm1.SlctLane_Rule == null)
             {
                 return null;
             }
-            LaneFeature laneFeature = new LaneFeature(_frm1.FeaClsLane,0);
+            LaneFeatureService laneFeature = new LaneFeatureService(_frm1.FeaClsLane,0);
             return laneFeature.GetEntity(_frm1.SlctLane_Rule);
         }
 
@@ -504,7 +504,7 @@ namespace RoadNetworkSystem.WinForm.RuleSetting
                         //选择的是Arc
                         _frm1.ToolBarFlag = false;
                         LayerHelper.ClearSelect(_frm1.axMapControl1);
-                        LayerHelper.SelectLayer(_frm1.axMapControl1,ArcEntity.ArcFeatureName);
+                        LayerHelper.SelectLayer(_frm1.axMapControl1,Arc.ArcFeatureName);
 
                         break;
                     }
@@ -514,7 +514,7 @@ namespace RoadNetworkSystem.WinForm.RuleSetting
 
                         _frm1.ToolBarFlag = false;
                         LayerHelper.ClearSelect(_frm1.axMapControl1);
-                        LayerHelper.SelectLayer(_frm1.axMapControl1, LaneEntity.LaneName);
+                        LayerHelper.SelectLayer(_frm1.axMapControl1, Lane.LaneName);
 
                         break;
                     }
@@ -538,8 +538,8 @@ namespace RoadNetworkSystem.WinForm.RuleSetting
         private void setLayerList()
         {
             List<string> itemList = new List<string>();
-            itemList.Add(ArcEntity.ArcFeatureName);
-            itemList.Add(LaneEntity.LaneName);
+            itemList.Add(Arc.ArcFeatureName);
+            itemList.Add(Lane.LaneName);
             foreach (string item in itemList)
             {
                 _frm1.comboBox_Layer.Items.Add(item);

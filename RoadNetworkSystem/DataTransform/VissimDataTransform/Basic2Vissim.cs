@@ -53,9 +53,9 @@ namespace RoadNetworkSystem.VissimDataTransform
             Conn = AccessHelper.OpenConnection(databasePath);
 
             //初始化需要用到的要素类
-            _pFeaClsNode = (ws as IFeatureWorkspace).OpenFeatureClass(NodeEntity.NodeName);
-            _pFeaClsLink = (ws as IFeatureWorkspace).OpenFeatureClass(LinkEntity.LinkName);
-            _pFeaClsArc = (ws as IFeatureWorkspace).OpenFeatureClass(ArcEntity.ArcFeatureName);
+            _pFeaClsNode = (ws as IFeatureWorkspace).OpenFeatureClass(Node.NodeName);
+            _pFeaClsLink = (ws as IFeatureWorkspace).OpenFeatureClass(Link.LinkName);
+            _pFeaClsArc = (ws as IFeatureWorkspace).OpenFeatureClass(Arc.ArcFeatureName);
 
             //找不到Link或Node， 返回false
             if (_pFeaClsLink == null || _pFeaClsArc == null)
@@ -189,22 +189,22 @@ namespace RoadNetworkSystem.VissimDataTransform
             pFeatQuery = pCursor.NextFeature();
 
 
-            Link link = new Link(_pFeaClsLink, 0);
+            LinkService link = new LinkService(_pFeaClsLink, 0);
             while (pFeatQuery != null)//遍历弧段
             {
                 string rodename = "", FNode = "", TNode = "", OverNode = "";
                 int arcid, linkid, lanenum;
                 m++;
-                f = _pFeaClsArc.FindField(Arc.ArcIDNm);//当前弧段的ArcID
+                f = _pFeaClsArc.FindField(ArcService.ArcIDNm);//当前弧段的ArcID
                 arcid = Convert.ToInt32(pFeatQuery.get_Value(f));
-                b = _pFeaClsArc.FindField(Arc.LinkIDNm);//当前弧段的LinkID
+                b = _pFeaClsArc.FindField(ArcService.LinkIDNm);//当前弧段的LinkID
                 linkid = Convert.ToInt32(pFeatQuery.get_Value(b));
 
-                string Str = "select " + link.RoadNameNm + " from " + LinkEntity.LinkName + " where " + link.IDNm + "=" + linkid;
+                string Str = "select " + link.RoadNameNm + " from " + Link.LinkName + " where " + link.IDNm + "=" + linkid;
 
                 OleDbCommand Com_1 = new OleDbCommand(Str, Conn);
                 rodename = Convert.ToString(Com_1.ExecuteScalar());
-                c = _pFeaClsArc.FindField(Arc.LaneNumNm);//当前弧段的LaneNum
+                c = _pFeaClsArc.FindField(ArcService.LaneNumNm);//当前弧段的LaneNum
                 lanenum = Convert.ToInt32(pFeatQuery.get_Value(c));
 
                 //当前弧段的弧段长度
@@ -340,7 +340,7 @@ namespace RoadNetworkSystem.VissimDataTransform
             OleDbCommand cmd = new OleDbCommand();
             OleDbDataReader reader;
             string strSql, str;
-            strSql = "select * from " + LaneConnectorEntity.ConnectorName + " order by " + LaneConnectorFeature.ConnectorIDNm;
+            strSql = "select * from " + LaneConnector.ConnectorName + " order by " + LaneConnectorFeatureService.ConnectorIDNm;
             cmd.CommandText = strSql;
             cmd.Connection = Conn;
             reader = cmd.ExecuteReader();
@@ -350,11 +350,11 @@ namespace RoadNetworkSystem.VissimDataTransform
             string OverNode = "", rodename = "";
             while (reader.Read())
             {
-                ConnectorID = (int)reader[LaneConnectorFeature.ConnectorIDNm];
-                fromArcID = (int)reader[LaneConnectorFeature.fromArcIDNm];
-                toArcID = (int)reader[LaneConnectorFeature.toArcIDNm];
-                fromLaneID = (int)reader[LaneConnectorFeature.fromLaneIDNm];
-                toLaneID = (int)reader[LaneConnectorFeature.toLaneIDNm];
+                ConnectorID = (int)reader[LaneConnectorFeatureService.ConnectorIDNm];
+                fromArcID = (int)reader[LaneConnectorFeatureService.fromArcIDNm];
+                toArcID = (int)reader[LaneConnectorFeatureService.toArcIDNm];
+                fromLaneID = (int)reader[LaneConnectorFeatureService.fromLaneIDNm];
+                toLaneID = (int)reader[LaneConnectorFeatureService.toLaneIDNm];
                 string Str0 = "select Length from Vissim_LINKS where ArcID=" + fromArcID;
                 OleDbCommand Com_1 = new OleDbCommand(Str0, Conn);
                 len = Convert.ToDouble(Com_1.ExecuteScalar());

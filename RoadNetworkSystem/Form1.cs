@@ -450,7 +450,7 @@ namespace RoadNetworkSystem
                 else
                 {
                     System.Collections.Generic.List<string> layerNames = new System.Collections.Generic.List<string>();
-                    layerNames.Add(RoadEntity.RoadNm);
+                    layerNames.Add(Road.RoadNm);
                     LayerHelper.LoadMapLayer(axMapControl1, layerNames);
                 }
             }
@@ -588,76 +588,76 @@ namespace RoadNetworkSystem
             {
                 switch (feaClsName)
                 {
-                    case SegmentNodeEntity.RoadSegmentNodeName:
+                    case SegmentNode.RoadSegmentNodeName:
                         {
-                            FeaClsSegNode = feaWs.OpenFeatureClass(SegmentNodeEntity.RoadSegmentNodeName);
+                            FeaClsSegNode = feaWs.OpenFeatureClass(SegmentNode.RoadSegmentNodeName);
                             break;
                         }
-                    case SegmentEntity.SegmentName:
+                    case Segment.SegmentName:
                         {
-                            FeaClsSegment = feaWs.OpenFeatureClass(SegmentEntity.SegmentName);
+                            FeaClsSegment = feaWs.OpenFeatureClass(Segment.SegmentName);
                             break;
                         }
-                    case NodeEntity.NodeName:
+                    case Node.NodeName:
                         {
-                            FeaClsNode = feaWs.OpenFeatureClass(NodeEntity.NodeName);
-                            break;
-                        }
-
-
-                    case LinkEntity.LinkName:
-                        {
-                            FeaClsLink = feaWs.OpenFeatureClass(LinkEntity.LinkName);
-                            break;
-                        }
-                    case ArcEntity.ArcFeatureName:
-                        {
-                            FeaClsArc = feaWs.OpenFeatureClass(ArcEntity.ArcFeatureName);
-                            break;
-
-                        }
-                    case LaneEntity.LaneName:
-                        {
-                            FeaClsLane = feaWs.OpenFeatureClass(LaneEntity.LaneName);
+                            FeaClsNode = feaWs.OpenFeatureClass(Node.NodeName);
                             break;
                         }
 
 
-                    case LaneConnectorEntity.ConnectorName:
+                    case Link.LinkName:
                         {
-                            FeaClsConnector = feaWs.OpenFeatureClass(LaneConnectorEntity.ConnectorName);
+                            FeaClsLink = feaWs.OpenFeatureClass(Link.LinkName);
                             break;
                         }
-                    case BoundaryEntity.BoundaryName:
+                    case Arc.ArcFeatureName:
                         {
-                            FeaClsBoundary = feaWs.OpenFeatureClass(BoundaryEntity.BoundaryName);
+                            FeaClsArc = feaWs.OpenFeatureClass(Arc.ArcFeatureName);
                             break;
+
                         }
-                    case KerbEntity.KerbName:
+                    case Lane.LaneName:
                         {
-                            FeaClsKerb = feaWs.OpenFeatureClass(KerbEntity.KerbName);
+                            FeaClsLane = feaWs.OpenFeatureClass(Lane.LaneName);
                             break;
                         }
 
 
-                    case StopLineEntity.StopLineName:
+                    case LaneConnector.ConnectorName:
                         {
-                            FeaClsStopLine = feaWs.OpenFeatureClass(StopLineEntity.StopLineName);
+                            FeaClsConnector = feaWs.OpenFeatureClass(LaneConnector.ConnectorName);
                             break;
                         }
-                    case TurnArrowEntity.TurnArrowName:
+                    case Boundary.BoundaryName:
                         {
-                            FeaClsTurnArrow = feaWs.OpenFeatureClass(TurnArrowEntity.TurnArrowName);
+                            FeaClsBoundary = feaWs.OpenFeatureClass(Boundary.BoundaryName);
                             break;
                         }
-                    case SurfaceEntity.SurfaceName:
+                    case Kerb.KerbName:
                         {
-                            FeaClsSurface = feaWs.OpenFeatureClass(SurfaceEntity.SurfaceName);
+                            FeaClsKerb = feaWs.OpenFeatureClass(Kerb.KerbName);
                             break;
                         }
-                    case RoadEntity.RoadNm:
+
+
+                    case StopLine.StopLineName:
                         {
-                            FeaClsRoad = feaWs.OpenFeatureClass(RoadEntity.RoadNm);
+                            FeaClsStopLine = feaWs.OpenFeatureClass(StopLine.StopLineName);
+                            break;
+                        }
+                    case TurnArrow.TurnArrowName:
+                        {
+                            FeaClsTurnArrow = feaWs.OpenFeatureClass(TurnArrow.TurnArrowName);
+                            break;
+                        }
+                    case Surface.SurfaceName:
+                        {
+                            FeaClsSurface = feaWs.OpenFeatureClass(Surface.SurfaceName);
+                            break;
+                        }
+                    case Road.RoadNm:
+                        {
+                            FeaClsRoad = feaWs.OpenFeatureClass(Road.RoadNm);
                             break;
                         }
                     default:
@@ -787,12 +787,12 @@ namespace RoadNetworkSystem
                                 if (SlctRoadIndex_EditTool == 0)
                                 {
                                     FirstRoadFea = pFeature;
-                                    Road road = new Road(FeaClsRoad, 0);
-                                    RoadEntity roadEty = new RoadEntity();
+                                    RoadService road = new RoadService(FeaClsRoad, 0);
+                                    Road roadEty = new Road();
                                     roadEty = road.GetEntity(pFeature);
                                     object o = roadEty.RoadType;
                                     string text = "路名:" + roadEty.RoadName + "\n" +
-                                        "道路类型:" + System.Enum.GetName(typeof(LinkEntity.道路类型), o).ToString();
+                                        "道路类型:" + System.Enum.GetName(typeof(Link.道路类型), o).ToString();
 
                                     SlctRoadIndex_EditTool += 1;
                                     richTextBox_Tool_FirstFea.Text = text;
@@ -803,12 +803,12 @@ namespace RoadNetworkSystem
                                 else if (SlctRoadIndex_EditTool == 1)
                                 {
                                     SecondRoadFea = pFeature;
-                                    Road road = new Road(FeaClsRoad, 0);
-                                    RoadEntity roadEty = new RoadEntity();
+                                    RoadService road = new RoadService(FeaClsRoad, 0);
+                                    Road roadEty = new Road();
                                     roadEty = road.GetEntity(pFeature);
                                     object o = roadEty.RoadType;
                                     string text = "路名:" + roadEty.RoadName + "\n" +
-                                        "道路类型:" + System.Enum.GetName(typeof(LinkEntity.道路类型), o).ToString();
+                                        "道路类型:" + System.Enum.GetName(typeof(Link.道路类型), o).ToString();
                                     richTextBox_Tool_SecondFea.Text = text;
                                     SlctRoadIndex_EditTool = 0;
                                     GeoDisplayHelper.HightLine(axMapControl1, SecondRoadFea.Shape as IPolyline, 0, 255, 0, 10, esriSimpleLineStyle.esriSLSSolid);
@@ -836,16 +836,16 @@ namespace RoadNetworkSystem
                                 if (SlctSegmentIndex_EditTool == 0)
                                 {
                                     FirstSegFea = pFeature;
-                                    Segment seg = new Segment(FeaClsSegment, 0);
-                                    SegmentEntity segEty = new SegmentEntity();
+                                    SegmentService seg = new SegmentService(FeaClsSegment, 0);
+                                    Segment segEty = new Segment();
 
-                                    LinkMasterEntity linkMstrEty = seg.GetEntity(pFeature);
+                                    LinkMaster linkMstrEty = seg.GetEntity(pFeature);
                                     segEty = segEty.Copy(linkMstrEty);
                                     object o = segEty.RoadType;
 
 
                                     string text = "路名:" + segEty.RoadName + "\n" +
-                                        "道路类型:" + System.Enum.GetName(typeof(LinkEntity.道路类型), o).ToString();
+                                        "道路类型:" + System.Enum.GetName(typeof(Link.道路类型), o).ToString();
 
                                     SlctSegmentIndex_EditTool += 1;
                                     richTextBox_Tool_FirstFea.Text = text;
@@ -854,16 +854,16 @@ namespace RoadNetworkSystem
                                 else if (SlctSegmentIndex_EditTool == 1)
                                 {
                                     SecondSegFea = pFeature;
-                                    Segment seg = new Segment(FeaClsSegment, 0);
-                                    SegmentEntity segEty = new SegmentEntity();
+                                    SegmentService seg = new SegmentService(FeaClsSegment, 0);
+                                    Segment segEty = new Segment();
 
-                                    LinkMasterEntity linkMstrEty = seg.GetEntity(pFeature);
+                                    LinkMaster linkMstrEty = seg.GetEntity(pFeature);
 
                                     segEty = segEty.Copy(linkMstrEty);
                                     object o = segEty.RoadType;
 
                                     string text = "路名:" + segEty.RoadName + "\n" +
-                                        "道路类型:" + System.Enum.GetName(typeof(LinkEntity.道路类型), o).ToString();
+                                        "道路类型:" + System.Enum.GetName(typeof(Link.道路类型), o).ToString();
 
                                     richTextBox_Tool_SecondFea.Text = text;
                                     SlctSegmentIndex_EditTool = 0;
@@ -976,9 +976,9 @@ namespace RoadNetworkSystem
                             if (pFeature != null)
                             {
                                 SltSegmentNode = pFeature;
-                                SegmentNode segNode = new SegmentNode(FeaClsSegNode, 0, null);
-                                SegmentNodeEntity segNodeEty = new SegmentNodeEntity();
-                                NodeMasterEntity nodeMstEty = segNode.GetNodeMasterEty(pFeature);
+                                SegmentNodeService segNode = new SegmentNodeService(FeaClsSegNode, 0, null);
+                                SegmentNode segNodeEty = new SegmentNode();
+                                NodeMaster nodeMstEty = segNode.GetNodeMasterEty(pFeature);
                                 segNodeEty = segNodeEty.Copy(nodeMstEty);
 
                                 string[] northAngles = segNodeEty.NorthAngles.Split('\\');
@@ -986,15 +986,15 @@ namespace RoadNetworkSystem
                                 for (int i = 0; i < northAngles.Length; i++)
                                 {
                                     int temSegmentID = Convert.ToInt32(adjSegmentIDs[i]);
-                                    Segment seg = new Segment(FeaClsSegment, temSegmentID);
+                                    SegmentService seg = new SegmentService(FeaClsSegment, temSegmentID);
                                     IFeature fea1 = seg.GetFeature();
-                                    SegmentEntity segEty = new SegmentEntity();
-                                    LinkMasterEntity linkMstrEty = seg.GetEntity(fea1);
+                                    Segment segEty = new Segment();
+                                    LinkMaster linkMstrEty = seg.GetEntity(fea1);
                                     segEty = segEty.Copy(linkMstrEty);
                                     object o = segEty.RoadType;
                                     string text = "北偏角为：" + northAngles[i] + "\n" +
                                         "道路名为：" + segEty.RoadName + "\n" +
-                                        "道路类型：" + System.Enum.GetName(typeof(LinkEntity.道路类型), o).ToString();
+                                        "道路类型：" + System.Enum.GetName(typeof(Link.道路类型), o).ToString();
                                     if (i == 0)
                                     {
                                         GeoDisplayHelper.HightLine(axMapControl1, fea1.Shape as IPolyline, 255, 0, 0, 10, esriSimpleLineStyle.esriSLSSolid);
@@ -1040,7 +1040,7 @@ namespace RoadNetworkSystem
 
                                 //这时选择图层设为Segment
 
-                                LayerHelper.SelectLayer(axMapControl1, SegmentEntity.SegmentName);
+                                LayerHelper.SelectLayer(axMapControl1, Segment.SegmentName);
                                 NodeSelected = true;
 
 
@@ -1078,7 +1078,7 @@ namespace RoadNetworkSystem
                             //获取选择的图层
                             ILayer pLayer = LayerHelper.GetSelectedLayer(axMapControl1.Map);
 
-                            if (pLayer.Name.Equals(NodeEntity.NodeName))
+                            if (pLayer.Name.Equals(Node.NodeName))
                             {
                                 //确定是link的添加
                                 if (Convert.ToInt32(button_Add.Tag) == 2)
@@ -1132,7 +1132,7 @@ namespace RoadNetworkSystem
                                 }
 
                             }
-                            else if (pLayer.Name.Equals(LinkEntity.LinkName))
+                            else if (pLayer.Name.Equals(Link.LinkName))
                             {
                                 if (pFeature != null)
                                 {
@@ -1181,7 +1181,7 @@ namespace RoadNetworkSystem
 
                                     _roadFeaPair = new FeaPair(FirstRoadFea, null);
 
-                                    string roadNm = Convert.ToString(FirstRoadFea.get_Value(FeaClsRoad.FindField(Road.RoadNameNm)));
+                                    string roadNm = Convert.ToString(FirstRoadFea.get_Value(FeaClsRoad.FindField(RoadService.RoadNameNm)));
                                     listBox_extraction_roadPair1.Items.Add(roadNm);
 
                                     FeaPairSlctFlag = -1;
@@ -1203,7 +1203,7 @@ namespace RoadNetworkSystem
                                     if (_roadFeaPair.IsExistInFeaPair(RoadFeaPairs) == false)
                                     {
                                         RoadFeaPairs.Add(_roadFeaPair);
-                                        string roadNm = Convert.ToString(SecondRoadFea.get_Value(FeaClsRoad.FindField(Road.RoadNameNm)));
+                                        string roadNm = Convert.ToString(SecondRoadFea.get_Value(FeaClsRoad.FindField(RoadService.RoadNameNm)));
                                         listBox_extraction_roadPair2.Items.Add(roadNm);
                                         //停止选择
                                         FeaPairSlctFlag = -1;

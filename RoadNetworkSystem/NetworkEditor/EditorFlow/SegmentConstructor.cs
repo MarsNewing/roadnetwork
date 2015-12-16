@@ -34,18 +34,18 @@ namespace RoadNetworkSystem.NetworkEditor.EditorFlow
 
 
         private IFeature _crtLinkFea;
-        private LinkEntity _linkEty ;
+        private Link _linkEty ;
 
 
         private IFeature _fNodeFea;
-        private NodeEntity _fNodeEty;
-        private NodeEntity _tNodeEty;
+        private Node _fNodeEty;
+        private Node _tNodeEty;
         private IFeature _tNodeFea;
 
-        private ArcEntity _sameArcEty;
+        private Arc _sameArcEty;
         private IFeature _sameArcFea;
 
-        private ArcEntity _oppArcEty;
+        private Arc _oppArcEty;
         private IFeature _oppArcFea;
 
         private const double LANEWEIDTH = 3.5;
@@ -62,22 +62,22 @@ namespace RoadNetworkSystem.NetworkEditor.EditorFlow
 
         public SegmentConstructor(Dictionary<string, IFeatureClass> feaClsDic, IFeature fNodeFea, IFeature tNodeFea)
         {
-            _linkEty = new LinkEntity();
-            _sameArcEty = new ArcEntity();
-            _oppArcEty = new ArcEntity();
+            _linkEty = new Link();
+            _sameArcEty = new Arc();
+            _oppArcEty = new Arc();
 
-            _pFeaClsArc = feaClsDic[ArcEntity.ArcFeatureName];
-            _pFeaClsBoundary = feaClsDic[BoundaryEntity.BoundaryName];
-            _pFeaClsConnector=feaClsDic[LaneConnectorEntity.ConnectorName];
+            _pFeaClsArc = feaClsDic[Arc.ArcFeatureName];
+            _pFeaClsBoundary = feaClsDic[Boundary.BoundaryName];
+            _pFeaClsConnector=feaClsDic[LaneConnector.ConnectorName];
 
-            _pFeaClsKerb=feaClsDic[KerbEntity.KerbName];
-            _pFeaClsLane = feaClsDic[LaneEntity.LaneName];
-            _pFeaClsLink = feaClsDic[LinkEntity.LinkName];
+            _pFeaClsKerb=feaClsDic[Kerb.KerbName];
+            _pFeaClsLane = feaClsDic[Lane.LaneName];
+            _pFeaClsLink = feaClsDic[Link.LinkName];
 
-            _pFeaClsNode = feaClsDic[NodeEntity.NodeName];
-            _pFeaClsStopLine = feaClsDic[StopLineEntity.StopLineName];
-            _pFeaClsTurnArrow = feaClsDic[TurnArrowEntity.TurnArrowName];
-            _pFeaClsSurface = feaClsDic[SurfaceEntity.SurfaceName];
+            _pFeaClsNode = feaClsDic[Node.NodeName];
+            _pFeaClsStopLine = feaClsDic[StopLine.StopLineName];
+            _pFeaClsTurnArrow = feaClsDic[TurnArrow.TurnArrowName];
+            _pFeaClsSurface = feaClsDic[Surface.SurfaceName];
 
 
             _fNodeFea = fNodeFea;
@@ -87,9 +87,16 @@ namespace RoadNetworkSystem.NetworkEditor.EditorFlow
         public void CreateLinkTopo(IPolyline linkLine,IFeature fNodeFea,IFeature tNodeFea,int linkRoadType, string linkRoadNm,
             int linkFlowDir, int sameLaneNum, int oppLaneNum)
         {
-            _linkEty = new LinkEntity();
-            _sameArcEty = new ArcEntity();
-            _oppArcEty = new ArcEntity();
+            if (fNodeFea == null || tNodeFea == null)
+            {
+                MessageBox.Show("确认fnode 和 tnode 为非空");
+                return;
+            }
+            _linkEty = new Link();
+            _sameArcEty = new Arc();
+            _oppArcEty = new Arc();
+
+            
 
             //保存Link
             IFeature crtLinkFea = saveLink(fNodeFea,tNodeFea, linkRoadType, linkRoadNm, linkFlowDir, linkLine);
@@ -135,14 +142,14 @@ namespace RoadNetworkSystem.NetworkEditor.EditorFlow
 
 
     //  5.-------------------创建同向Arc的Surface---------------------------
-                Surface surface = new Surface(_pFeaClsSurface, 0);
+                SurfaceService surface = new SurfaceService(_pFeaClsSurface, 0);
 
                 IPolygon gon = new PolygonClass();
                 string str = "";
                 surface.CrateSurfaceShape(_pFeaClsKerb, sameNextNodeCutInfor, tNodeFea, fNodeFea,ref gon,ref str);
 
 
-                SurfaceEntity surfaceEty = new SurfaceEntity();
+                Surface surfaceEty = new Surface();
                 surfaceEty.ArcID = _sameArcEty.ArcID;
                 surfaceEty.ControlIDs = str;
                 surfaceEty.SurfaceID = 0;
@@ -183,7 +190,7 @@ namespace RoadNetworkSystem.NetworkEditor.EditorFlow
 
     //  9.-----------------------创建反向Arc的Surface----------------------------------------
                 surface.CrateSurfaceShape(_pFeaClsKerb, oppNextNodeCutInfor, fNodeFea, tNodeFea, ref gon, ref str);
-                surfaceEty = new SurfaceEntity();
+                surfaceEty = new Surface();
                 surfaceEty.ArcID = _oppArcEty.ArcID;
                 surfaceEty.ControlIDs = str;
                 surfaceEty.SurfaceID = 0;
@@ -203,15 +210,15 @@ namespace RoadNetworkSystem.NetworkEditor.EditorFlow
         private void updateFTNode(IFeature fNodeFea, IFeature tNodeFea)
         {
             //保存FNode属性2
-            Node node = new Node(_pFeaClsNode, 0, null);
-            _fNodeEty = new NodeEntity();
-            NodeMasterEntity fNodeMasterEty = node.GetNodeMasterEty(fNodeFea);
+            NodeService node = new NodeService(_pFeaClsNode, 0, null);
+            _fNodeEty = new Node();
+            NodeMaster fNodeMasterEty = node.GetNodeMasterEty(fNodeFea);
             _fNodeEty = _fNodeEty.Copy(fNodeMasterEty);
             //保存FNode属性2
             updateNodeAtt2(_fNodeEty.ID, fNodeFea.Shape as IPoint);
 
             //更新fNodeFea
-            node = new Node(_pFeaClsNode, _fNodeEty.ID, fNodeFea.Shape as IPoint);
+            node = new NodeService(_pFeaClsNode, _fNodeEty.ID, fNodeFea.Shape as IPoint);
             fNodeFea = node.GetFeature();
 
             ///更新fNodeEty
@@ -227,13 +234,13 @@ namespace RoadNetworkSystem.NetworkEditor.EditorFlow
 
 
             //保存TNode属性2
-            _tNodeEty = new NodeEntity();
-            NodeMasterEntity tNodeMasterEty = node.GetNodeMasterEty(tNodeFea);
+            _tNodeEty = new Node();
+            NodeMaster tNodeMasterEty = node.GetNodeMasterEty(tNodeFea);
             _tNodeEty = _tNodeEty.Copy(tNodeMasterEty);
             //保存FNode属性2
             updateNodeAtt2(_tNodeEty.ID, tNodeFea.Shape as IPoint);
             //更新tNodeFea
-            node = new Node(_pFeaClsNode, _tNodeEty.ID, tNodeFea.Shape as IPoint);
+            node = new NodeService(_pFeaClsNode, _tNodeEty.ID, tNodeFea.Shape as IPoint);
             tNodeFea = node.GetFeature();
 
             ///更新_tNodeEty
@@ -243,8 +250,8 @@ namespace RoadNetworkSystem.NetworkEditor.EditorFlow
 
         private void updateNodeAtt2(int nodeID, IPoint pnt)
         {
-            Node rdSegNode = new Node(_pFeaClsNode, nodeID, pnt);
-            Link rs = new Link(_pFeaClsLink, 0);
+            NodeService rdSegNode = new NodeService(_pFeaClsNode, nodeID, pnt);
+            LinkService rs = new LinkService(_pFeaClsLink, 0);
             rdSegNode.CreateAdjData(rs);
         }
 
@@ -257,7 +264,7 @@ namespace RoadNetworkSystem.NetworkEditor.EditorFlow
 
             IFeature pArcFea = null;
 
-            Link link=new Link(_pFeaClsLink,linkID);
+            LinkService link=new LinkService(_pFeaClsLink,linkID);
             IQueryFilter filter = new QueryFilterClass();
             filter.WhereClause = link.IDNm + " = " + linkID;
             IFeatureCursor cursor = _pFeaClsArc.Search(filter, false);
@@ -268,18 +275,18 @@ namespace RoadNetworkSystem.NetworkEditor.EditorFlow
 
             while (pArcFea != null)
             {
-                int flowDir = Convert.ToInt32(pArcFea.get_Value(_pFeaClsArc.FindField(Arc.FlowDirNm)));
+                int flowDir = Convert.ToInt32(pArcFea.get_Value(_pFeaClsArc.FindField(ArcService.FlowDirNm)));
                 if (flowDir == 1)
                 {
-                    sameArcID = Convert.ToInt32(pArcFea.get_Value(_pFeaClsArc.FindField(Arc.ArcIDNm)));
+                    sameArcID = Convert.ToInt32(pArcFea.get_Value(_pFeaClsArc.FindField(ArcService.ArcIDNm)));
 
                     if (centerLiuneDltFlag == false)
                     {
                         //删除旧的CenterLine
-                        LaneFeature lane = new LaneFeature(_pFeaClsLane, 0);
+                        LaneFeatureService lane = new LaneFeatureService(_pFeaClsLane, 0);
                         IFeature laneFea = lane.QueryFeatureBuRule(sameArcID, 0);
-                        int centerLineID = Convert.ToInt32(laneFea.get_Value(_pFeaClsLane.FindField(LaneFeature.LeftBoundaryIDNm)));
-                        Boundary boun = new Boundary(_pFeaClsBoundary, centerLineID);
+                        int centerLineID = Convert.ToInt32(laneFea.get_Value(_pFeaClsLane.FindField(LaneFeatureService.LeftBoundaryIDNm)));
+                        BoundaryService boun = new BoundaryService(_pFeaClsBoundary, centerLineID);
                         IFeature bounFea = boun.GetFeature();
                         if (bounFea != null)
                         {
@@ -293,24 +300,24 @@ namespace RoadNetworkSystem.NetworkEditor.EditorFlow
                     }
 
 
-                    Kerb kerb = new Kerb(_pFeaClsKerb, 0);
+                    KerbService kerb = new KerbService(_pFeaClsKerb, 0);
                     IFeature kerb3 = kerb.GetKerbByArcAndSerial(sameArcID, 3);
                     sameKerb3 = kerb3.ShapeCopy as IPoint;
                 }
                 else
                 {
-                    oppArcID = Convert.ToInt32(pArcFea.get_Value(_pFeaClsArc.FindField(Arc.ArcIDNm)));
-                    Kerb kerb = new Kerb(_pFeaClsKerb, 0);
+                    oppArcID = Convert.ToInt32(pArcFea.get_Value(_pFeaClsArc.FindField(ArcService.ArcIDNm)));
+                    KerbService kerb = new KerbService(_pFeaClsKerb, 0);
                     IFeature kerb3 = kerb.GetKerbByArcAndSerial(oppArcID, 3);
                     oppKerb3 = kerb3.ShapeCopy as IPoint;
 
                     if (centerLiuneDltFlag == false)
                     {
                         //删除旧的CenterLine
-                        LaneFeature lane = new LaneFeature(_pFeaClsLane, 0);
+                        LaneFeatureService lane = new LaneFeatureService(_pFeaClsLane, 0);
                         IFeature laneFea = lane.QueryFeatureBuRule(oppArcID, 0);
-                        int centerLineID = Convert.ToInt32(laneFea.get_Value(_pFeaClsLane.FindField(LaneFeature.LeftBoundaryIDNm)));
-                        Boundary boun = new Boundary(_pFeaClsBoundary, centerLineID);
+                        int centerLineID = Convert.ToInt32(laneFea.get_Value(_pFeaClsLane.FindField(LaneFeatureService.LeftBoundaryIDNm)));
+                        BoundaryService boun = new BoundaryService(_pFeaClsBoundary, centerLineID);
                         IFeature bounFea = boun.GetFeature();
                         if (bounFea != null)
                         {
@@ -334,24 +341,24 @@ namespace RoadNetworkSystem.NetworkEditor.EditorFlow
             col.AddPoint(sameKerb3);
 
             IPolyline cneterLine = col as IPolyline;
-            BoundaryEntity bounEty = new BoundaryEntity();
+            Boundary bounEty = new Boundary();
             bounEty.BoundaryID = 0;
             bounEty.Dir = 1;
             bounEty.StyleID = CENTERLINESTYLE;
             bounEty.Other = 0;
 
             //创建道路中心线
-            Boundary boun1 = new Boundary(_pFeaClsBoundary, 0);
+            BoundaryService boun1 = new BoundaryService(_pFeaClsBoundary, 0);
             IFeature bounFea1 = boun1.CreateBoundary(bounEty, cneterLine);
-            int bounID = Convert.ToInt32(bounFea1.get_Value(_pFeaClsBoundary.FindField(Boundary.BoundaryIDNm)));
+            int bounID = Convert.ToInt32(bounFea1.get_Value(_pFeaClsBoundary.FindField(BoundaryService.BoundaryIDNm)));
 
-            LaneFeature lane1=new LaneFeature(_pFeaClsLane,0);
+            LaneFeatureService lane1=new LaneFeatureService(_pFeaClsLane,0);
 
             //更新车道的LeftBoundaryID
             IFeature sameLane = lane1.QueryFeatureBuRule(sameArcID, 0);
             if(sameLane!=null)
             {
-                sameLane.set_Value(_pFeaClsLane.FindField(LaneFeature.LeftBoundaryIDNm), bounID);
+                sameLane.set_Value(_pFeaClsLane.FindField(LaneFeatureService.LeftBoundaryIDNm), bounID);
                 sameLane.Store();
             }
 
@@ -359,7 +366,7 @@ namespace RoadNetworkSystem.NetworkEditor.EditorFlow
             IFeature oppLane = lane1.QueryFeatureBuRule(oppArcID, 0);
             if (oppLane != null)
             {
-                oppLane.set_Value(_pFeaClsLane.FindField(LaneFeature.LeftBoundaryIDNm), bounID);
+                oppLane.set_Value(_pFeaClsLane.FindField(LaneFeatureService.LeftBoundaryIDNm), bounID);
                 oppLane.Store();
             }
 
@@ -374,8 +381,14 @@ namespace RoadNetworkSystem.NetworkEditor.EditorFlow
         /// <param name="linkFlowDir"></param>
         private IFeature saveLink(IFeature fNodeFea,IFeature tNodeFea,int linkRoadType,string linkRoadNm,int linkFlowDir,IPolyline linkLine)
         {
-            Link link = new Link(_pFeaClsLink, 0);
-            Node node = new Node(_pFeaClsNode, 0, null);
+            if (fNodeFea == null || tNodeFea == null)
+            {
+                return null;
+            }
+
+            LinkService link = new LinkService(_pFeaClsLink, 0);
+            NodeService node = new NodeService(_pFeaClsNode, 0, null);
+
 
             _linkEty.ID = 0;
             _linkEty.RoadType = linkRoadType;
@@ -394,10 +407,10 @@ namespace RoadNetworkSystem.NetworkEditor.EditorFlow
 
         private void saveArc(int linkFlowDir, int arcFlowDir,int laneNum,IPolyline linkLine)
         {
-            ArcEntity arcEty = new ArcEntity();
+            Arc arcEty = new Arc();
             #region ++++++++++++++++++++++++++保存Arc+++++++++++++++++++++++++++++++
             arcEty.ArcID = 0;
-            Link link = new Link(_pFeaClsLink, 0);
+            LinkService link = new LinkService(_pFeaClsLink, 0);
 
             arcEty.LinkID = _linkEty.ID;
 
@@ -413,7 +426,7 @@ namespace RoadNetworkSystem.NetworkEditor.EditorFlow
                 INITFCUR, INITTCUT);
 
             //获取截头截尾的距离
-            Arc arc = new Arc(_pFeaClsArc, 0);
+            ArcService arc = new ArcService(_pFeaClsArc, 0);
 
             if (arcFlowDir == 1)
             {
@@ -437,31 +450,31 @@ namespace RoadNetworkSystem.NetworkEditor.EditorFlow
         /// 更新Arc所有的拓扑，用于当前Arc变化后，更新上游或下游的Arc
         /// </summary>
         /// <param name="arcEty"></param>上游或下游Arc实体
-        private void updateArc(ArcEntity arcEty)
+        private void updateArc(Arc arcEty)
         {
             try
             {
 
                 int linkID = arcEty.LinkID;
-                Link link = new Link(_pFeaClsLink, linkID);
+                LinkService link = new LinkService(_pFeaClsLink, linkID);
                 IFeature linkFea = link.GetFeature();
                 IPolyline curLinkLine = linkFea.Shape as IPolyline;
 
-                LinkMasterEntity linkMstEty = new LinkMasterEntity();
+                LinkMaster linkMstEty = new LinkMaster();
                 linkMstEty = link.GetEntity(linkFea);
-                LinkEntity linkEty = new LinkEntity();
+                Link linkEty = new Link();
                 linkEty = linkEty.Copy(linkMstEty);
 
-                NodeEntity fNodeEty = new NodeEntity();
-                Node fNode = new Node(_pFeaClsNode, linkEty.FNodeID, null);
-                NodeMasterEntity nodeMstEty = new NodeMasterEntity();
+                Node fNodeEty = new Node();
+                NodeService fNode = new NodeService(_pFeaClsNode, linkEty.FNodeID, null);
+                NodeMaster nodeMstEty = new NodeMaster();
                 IFeature fNodeFea = fNode.GetFeature();
                 nodeMstEty = fNode.GetNodeMasterEty(fNodeFea);
                 fNodeEty = fNodeEty.Copy(nodeMstEty);
 
-                NodeEntity tNodeEty = new NodeEntity();
-                Node tNode = new Node(_pFeaClsNode, linkEty.TNodeID, null);
-                nodeMstEty = new NodeMasterEntity();
+                Node tNodeEty = new Node();
+                NodeService tNode = new NodeService(_pFeaClsNode, linkEty.TNodeID, null);
+                nodeMstEty = new NodeMaster();
                 IFeature tNodeFea = tNode.GetFeature();
                 nodeMstEty = tNode.GetNodeMasterEty(tNodeFea);
                 tNodeEty = tNodeEty.Copy(nodeMstEty);
@@ -483,7 +496,7 @@ namespace RoadNetworkSystem.NetworkEditor.EditorFlow
                 }
                 createLaneTopo(linkFea, linkEty.FlowDir, arcEty, preNodeCutInfor, nextNodeCutInfor);
 
-                Surface surface = new Surface(_pFeaClsSurface, 0);
+                SurfaceService surface = new SurfaceService(_pFeaClsSurface, 0);
 
                 IPolygon gon = new PolygonClass();
                 string str = "";
@@ -497,7 +510,7 @@ namespace RoadNetworkSystem.NetworkEditor.EditorFlow
                     surface.CrateSurfaceShape(_pFeaClsKerb, nextNodeCutInfor, fNodeFea, tNodeFea, ref gon, ref str);
                 }
 
-                SurfaceEntity surfaceEty = new SurfaceEntity();
+                Surface surfaceEty = new Surface();
                 surfaceEty.ArcID = arcEty.ArcID;
                 surfaceEty.ControlIDs = str;
                 surfaceEty.SurfaceID = 0;
@@ -543,8 +556,8 @@ namespace RoadNetworkSystem.NetworkEditor.EditorFlow
             IPolyline spltLine = LineHelper.CreateLineByLRS(fatherLine, 0, 0, fatherLine.Length / 2);
             IPoint spltPnt = spltLine.ToPoint;
 
-            Node spltNode = new Node(_pFeaClsNode, 0, spltPnt);
-            NodeEntity spltNodeEty = new NodeEntity();
+            NodeService spltNode = new NodeService(_pFeaClsNode, 0, spltPnt);
+            Node spltNodeEty = new Node();
             spltNodeEty.ID = 0;
             spltNodeEty.AdjIDs = "";
             spltNodeEty.CompositeType = 1;
@@ -554,11 +567,11 @@ namespace RoadNetworkSystem.NetworkEditor.EditorFlow
             spltNodeEty.Other = 0;
             IFeature spltNodeFea = spltNode.CreateNode(spltNodeEty);
 
-            Link spltLink = new Link(_pFeaClsLink, 0);
-            LinkMasterEntity linkMstEty = new LinkMasterEntity();
+            LinkService spltLink = new LinkService(_pFeaClsLink, 0);
+            LinkMaster linkMstEty = new LinkMaster();
             linkMstEty = spltLink.GetEntity(fatherLinkFea);
 
-            LinkEntity spltLinkEty = new LinkEntity();
+            Link spltLinkEty = new Link();
             spltLinkEty = spltLinkEty.Copy(linkMstEty);
 
 
@@ -567,17 +580,17 @@ namespace RoadNetworkSystem.NetworkEditor.EditorFlow
             int fNodeId = spltLinkEty.FNodeID;
             int tNodeId = spltLinkEty.TNodeID;
 
-            spltNode = new Node(_pFeaClsNode, fNodeId, null);
+            spltNode = new NodeService(_pFeaClsNode, fNodeId, null);
             IFeature fNodeFea = spltNode.GetFeature();
 
 
-            spltNode = new Node(_pFeaClsNode, tNodeId, null);
+            spltNode = new NodeService(_pFeaClsNode, tNodeId, null);
             IFeature tNodeFea = spltNode.GetFeature();
 
-            ArcEntity sameArcEty = new ArcEntity();
-            ArcEntity oppArcEty = new ArcEntity();
+            Arc sameArcEty = new Arc();
+            Arc oppArcEty = new Arc();
 
-            Arc arc = new Arc(_pFeaClsArc, 0);
+            ArcService arc = new ArcService(_pFeaClsArc, 0);
             IFeatureCursor cursor;
             IQueryFilter fitler = new QueryFilterClass();
             fitler.WhereClause = spltLink.IDNm + " = " + spltLinkEty.ID;
@@ -585,7 +598,7 @@ namespace RoadNetworkSystem.NetworkEditor.EditorFlow
             IFeature pFeaArc = cursor.NextFeature();
             while (pFeaArc != null)
             {
-                int flowDir = Convert.ToInt32(pFeaArc.get_Value(_pFeaClsArc.FindField(Arc.FlowDirNm)));
+                int flowDir = Convert.ToInt32(pFeaArc.get_Value(_pFeaClsArc.FindField(ArcService.FlowDirNm)));
                 if (flowDir == 1)
                 {
                     sameArcEty = arc.GetArcEty(pFeaArc);
@@ -622,11 +635,11 @@ namespace RoadNetworkSystem.NetworkEditor.EditorFlow
 
         private void deleteLink(IFeature linkFea)
         {
-            Link link = new Link(_pFeaClsLink, 0);
+            LinkService link = new LinkService(_pFeaClsLink, 0);
             int linkID = Convert.ToInt32(linkFea.get_Value(_pFeaClsLink.FindField(link.IDNm)));
             linkFea.Delete();
 
-            Arc arc = new Arc(_pFeaClsArc, 0);
+            ArcService arc = new ArcService(_pFeaClsArc, 0);
             IFeatureCursor cursor;
             IQueryFilter fitler = new QueryFilterClass();
             fitler.WhereClause = link.IDNm + " = " + linkID;
@@ -634,13 +647,13 @@ namespace RoadNetworkSystem.NetworkEditor.EditorFlow
             IFeature pFeaArc = cursor.NextFeature();
             while (pFeaArc != null)
             {
-                ArcEntity arcEty = arc.GetArcEty(pFeaArc);
+                Arc arcEty = arc.GetArcEty(pFeaArc);
                 pFeaArc.Delete();
 
                 //删除Arc层次上的东东
                 IFeatureCursor cursorKerb;
                 IQueryFilter filterKerb = new QueryFilterClass();
-                filterKerb.WhereClause = Kerb.ArcIDNm + " = " + arcEty.ArcID;
+                filterKerb.WhereClause = KerbService.ArcIDNm + " = " + arcEty.ArcID;
                 cursorKerb = _pFeaClsKerb.Search(filterKerb, false);
                 IFeature kerbFea = cursorKerb.NextFeature();
                 while (kerbFea != null)
@@ -652,7 +665,7 @@ namespace RoadNetworkSystem.NetworkEditor.EditorFlow
 
                 IFeatureCursor cursorSurface;
                 IQueryFilter filterSurface= new QueryFilterClass();
-                filterSurface.WhereClause = Surface.ArcIDNm + " = " + arcEty.ArcID;
+                filterSurface.WhereClause = SurfaceService.ArcIDNm + " = " + arcEty.ArcID;
                 cursorSurface = _pFeaClsSurface.Search(filterSurface, false);
                 IFeature surfaceFea = cursorSurface.NextFeature();
                 while (surfaceFea != null)
@@ -664,10 +677,10 @@ namespace RoadNetworkSystem.NetworkEditor.EditorFlow
                 //System.Runtime.InteropServices.Marshal.ReleaseComObject(cursor);
 
                 //删除车道层次的东东
-                LaneFeature lane = new LaneFeature(_pFeaClsLane, 0);
+                LaneFeatureService lane = new LaneFeatureService(_pFeaClsLane, 0);
                 IFeatureCursor cursorLane;
                 IQueryFilter filterLane = new QueryFilterClass();
-                filterLane.WhereClause = LaneFeature.ArcIDNm + " = " + arcEty.ArcID;
+                filterLane.WhereClause = LaneFeatureService.ArcIDNm + " = " + arcEty.ArcID;
                 cursorLane = _pFeaClsLane.Search(filterLane, false);
                 IFeature laneFea = cursorLane.NextFeature();
 
@@ -675,12 +688,12 @@ namespace RoadNetworkSystem.NetworkEditor.EditorFlow
                 int centerBoundaryID = 0; 
                 if (laneFea != null&& centerBoundaryID== 0)
                 {
-                    LaneEntity laneEty = new LaneEntity();
+                    Lane laneEty = new Lane();
                     laneEty = lane.GetEntity(laneFea);
                     if (laneEty.Position == 0)
                     {
                         centerBoundaryID = laneEty.LeftBoundaryID;
-                        Boundary boun = new Boundary(_pFeaClsBoundary, centerBoundaryID);
+                        BoundaryService boun = new BoundaryService(_pFeaClsBoundary, centerBoundaryID);
                         IFeature bounFea = boun.GetFeature();
                         if (bounFea != null)
                         {
@@ -690,12 +703,12 @@ namespace RoadNetworkSystem.NetworkEditor.EditorFlow
                 }
                 while (laneFea != null)
                 {
-                    LaneEntity laneEty = new LaneEntity();
+                    Lane laneEty = new Lane();
                     laneEty = lane.GetEntity(laneFea);
                     laneFea.Delete();
 
                     int rigntBounID = laneEty.RightBoundaryID;
-                    Boundary boun = new Boundary(_pFeaClsBoundary, rigntBounID);
+                    BoundaryService boun = new BoundaryService(_pFeaClsBoundary, rigntBounID);
                     IFeature bounFea = boun.GetFeature();
 
                     if (bounFea != null)
@@ -719,17 +732,17 @@ namespace RoadNetworkSystem.NetworkEditor.EditorFlow
         /// /// <param name="nodePnt"></param>交叉口Node几何
         /// <param name="arcEty"></param>需要更新的Arc
         /// <param name="entranceFlag"></param> ==true,表示Arc是入口Arc；==false，表示Arc是出口Arc
-        private void updateConnetorAndArrow(NodeEntity junctionNodeEty, IPoint nodePnt,ArcEntity arcEty, bool entranceFlag)
+        private void updateConnetorAndArrow(Node junctionNodeEty, IPoint nodePnt,Arc arcEty, bool entranceFlag)
         {
 
             //arcEty是交叉口入口，那么就获取交叉口的所有出口Arc
             //只更新当前arcEty的所有车道的Arrow，出口车道的导向箭头生成一排直行即可
             if (entranceFlag == true)
             {
-                ArcEntity[] exitArcEtys = LogicalConnection.GetNodeExitArcs(_pFeaClsLink, _pFeaClsArc, junctionNodeEty);
+                Arc[] exitArcEtys = LogicalConnection.GetNodeExitArcs(_pFeaClsLink, _pFeaClsArc, junctionNodeEty);
                 for (int i = 0; i < exitArcEtys.Length; i++)
                 {
-                    ArcEntity exitArcEty = new ArcEntity();
+                    Arc exitArcEty = new Arc();
                     exitArcEty = exitArcEtys[i];
 
                     //去掉断头路
@@ -739,7 +752,7 @@ namespace RoadNetworkSystem.NetworkEditor.EditorFlow
                     }
 
                     //生成车道连接器，注意，生成前是否要查一下，有没有存在
-                    LaneConnectorFeature connector = new LaneConnectorFeature(_pFeaClsConnector, 0);
+                    LaneConnectorFeatureService connector = new LaneConnectorFeatureService(_pFeaClsConnector, 0);
                     double angle = PhysicalConnection.GetLinksAngle(arcEty.LinkID, exitArcEty.LinkID, junctionNodeEty);
 
                     connector.CreateConnectorInArcs(_pFeaClsLane, arcEty, exitArcEty, PhysicalConnection.GetTurningDir(angle),nodePnt);
@@ -747,14 +760,14 @@ namespace RoadNetworkSystem.NetworkEditor.EditorFlow
                     //出口车道的导向箭头生成一排直行即可
                     if (exitArcEtys.Length > 2)
                     {
-                        TurnArrow arrow = new TurnArrow(_pFeaClsTurnArrow, 0);
+                        TurnArrowService arrow = new TurnArrowService(_pFeaClsTurnArrow, 0);
                         arrow.createExitArcArrow(_pFeaClsLane, exitArcEty.ArcID);
                     }
                 }
                 if (exitArcEtys.Length > 2)
                 {
                     //更新入口段的导向箭头，暂且生成两排
-                    TurnArrow arrow1 = new TurnArrow(_pFeaClsTurnArrow, 0);
+                    TurnArrowService arrow1 = new TurnArrowService(_pFeaClsTurnArrow, 0);
                     arrow1.createEntranceArcArrow(_pFeaClsNode, _pFeaClsLink, _pFeaClsArc, _pFeaClsLane, _pFeaClsConnector, arcEty.ArcID);
                 }
 
@@ -763,10 +776,10 @@ namespace RoadNetworkSystem.NetworkEditor.EditorFlow
             //出口TurnArrow全为直行，只有一排；所有入口的Arc的所有车道的导向箭头要更新
             else
             {
-                ArcEntity[] entranceArcEtys = LogicalConnection.GetNodeEntranceArcs(_pFeaClsLink, _pFeaClsArc, junctionNodeEty);
+                Arc[] entranceArcEtys = LogicalConnection.GetNodeEntranceArcs(_pFeaClsLink, _pFeaClsArc, junctionNodeEty);
                 for (int i = 0; i < entranceArcEtys.Length; i++)
                 {
-                    ArcEntity entranceArcEty = new ArcEntity();
+                    Arc entranceArcEty = new Arc();
                     entranceArcEty = entranceArcEtys[i];
 
                     //去掉断头路
@@ -774,7 +787,7 @@ namespace RoadNetworkSystem.NetworkEditor.EditorFlow
                     {
                         return;
                     }
-                    LaneConnectorFeature connector = new LaneConnectorFeature(_pFeaClsConnector, 0);
+                    LaneConnectorFeatureService connector = new LaneConnectorFeatureService(_pFeaClsConnector, 0);
                     double angle = PhysicalConnection.GetLinksAngle(entranceArcEty.LinkID, arcEty.LinkID, junctionNodeEty);
 
                     connector.CreateConnectorInArcs(_pFeaClsLane, entranceArcEty, arcEty, PhysicalConnection.GetTurningDir(angle),nodePnt);
@@ -784,7 +797,7 @@ namespace RoadNetworkSystem.NetworkEditor.EditorFlow
                     {
 
                         //更新入口段的导向箭头，暂且生成两排
-                        TurnArrow arrow1 = new TurnArrow(_pFeaClsTurnArrow, 0);
+                        TurnArrowService arrow1 = new TurnArrowService(_pFeaClsTurnArrow, 0);
                         arrow1.createEntranceArcArrow(_pFeaClsNode, _pFeaClsLink, _pFeaClsArc, _pFeaClsLane, _pFeaClsConnector, entranceArcEty.ArcID);
 
                     }
@@ -794,7 +807,7 @@ namespace RoadNetworkSystem.NetworkEditor.EditorFlow
                 {
 
                     //出口车道的导向箭头生成一排直行即可
-                    TurnArrow arrow = new TurnArrow(_pFeaClsTurnArrow, 0);
+                    TurnArrowService arrow = new TurnArrowService(_pFeaClsTurnArrow, 0);
                     arrow.createExitArcArrow(_pFeaClsLane, arcEty.ArcID);
                 }
             }
@@ -811,7 +824,7 @@ namespace RoadNetworkSystem.NetworkEditor.EditorFlow
         /// <param name="arcEty"></param>Arc实体
         /// <param name="preNodeCutInfor"></param>Arc上游的截取信息
         /// <param name="nextNodeCutInfor"></param>Arc下游的截取信息
-        private void createLaneTopo(IFeature linkFea, int linkFlowDir,ArcEntity arcEty,PreNodeCutInfor preNodeCutInfor,
+        private void createLaneTopo(IFeature linkFea, int linkFlowDir,Arc arcEty,PreNodeCutInfor preNodeCutInfor,
             NextNodeCutInfor nextNodeCutInfor)
         {
             
@@ -820,7 +833,7 @@ namespace RoadNetworkSystem.NetworkEditor.EditorFlow
             //删除Arc的所有的Kerb
             IFeatureCursor curseorKerb;
              IQueryFilter filterKerb = new QueryFilterClass();
-            filterKerb.WhereClause = Kerb.ArcIDNm + " = " + arcEty.ArcID;
+            filterKerb.WhereClause = KerbService.ArcIDNm + " = " + arcEty.ArcID;
             curseorKerb = _pFeaClsSurface.Search(filterKerb, false);
             IFeature pFeaKerb = curseorKerb.NextFeature();
             while (pFeaKerb != null)
@@ -832,7 +845,7 @@ namespace RoadNetworkSystem.NetworkEditor.EditorFlow
             //删除Arc的Surface
             IFeatureCursor curseorSurface;
             IQueryFilter filterSurface = new QueryFilterClass();
-            filterSurface.WhereClause = Surface.ArcIDNm + " = " + arcEty.ArcID;
+            filterSurface.WhereClause = SurfaceService.ArcIDNm + " = " + arcEty.ArcID;
             curseorSurface = _pFeaClsKerb.Search(filterSurface, false);
             IFeature pFeaSurface = curseorSurface.NextFeature();
             while (pFeaSurface != null)
@@ -863,7 +876,7 @@ namespace RoadNetworkSystem.NetworkEditor.EditorFlow
                 #region ++++++++++++++++++++++++ 2.1 删除旧的Lane要素，保留属性++++++++++++++++++++++++
 
                 //先给LaneEntity赋值，因为，后面计算偏移量时要用到车道宽度
-                LaneEntity newLaneEty = new LaneEntity();
+                Lane newLaneEty = new Lane();
                 newLaneEty.LaneID = arcEty.ArcID * 10 + (i + 1);
                 newLaneEty.ArcID = arcEty.ArcID;
                 newLaneEty.LaneClosed = 0;
@@ -876,7 +889,7 @@ namespace RoadNetworkSystem.NetworkEditor.EditorFlow
                 newLaneEty.VehClasses = "1";
                 newLaneEty.Width = LANEWEIDTH;
 
-                LaneFeature lane = new LaneFeature(_pFeaClsLane, 0);
+                LaneFeatureService lane = new LaneFeatureService(_pFeaClsLane, 0);
                 IFeature fatherLaneFea = lane.QueryFeatureBuRule(arcEty.ArcID, i);
                 if (fatherLaneFea != null)
                 {
@@ -887,7 +900,7 @@ namespace RoadNetworkSystem.NetworkEditor.EditorFlow
                     //既然删除了Lane，那就删除以该Lane为起始车道的车道连接器吧
                     IFeatureCursor cursorConn;
                     IQueryFilter filterConn = new QueryFilterClass();
-                    filterConn.WhereClause = LaneConnectorFeature.fromLaneIDNm + " = " + newLaneEty.LaneID;
+                    filterConn.WhereClause = LaneConnectorFeatureService.fromLaneIDNm + " = " + newLaneEty.LaneID;
                     cursorConn = _pFeaClsConnector.Search(filterConn, false);
                     IFeature feaConn = cursorConn.NextFeature();
                     while (feaConn != null)
@@ -897,7 +910,7 @@ namespace RoadNetworkSystem.NetworkEditor.EditorFlow
                     }
 
                     filterConn = new QueryFilterClass();
-                    filterConn.WhereClause = LaneConnectorFeature.toLaneIDNm + " = " + newLaneEty.LaneID;
+                    filterConn.WhereClause = LaneConnectorFeatureService.toLaneIDNm + " = " + newLaneEty.LaneID;
                     cursorConn = _pFeaClsConnector.Search(filterConn, false);
                     feaConn = cursorConn.NextFeature();
                     while (feaConn != null)
@@ -920,7 +933,7 @@ namespace RoadNetworkSystem.NetworkEditor.EditorFlow
                 #region ++++++++++++++++++++++++2.2 根据类型判断截取的大小++++++++++++++++++++++++
                 if (preNodeCutInfor.cutType == 1)
                 {
-                    Arc preArc = new Arc(_pFeaClsArc, preNodeCutInfor.preArcEty.ArcID);
+                    ArcService preArc = new ArcService(_pFeaClsArc, preNodeCutInfor.preArcEty.ArcID);
                     double preLanesWidth = preArc.GetLanesWidth(_pFeaClsLane, i);
                     preCut = CutHelper.getCutDefualt(curWidth, preLanesWidth, preNodeCutInfor.clockAngle);
                 }
@@ -935,7 +948,7 @@ namespace RoadNetworkSystem.NetworkEditor.EditorFlow
                 //尾端截取值
                 if (nextNodeCutInfor.cutType == 1)
                 {
-                    Arc nextArc = new Arc(_pFeaClsArc,nextNodeCutInfor.nextArcEty.ArcID);
+                    ArcService nextArc = new ArcService(_pFeaClsArc,nextNodeCutInfor.nextArcEty.ArcID);
                     double nextLanesWidth = nextArc.GetLanesWidth(_pFeaClsLane, i);
                     nextCut = CutHelper.getCutDefualt(curWidth, nextLanesWidth, nextNodeCutInfor.antiClockAngle);
                 }
@@ -1020,24 +1033,24 @@ namespace RoadNetworkSystem.NetworkEditor.EditorFlow
                     if (linkFlowDir == arcEty.FlowDir || linkFlowDir == 0)
                     {
                         #region ********************* 2.5.1 创建车道边界线***************************
-                            BoundaryEntity bounEty = new BoundaryEntity();
+                            Boundary bounEty = new Boundary();
                             bounEty.BoundaryID = 0;
                             bounEty.Dir = 1;
                             bounEty.StyleID = DASHBOUNSTYLE;
                             bounEty.Other = 0;
-                            Boundary boun = new Boundary(_pFeaClsBoundary, 0);
+                            BoundaryService boun = new BoundaryService(_pFeaClsBoundary, 0);
 
                         //如果原来车道存在，并且车道边界线也存在，那么就删掉
                             if (curBounID > 0)
                             {
-                                boun = new Boundary(_pFeaClsBoundary, curBounID);
+                                boun = new BoundaryService(_pFeaClsBoundary, curBounID);
                                 IFeature parentBounFea = boun.GetFeature();
                                 bounEty = boun.GetEntity(parentBounFea);
                                 parentBounFea.Delete();
                             }
 
                             IFeature bounFea = boun.CreateBoundary(bounEty, boundryLine);
-                            curBounID = Convert.ToInt32(bounFea.get_Value(_pFeaClsBoundary.FindField(Boundary.BoundaryIDNm)));
+                            curBounID = Convert.ToInt32(bounFea.get_Value(_pFeaClsBoundary.FindField(BoundaryService.BoundaryIDNm)));
 
                             //第一个车道先只生成右侧边界线
                             //更新车道的边界线
@@ -1045,14 +1058,14 @@ namespace RoadNetworkSystem.NetworkEditor.EditorFlow
                             {
                                 
                                 preBounID = curBounID;
-                                laneFeature.set_Value(_pFeaClsLane.FindField(LaneFeature.RightBoundaryIDNm), curBounID);
+                                laneFeature.set_Value(_pFeaClsLane.FindField(LaneFeatureService.RightBoundaryIDNm), curBounID);
                                 laneFeature.Store();
                             }
                             //其他车道左右侧边界线均可生成
                             else
                             {
-                                laneFeature.set_Value(_pFeaClsLane.FindField(LaneFeature.LeftBoundaryIDNm), preBounID);
-                                laneFeature.set_Value(_pFeaClsLane.FindField(LaneFeature.RightBoundaryIDNm), curBounID);
+                                laneFeature.set_Value(_pFeaClsLane.FindField(LaneFeatureService.LeftBoundaryIDNm), preBounID);
+                                laneFeature.set_Value(_pFeaClsLane.FindField(LaneFeatureService.RightBoundaryIDNm), curBounID);
                                 laneFeature.Store();
                                 preBounID = curBounID;
                             }
@@ -1063,9 +1076,9 @@ namespace RoadNetworkSystem.NetworkEditor.EditorFlow
                             //编号2、3的kerb
                             if (i == 0)
                             {
-                                Kerb kerb = new Kerb(_pFeaClsKerb, 0);
-                                KerbEntity kerbEty2 = new KerbEntity();
-                                KerbEntity kerbEty3 = new KerbEntity();
+                                KerbService kerb = new KerbService(_pFeaClsKerb, 0);
+                                Kerb kerbEty2 = new Kerb();
+                                Kerb kerbEty3 = new Kerb();
                                 kerbEty2.ArcID = arcEty.ArcID;
                                 kerbEty2.KerbID = 0;
                                 kerbEty2.Serial = 2;
@@ -1119,15 +1132,15 @@ namespace RoadNetworkSystem.NetworkEditor.EditorFlow
                         //编号0、1的kerb
                             if (i == arcEty.LaneNum - 1)
                             {
-                                Kerb kerb = new Kerb(_pFeaClsKerb, 0);
-                                KerbEntity kerbEty0 = new KerbEntity();
-                                KerbEntity kerbEty1 = new KerbEntity();
+                                KerbService kerb = new KerbService(_pFeaClsKerb, 0);
+                                Kerb kerbEty0 = new Kerb();
+                                Kerb kerbEty1 = new Kerb();
                                 kerbEty0.ArcID = arcEty.ArcID;
                                 kerbEty0.KerbID = 0;
                                 kerbEty0.Serial = 0;
                                 kerbEty0.Other = 0;
                                 //修改最右侧的道路边界线的类型
-                                bounFea.set_Value(_pFeaClsBoundary.FindField(Boundary.StyleIDNm), OUTSIDEBOUNSTYLE);
+                                bounFea.set_Value(_pFeaClsBoundary.FindField(BoundaryService.StyleIDNm), OUTSIDEBOUNSTYLE);
                                 bounFea.Store();
                                 
                                 IPoint pnt0 = null;
@@ -1186,8 +1199,8 @@ namespace RoadNetworkSystem.NetworkEditor.EditorFlow
                                 leftBoundaryLine = boundryLine;
                             
 
-                                StopLine stopLine = new StopLine(_pFeaClsStopLine, 0);
-                                StopLineEntity stopLineEty = new StopLineEntity();
+                                StopLineService stopLine = new StopLineService(_pFeaClsStopLine, 0);
+                                StopLine stopLineEty = new StopLine();
                                 stopLineEty.StopLineID = 0;
                                 stopLineEty.ArcID = arcEty.ArcID;
                                 stopLineEty.NodeID = nextNodeCutInfor.nextNodeEty.ID;
@@ -1210,9 +1223,9 @@ namespace RoadNetworkSystem.NetworkEditor.EditorFlow
 
         public struct NextNodeCutInfor
         {
-            public NodeEntity nextNodeEty;
+            public Node nextNodeEty;
             public int curArcID;
-            public ArcEntity nextArcEty;
+            public Arc nextArcEty;
 
             /// <summary>
             /// 逆时针方向第一个Link
@@ -1234,9 +1247,9 @@ namespace RoadNetworkSystem.NetworkEditor.EditorFlow
 
         public struct PreNodeCutInfor
         {
-            public NodeEntity preNodeEty;
+            public Node preNodeEty;
             public int curArcID;
-            public ArcEntity preArcEty;
+            public Arc preArcEty;
 
             /// <summary>
             /// 逆时针方向第一个Link
@@ -1262,17 +1275,17 @@ namespace RoadNetworkSystem.NetworkEditor.EditorFlow
         /// <param name="curArcEty"></param>
         /// <param name="curLinkEty"></param>
         /// <returns></returns>
-        private NextNodeCutInfor getNextNodeCutInfor(NodeEntity nextNodeEty, ArcEntity curArcEty, LinkEntity curLinkEty)
+        private NextNodeCutInfor getNextNodeCutInfor(Node nextNodeEty, Arc curArcEty, Link curLinkEty)
         {
 
             NextNodeCutInfor nextNodeCurInfor = new NextNodeCutInfor();
             nextNodeCurInfor.cutType = -1;
-            nextNodeCurInfor.nextArcEty = new ArcEntity();
+            nextNodeCurInfor.nextArcEty = new Arc();
             nextNodeCurInfor.curArcID=curArcEty.ArcID;
 
             int cutType=-1;
 
-            ArcEntity nextArcEty = new ArcEntity();
+            Arc nextArcEty = new Arc();
              string[] adjLinkIDs = nextNodeEty.AdjIDs.Split('\\');
 
             ///单向标志,true表示为单向，false表示双向；
@@ -1309,19 +1322,19 @@ namespace RoadNetworkSystem.NetworkEditor.EditorFlow
                 double antiClockAngle = 0.0;
                 PhysicalConnection.GetAntiClockLinkInfor(curLinkID, nextNodeEty, ref antiClockLinkID, ref antiClockAngle);
 
-                Link antiClockLink = new Link(_pFeaClsLink, antiClockLinkID);
+                LinkService antiClockLink = new LinkService(_pFeaClsLink, antiClockLinkID);
                 IFeature antiClockLinkFea = antiClockLink.GetFeature();
-                LinkMasterEntity linkMasterEty = new LinkMasterEntity();
+                LinkMaster linkMasterEty = new LinkMaster();
                 linkMasterEty = antiClockLink.GetEntity(antiClockLinkFea);
-                LinkEntity antiClockLinkEty = new LinkEntity();
+                Link antiClockLinkEty = new Link();
                 antiClockLinkEty = antiClockLinkEty.Copy(linkMasterEty);
 
                 //下一段Arc
                 IFeature nextArcFea = LogicalConnection.GetExitArc(_pFeaClsArc, nextNodeEty.ID, antiClockLinkEty);
-                Arc nextArc = new Arc(_pFeaClsArc, 0);
+                ArcService nextArc = new ArcService(_pFeaClsArc, 0);
 
                 nextArcEty = nextArc.GetArcEty(nextArcFea);
-                nextArc = new Arc(_pFeaClsArc, nextArcEty.ArcID);
+                nextArc = new ArcService(_pFeaClsArc, nextArcEty.ArcID);
 
                 if (antiClockLinkEty.FlowDir == nextArcEty.FlowDir)
                 {
@@ -1381,17 +1394,17 @@ namespace RoadNetworkSystem.NetworkEditor.EditorFlow
         /// <param name="curArcEty"></param>
         /// <param name="curLinkEty"></param>
         /// <returns></returns>
-         private PreNodeCutInfor getPreNodeCutInfor(NodeEntity preNodeEty, ArcEntity curArcEty, LinkEntity curLinkEty)
+         private PreNodeCutInfor getPreNodeCutInfor(Node preNodeEty, Arc curArcEty, Link curLinkEty)
         {
 
             PreNodeCutInfor preNodeCurInfor = new PreNodeCutInfor();
             preNodeCurInfor.cutType = -1;
-            preNodeCurInfor.preArcEty = new ArcEntity();
+            preNodeCurInfor.preArcEty = new Arc();
             preNodeCurInfor.curArcID=curArcEty.ArcID;
 
             int cutType=-1;
 
-            ArcEntity preArcEty = new ArcEntity();
+            Arc preArcEty = new Arc();
              string[] adjLinkIDs = preNodeEty.AdjIDs.Split('\\');
 
             ///单向标志,true表示为单向，false表示双向；
@@ -1428,21 +1441,21 @@ namespace RoadNetworkSystem.NetworkEditor.EditorFlow
                 double clockAngle = 0.0;
                 PhysicalConnection.GetClockLinkInfor(curLinkID, preNodeEty, ref clockLinkID, ref clockAngle);
 
-                Link clockLink = new Link(_pFeaClsLink, clockLinkID);
+                LinkService clockLink = new LinkService(_pFeaClsLink, clockLinkID);
                 IFeature clockLinkFea = clockLink.GetFeature();
-                LinkMasterEntity linkMasterEty = new LinkMasterEntity();
+                LinkMaster linkMasterEty = new LinkMaster();
                 linkMasterEty = clockLink.GetEntity(clockLinkFea);
-                LinkEntity clockLinkEty = new LinkEntity();
+                Link clockLinkEty = new Link();
                 clockLinkEty = clockLinkEty.Copy(linkMasterEty);
 
                 //下一段Arc
                 IFeature preArcFea = LogicalConnection.GetEntranceArc(_pFeaClsArc, preNodeEty.ID, clockLinkEty);
-                Arc preArc = new Arc(_pFeaClsArc, 0);
+                ArcService preArc = new ArcService(_pFeaClsArc, 0);
                 if (preArcFea != null)
                 { }
 
                 preArcEty = preArc.GetArcEty(preArcFea);
-                preArc = new Arc(_pFeaClsArc, preArcEty.ArcID);
+                preArc = new ArcService(_pFeaClsArc, preArcEty.ArcID);
 
                 if (clockLinkEty.FlowDir == preArcEty.FlowDir)
                 {

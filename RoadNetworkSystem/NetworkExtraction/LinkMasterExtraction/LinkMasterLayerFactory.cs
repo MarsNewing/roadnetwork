@@ -109,7 +109,7 @@ namespace RoadNetworkSystem.NetworkExtraction.LinkMasterExtraction
 
             
 
-            int roadTypeFldIndex = _pFeaClsRoad.Fields.FindField(Road.RoadTypeNm);
+            int roadTypeFldIndex = _pFeaClsRoad.Fields.FindField(RoadService.RoadTypeNm);
             string strRoadType = string.Empty;
             Boolean isJunction;
             //road图形

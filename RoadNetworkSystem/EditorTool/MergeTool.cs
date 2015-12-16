@@ -105,8 +105,8 @@ namespace RoadNetworkSystem.EditorTool
         //更新被打断道路首尾节点的拓扑关系
         private void UpdateNodeAttr(int nodeID, IPoint pnt)
         {
-            Node pNode = new Node(pNodeClass, nodeID, pnt);
-            Segment seg = new Segment(pSegClass, 0);
+            NodeService pNode = new NodeService(pNodeClass, nodeID, pnt);
+            SegmentService seg = new SegmentService(pSegClass, 0);
             pNode.CreateAdjData(seg);
 
         }
@@ -118,7 +118,7 @@ namespace RoadNetworkSystem.EditorTool
             IFeature Fea1 = pSegClass.CreateFeature();
             Fea1.Shape = pLine;
 
-            Segment seg = new Segment(pSegClass, 0);
+            SegmentService seg = new SegmentService(pSegClass, 0);
             int nRoadSegmentID = pSegClass.Fields.FindField(seg.IDNm);
             int nFNode = pSegClass.Fields.FindField(seg.FNodeIDNm);
             int nTNode = pSegClass.Fields.FindField(seg.TNodeIDNm);

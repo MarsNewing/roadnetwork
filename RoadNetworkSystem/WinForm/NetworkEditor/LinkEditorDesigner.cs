@@ -31,12 +31,12 @@ namespace RoadNetworkSystem.WinForm.NetworkEditor
         private static int _slctPntIndex = 0;
 
 
-        private static LinkEntity _crtLineEty = new LinkEntity();
+        private static Link _crtLineEty = new Link();
 
         //Arc相关的
         
-        private static ArcEntity _sameArcEty=new ArcEntity();
-        private static ArcEntity _oppArcEty=new ArcEntity();
+        private static Arc _sameArcEty=new Arc();
+        private static Arc _oppArcEty=new Arc();
         private static IFeature _sameArcFea=null;
         private static IFeature _oppArcFea=null;
 
@@ -110,8 +110,8 @@ namespace RoadNetworkSystem.WinForm.NetworkEditor
             _frm1.CrttLinkFea=null;
             _frm1.CrtLine=null;
             _crtLineEty = null;
-            _sameArcEty=new ArcEntity();
-            _oppArcEty=new ArcEntity();
+            _sameArcEty=new Arc();
+            _oppArcEty=new Arc();
             _sameArcFea=null;
             _oppArcFea=null;
         }
@@ -189,19 +189,19 @@ namespace RoadNetworkSystem.WinForm.NetworkEditor
         static void button_link_split_Click(object sender, EventArgs e)
         {
             Dictionary<string, IFeatureClass> feaClsDic = new Dictionary<string, IFeatureClass>();
-            feaClsDic.Add(NodeEntity.NodeName, _frm1.FeaClsNode);
-            feaClsDic.Add(LinkEntity.LinkName, _frm1.FeaClsLink);
-            feaClsDic.Add(ArcEntity.ArcFeatureName, _frm1.FeaClsArc);
+            feaClsDic.Add(Node.NodeName, _frm1.FeaClsNode);
+            feaClsDic.Add(Link.LinkName, _frm1.FeaClsLink);
+            feaClsDic.Add(Arc.ArcFeatureName, _frm1.FeaClsArc);
 
-            feaClsDic.Add(LaneEntity.LaneName, _frm1.FeaClsLane);
-            feaClsDic.Add(LaneConnectorEntity.ConnectorName, _frm1.FeaClsConnector);
-            feaClsDic.Add(BoundaryEntity.BoundaryName, _frm1.FeaClsBoundary);
+            feaClsDic.Add(Lane.LaneName, _frm1.FeaClsLane);
+            feaClsDic.Add(LaneConnector.ConnectorName, _frm1.FeaClsConnector);
+            feaClsDic.Add(Boundary.BoundaryName, _frm1.FeaClsBoundary);
 
-            feaClsDic.Add(StopLineEntity.StopLineName, _frm1.FeaClsStopLine);
-            feaClsDic.Add(KerbEntity.KerbName, _frm1.FeaClsKerb);
-            feaClsDic.Add(TurnArrowEntity.TurnArrowName, _frm1.FeaClsTurnArrow);
+            feaClsDic.Add(StopLine.StopLineName, _frm1.FeaClsStopLine);
+            feaClsDic.Add(Kerb.KerbName, _frm1.FeaClsKerb);
+            feaClsDic.Add(TurnArrow.TurnArrowName, _frm1.FeaClsTurnArrow);
 
-            feaClsDic.Add(SurfaceEntity.SurfaceName, _frm1.FeaClsSurface);
+            feaClsDic.Add(Surface.SurfaceName, _frm1.FeaClsSurface);
 
             if (_frm1.CrttLinkFea != null)
             {
@@ -225,19 +225,19 @@ namespace RoadNetworkSystem.WinForm.NetworkEditor
             if (Convert.ToInt32(_frm1.button_Save.Tag) == 2 && _frm1.CrtLine != null)
             {
                 Dictionary<string, IFeatureClass> feaClsDic = new Dictionary<string, IFeatureClass>();
-                feaClsDic.Add(NodeEntity.NodeName, _frm1.FeaClsNode);
-                feaClsDic.Add(LinkEntity.LinkName, _frm1.FeaClsLink);
-                feaClsDic.Add(ArcEntity.ArcFeatureName, _frm1.FeaClsArc);
+                feaClsDic.Add(Node.NodeName, _frm1.FeaClsNode);
+                feaClsDic.Add(Link.LinkName, _frm1.FeaClsLink);
+                feaClsDic.Add(Arc.ArcFeatureName, _frm1.FeaClsArc);
 
-                feaClsDic.Add(LaneEntity.LaneName, _frm1.FeaClsLane);
-                feaClsDic.Add(LaneConnectorEntity.ConnectorName, _frm1.FeaClsConnector);
-                feaClsDic.Add(BoundaryEntity.BoundaryName, _frm1.FeaClsBoundary);
+                feaClsDic.Add(Lane.LaneName, _frm1.FeaClsLane);
+                feaClsDic.Add(LaneConnector.ConnectorName, _frm1.FeaClsConnector);
+                feaClsDic.Add(Boundary.BoundaryName, _frm1.FeaClsBoundary);
 
-                feaClsDic.Add(StopLineEntity.StopLineName, _frm1.FeaClsStopLine);
-                feaClsDic.Add(KerbEntity.KerbName, _frm1.FeaClsKerb);
-                feaClsDic.Add(TurnArrowEntity.TurnArrowName, _frm1.FeaClsTurnArrow);
+                feaClsDic.Add(StopLine.StopLineName, _frm1.FeaClsStopLine);
+                feaClsDic.Add(Kerb.KerbName, _frm1.FeaClsKerb);
+                feaClsDic.Add(TurnArrow.TurnArrowName, _frm1.FeaClsTurnArrow);
 
-                feaClsDic.Add(SurfaceEntity.SurfaceName, _frm1.FeaClsSurface);
+                feaClsDic.Add(Surface.SurfaceName, _frm1.FeaClsSurface);
 
                 SegmentConstructor segContruct = new SegmentConstructor(feaClsDic,_frm1.FNodeFea, _frm1.TNodeFea);
                 int roadType=_frm1.comboBox_Layer.SelectedIndex + 1;
@@ -253,7 +253,7 @@ namespace RoadNetworkSystem.WinForm.NetworkEditor
 
                 //保存完后，默认选择Link图层
                 LayerHelper.ClearSelect(_frm1.axMapControl1);
-                LayerHelper.SelectLayer(_frm1.axMapControl1, LinkEntity.LinkName);
+                LayerHelper.SelectLayer(_frm1.axMapControl1, Link.LinkName);
 
                 //结点清空
                 _frm1.FNodeFea = null;
@@ -280,7 +280,7 @@ namespace RoadNetworkSystem.WinForm.NetworkEditor
             {
                 //刷新后，默认选择Link图层
                 LayerHelper.ClearSelect(_frm1.axMapControl1);
-                LayerHelper.SelectLayer(_frm1.axMapControl1, LinkEntity.LinkName);
+                LayerHelper.SelectLayer(_frm1.axMapControl1, Link.LinkName);
 
                 //刷新所有的被选中的东东
                 IGraphicsContainer pGraphicsContainer = _frm1.axMapControl1.ActiveView as IGraphicsContainer;//把地图的当前view作为图片的容器
@@ -298,7 +298,7 @@ namespace RoadNetworkSystem.WinForm.NetworkEditor
             {
                 _frm1.ToolBarFlag = false;
                 LayerHelper.ClearSelect(_frm1.axMapControl1);
-                LayerHelper.SelectLayer(_frm1.axMapControl1, NodeEntity.NodeName);
+                LayerHelper.SelectLayer(_frm1.axMapControl1, Node.NodeName);
 
                 IGraphicsContainer pGraphicsContainer = _frm1.axMapControl1.ActiveView as IGraphicsContainer;//把地图的当前view作为图片的容器
                 pGraphicsContainer.DeleteAllElements();//显示储存在 IElement 中图形，这样就持久化了。
@@ -310,7 +310,7 @@ namespace RoadNetworkSystem.WinForm.NetworkEditor
         //当窗体形状发生变化时，相对位置的控件需要重新定位
         static void _frm1_Resize(object sender, EventArgs e)
         {
-            if (Convert.ToString(_frm1.comboBox_Layer.SelectedItem).Equals(LinkEntity.LinkName))
+            if (Convert.ToString(_frm1.comboBox_Layer.SelectedItem).Equals(Link.LinkName))
             {
 
                 RIGHTX = _frm1.comBox_link_roadType.Location.X;
@@ -521,7 +521,7 @@ namespace RoadNetworkSystem.WinForm.NetworkEditor
             try
             {
 
-                _frm1.comBox_link_roadType.Items.AddRange(System.Enum.GetNames(typeof(LinkEntity.道路类型)));
+                _frm1.comBox_link_roadType.Items.AddRange(System.Enum.GetNames(typeof(Link.道路类型)));
                 _frm1.groupBox_Link_BasicAtrr.Controls.Add(_frm1.comBox_link_roadType);
             }
             catch (Exception ex)

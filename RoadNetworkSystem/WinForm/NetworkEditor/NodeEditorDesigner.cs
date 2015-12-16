@@ -127,7 +127,7 @@ namespace RoadNetworkSystem.WinForm
             {
                 //刷新后，默认选择Link图层
                 LayerHelper.ClearSelect(_frm1.axMapControl1);
-                LayerHelper.SelectLayer(_frm1.axMapControl1, NodeEntity.NodeName);
+                LayerHelper.SelectLayer(_frm1.axMapControl1, Node.NodeName);
 
                 //刷新所有的被选中的东东
                 IGraphicsContainer pGraphicsContainer = _frm1.axMapControl1.ActiveView as IGraphicsContainer;//把地图的当前view作为图片的容器
@@ -151,9 +151,9 @@ namespace RoadNetworkSystem.WinForm
                 {
 
                     //保存Node
-                    Node node = new Node(_frm1.FeaClsNode, 0, _frm1.CrtPnt);
+                    NodeService node = new NodeService(_frm1.FeaClsNode, 0, _frm1.CrtPnt);
                     //MessageBox.Show((_frm1.FeaClsNode as IDataset).Workspace.PathName);
-                    NodeEntity nodeEty = new NodeEntity();
+                    Node nodeEty = new Node();
                     nodeEty.ID = 0;
                     
                     //默认是非交叉口结点，但是，在加入路段后，更新Adj数据后，需要更新这个字段
@@ -207,7 +207,7 @@ namespace RoadNetworkSystem.WinForm
 
         static void _frm1_Resize(object sender, EventArgs e)
         {
-            if (Convert.ToString(_frm1.comboBox_Layer.SelectedItem).Equals(NodeEntity.NodeName))
+            if (Convert.ToString(_frm1.comboBox_Layer.SelectedItem).Equals(Node.NodeName))
             {
 
                 int textBoxNode_y_x = _frm1.textBox_node_x.Location.X;

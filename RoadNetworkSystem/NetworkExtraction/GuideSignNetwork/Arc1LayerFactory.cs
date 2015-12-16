@@ -93,7 +93,7 @@ namespace RoadNetworkSystem.NetworkExtraction.GuideSignNetwork
             foreach (DictionaryEntry nodeDic in hstNode)
             {
                 //那么就创建一个吧
-                Node1Entity node1Ety = new Node1Entity();
+                Node1 node1Ety = new Node1();
                 NodeInfor nodeInfor=nodeDic.Value as NodeInfor;
                 node1Ety.ID = nodeInfor.NodeID;
 
@@ -114,9 +114,9 @@ namespace RoadNetworkSystem.NetworkExtraction.GuideSignNetwork
                 #endregion <<<<<<<<<<判断是否是平面交叉口>>>>>>>>>>>>>>>>>>>
 
                 node1Ety.CompositeType = 1;
-                Node1 rdSegNode = new Node1(_pFeaClsNode1, node1Ety.ID, nodeInfor.Point);
+                Node1Service rdSegNode = new Node1Service(_pFeaClsNode1, node1Ety.ID, nodeInfor.Point);
                 rdSegNode.CreateNode(node1Ety);
-                Arc1 rs = new Arc1(_pFeaClsArc1, 0);
+                Arc1Service rs = new Arc1Service(_pFeaClsArc1, 0);
                 rdSegNode.CreateAdjData(rs);
                 
             }
@@ -147,8 +147,8 @@ namespace RoadNetworkSystem.NetworkExtraction.GuideSignNetwork
             while (pFeature != null)
             {
                 //获取road实体
-                RoadEntity rdEty = new RoadEntity();
-                Road road = new Road(_pFeaClsRoad, 0);
+                Road rdEty = new Road();
+                RoadService road = new RoadService(_pFeaClsRoad, 0);
                 rdEty = road.GetEntity(pFeature);
                 //Road的几何
                 IPolyline roadLine = pFeature.Shape as IPolyline;
@@ -220,7 +220,7 @@ namespace RoadNetworkSystem.NetworkExtraction.GuideSignNetwork
                             IPolyline newSegLine = segCol as IPolyline;
 
                             //新建实体，并应用与要素生成
-                            Arc1Entity arc1Ety = new Arc1Entity();
+                            Arc1 arc1Ety = new Arc1();
                             arc1Ety.RelID = rdEty.RoadID;
                             arc1Ety.Other = rdEty.RoadID;
                             arc1Ety.RoadType = rdEty.RoadType;
@@ -232,7 +232,7 @@ namespace RoadNetworkSystem.NetworkExtraction.GuideSignNetwork
                             arc1Ety.TNodeID = tnodeID;
 
                             //创建新的Roadsegment
-                            Arc1 arc1 = new Arc1(_pFeaClsArc1, roadSegID);
+                            Arc1Service arc1 = new Arc1Service(_pFeaClsArc1, roadSegID);
                             arc1.Create(arc1Ety, newSegLine);
                         #endregion----------------创建新的Segment---------------
 
