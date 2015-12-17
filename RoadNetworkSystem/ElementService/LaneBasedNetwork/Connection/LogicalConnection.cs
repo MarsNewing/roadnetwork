@@ -237,11 +237,17 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.Connection
                 Arc temArc = new Arc();
                 IFeature temArcFea = GetEntranceArc(pFeaClsArc, junctionEty.ID, linkEty);
 
-                ArcService arc=new ArcService(pFeaClsArc,0);
-                temArc = arc.GetArcEty(temArcFea);
-
-                entranceArcEtys[i] = new Arc();
-                entranceArcEtys[i] = temArc.Copy();
+                if (temArcFea == null)
+                {
+                    continue;
+                }
+                else
+                {
+                    ArcService arc = new ArcService(pFeaClsArc, 0);
+                    temArc = arc.GetArcEty(temArcFea);
+                    entranceArcEtys[i] = new Arc();
+                    entranceArcEtys[i] = temArc.Copy();
+                }
             }
 
                 return entranceArcEtys;
@@ -267,11 +273,18 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.Connection
                 Arc temArc = new Arc();
                 IFeature temArcFea = GetExitArc(pFeaClsArc, junctionEty.ID, linkEty);
 
-                ArcService arc = new ArcService(pFeaClsArc, 0);
-                temArc = arc.GetArcEty(temArcFea);
+                if (temArcFea == null)
+                {
+                    continue;
+                }
+                else
+                {
+                    ArcService arc = new ArcService(pFeaClsArc, 0);
+                    temArc = arc.GetArcEty(temArcFea);
 
-                exitArcEtys[i] = new Arc();
-                exitArcEtys[i] = temArc.Copy();
+                    exitArcEtys[i] = new Arc();
+                    exitArcEtys[i] = temArc.Copy();
+                }
             }
 
             return exitArcEtys;

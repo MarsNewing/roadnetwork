@@ -157,6 +157,8 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LinkLayer
         /// <returns></returns>
         public Arc GetArcEty(IFeature arcFea)
         {
+            if (arcFea == null)
+                return null;
             Arc arcEty = new Arc();
 
             if (FeaClsArc.FindField(ArcIDNm) >= 0)

@@ -53,7 +53,6 @@ namespace RoadNetworkSystem.WinForm.NetworkEditor
 
 
 
-
         /*
          * ----------------------------------
          * 
@@ -114,12 +113,14 @@ namespace RoadNetworkSystem.WinForm.NetworkEditor
             _oppArcEty=new Arc();
             _sameArcFea=null;
             _oppArcFea=null;
+            
         }
 
         //拖拽界面设计
         public static void SetLinkPalette(Form1 frm1)
         {
             _frm1 = frm1;
+            _flowDir = Link.FLOWDIR_DOUBLE;
 
             #region 设置中间编辑面板
             //初始化tabPage_link_core

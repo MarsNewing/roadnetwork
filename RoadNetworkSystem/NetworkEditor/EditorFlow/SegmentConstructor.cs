@@ -48,6 +48,7 @@ namespace RoadNetworkSystem.NetworkEditor.EditorFlow
         private Arc _oppArcEty;
         private IFeature _oppArcFea;
 
+
         private const double LANEWEIDTH = 3.5;
         private const double INITFCUR = 5;
         private const double INITTCUT = 10;
@@ -93,67 +94,70 @@ namespace RoadNetworkSystem.NetworkEditor.EditorFlow
                 return;
             }
             _linkEty = new Link();
-            _sameArcEty = new Arc();
-            _oppArcEty = new Arc();
-
-            
+            _sameArcEty = null;
+            _oppArcEty = null;
 
             //保存Link
             IFeature crtLinkFea = saveLink(fNodeFea,tNodeFea, linkRoadType, linkRoadNm, linkFlowDir, linkLine);
 
             //更新FTNode的属性2，并更新_fNodeEty和_tNodeEty
-            updateFTNode(fNodeFea,tNodeFea);
+            updateFTNode(fNodeFea, tNodeFea);
+            if (linkFlowDir == Link.FLOWDIR_DOUBLE || linkFlowDir == Link.FLOWDIR_SAME)
+            {
+                saveArc(linkFlowDir, 1, sameLaneNum, linkLine);
+            }
 
-            saveArc(linkFlowDir, 1, sameLaneNum, linkLine);
-            saveArc(linkFlowDir, -1, oppLaneNum, linkLine);
+            
+            if (linkFlowDir == Link.FLOWDIR_DOUBLE || linkFlowDir == Link.FLOWDIR_OPPOSITION)
+            {
+                saveArc(linkFlowDir, -1, oppLaneNum, linkLine);
+            }
 
 
             try
             {
-    //  1.-----------------------获取与Link同向的Arc在Arc上游node (preNode) 和 下游node (nextNode)的 截取类型、连通的Arc的实体、与当前Arc的夹角----------------------------------------
-                //根据adjLinks,判断要不要截头截尾
-                PreNodeCutInfor samePreNodeCutInfor = getPreNodeCutInfor(_fNodeEty, _sameArcEty, _linkEty);
-
-                NextNodeCutInfor sameNextNodeCutInfor = getNextNodeCutInfor(_tNodeEty, _sameArcEty, _linkEty);
-    //  2.-----------------------创建与Link同向的车道、边界线、Kerb----------------------------------------
-                
-                //创建同向的拓扑
-                createLaneTopo(crtLinkFea, linkFlowDir, _sameArcEty, samePreNodeCutInfor, sameNextNodeCutInfor);
-
-                
-
-    //  3.-----------------------更新同向Arc的上游Arc----------------------------------------
-                //相同方向的Arc的上游Arc存在，则更新
-                if (samePreNodeCutInfor.preArcEty != null)
+                if (_sameArcEty != null)
                 {
-                    updateArc(samePreNodeCutInfor.preArcEty);
-                }
-    //  4.-----------------------更新同向Arc的下游Arc----------------------------------------
-                //相同方向的Arc的上游Arc存在，则更新
-                if (sameNextNodeCutInfor.nextArcEty != null)
-                {
-                    updateArc(sameNextNodeCutInfor.nextArcEty);
-                }
+                    //  1.-----------------------获取与Link同向的Arc在Arc上游node (preNode) 和 下游node (nextNode)的 截取类型、连通的Arc的实体、与当前Arc的夹角----------------------------------------
+                    //根据adjLinks,判断要不要截头截尾
+                    PreNodeCutInfor samePreNodeCutInfor = getPreNodeCutInfor(_fNodeEty, _sameArcEty, _linkEty);
 
-                //添加同向的车道为fromlane的连接器,TNode是入口交叉口
-                updateConnetorAndArrow(_tNodeEty, tNodeFea.ShapeCopy as IPoint, _sameArcEty, true);
-                //添加同向的车道为tolane的连接器,FNode是出口交叉口
-                updateConnetorAndArrow(_fNodeEty, fNodeFea.ShapeCopy as IPoint, _sameArcEty, false);
+                    NextNodeCutInfor sameNextNodeCutInfor = getNextNodeCutInfor(_tNodeEty, _sameArcEty, _linkEty);
+                    //  2.-----------------------创建与Link同向的车道、边界线、Kerb----------------------------------------
 
 
-    //  5.-------------------创建同向Arc的Surface---------------------------
-                SurfaceService surface = new SurfaceService(_pFeaClsSurface, 0);
+                    //创建同向的拓扑
+                    createLaneTopo(crtLinkFea, linkFlowDir, _sameArcEty, samePreNodeCutInfor, sameNextNodeCutInfor);
 
-                IPolygon gon = new PolygonClass();
-                string str = "";
-                Surface surfaceEty = new Surface();
-                if (linkFlowDir == Link.FLOWDIR_DOUBLE || linkFlowDir == Link.FLOWDIR_SAME)
-                {
 
+
+                    //  3.-----------------------更新同向Arc的上游Arc----------------------------------------
+                    //相同方向的Arc的上游Arc存在，则更新
+                    if (samePreNodeCutInfor.preArcEty != null)
+                    {
+                        updateArc(samePreNodeCutInfor.preArcEty);
+                    }
+                    //  4.-----------------------更新同向Arc的下游Arc----------------------------------------
+                    //相同方向的Arc的上游Arc存在，则更新
+                    if (sameNextNodeCutInfor.nextArcEty != null)
+                    {
+                        updateArc(sameNextNodeCutInfor.nextArcEty);
+                    }
+
+                    //添加同向的车道为fromlane的连接器,TNode是入口交叉口
+                    updateConnetorAndArrow(_tNodeEty, tNodeFea.ShapeCopy as IPoint, _sameArcEty, true);
+                    //添加同向的车道为tolane的连接器,FNode是出口交叉口
+                    updateConnetorAndArrow(_fNodeEty, fNodeFea.ShapeCopy as IPoint, _sameArcEty, false);
+
+
+                    //  5.-------------------创建同向Arc的Surface---------------------------
+                    SurfaceService surface = new SurfaceService(_pFeaClsSurface, 0);
+
+                    IPolygon gon = new PolygonClass();
+                    string str = "";
+                    Surface surfaceEty = new Surface();
                     surface.CrateSurfaceShape(_pFeaClsKerb, sameNextNodeCutInfor, tNodeFea, fNodeFea, ref gon, ref str);
 
-
-                    
                     surfaceEty.ArcID = _sameArcEty.ArcID;
                     surfaceEty.ControlIDs = str;
                     surfaceEty.SurfaceID = 0;
@@ -162,40 +166,47 @@ namespace RoadNetworkSystem.NetworkEditor.EditorFlow
 
                 }
 
-    //  6.-----------------------获取与Link反向的Arc在Arc上游node (preNode) 和 下游node (nextNode)的 截取类型、连通的Arc的实体、与当前Arc的夹角----------------------------------------
-                PreNodeCutInfor oppPreNodeCutInfor = getPreNodeCutInfor(_tNodeEty, _oppArcEty, _linkEty);
 
-                NextNodeCutInfor oppNextNodeCutInfor = getNextNodeCutInfor(_fNodeEty, _oppArcEty, _linkEty);
-
-                //创建反的拓扑
-                createLaneTopo(crtLinkFea, linkFlowDir, _oppArcEty, oppPreNodeCutInfor, oppNextNodeCutInfor);
-
-
-              
-    //  7.-----------------------更新反向Arc的上游Arc----------------------------------------
-                //相反方向的Arc的上游Arc存在，则更新
-                if (oppPreNodeCutInfor.preArcEty != null)
+                if (_oppArcEty != null)
                 {
-                    updateArc(oppPreNodeCutInfor.preArcEty);
-                }
+
+                    //  6.-----------------------获取与Link反向的Arc在Arc上游node (preNode) 和 下游node (nextNode)的 截取类型、连通的Arc的实体、与当前Arc的夹角----------------------------------------
+                    PreNodeCutInfor oppPreNodeCutInfor = getPreNodeCutInfor(_tNodeEty, _oppArcEty, _linkEty);
+
+                    NextNodeCutInfor oppNextNodeCutInfor = getNextNodeCutInfor(_fNodeEty, _oppArcEty, _linkEty);
+
+                    //创建反的拓扑
+                    createLaneTopo(crtLinkFea, linkFlowDir, _oppArcEty, oppPreNodeCutInfor, oppNextNodeCutInfor);
 
 
-    //  8.-----------------------更新反向Arc的下游Arc----------------------------------------
-                //相反方向的Arc的下游Arc存在，则更新
-                if (oppNextNodeCutInfor.nextArcEty != null)
-                {
-                    updateArc(oppNextNodeCutInfor.nextArcEty);
-                }
 
-                //添加反向的车道为fromlane的连接器,FNode是入口交叉口
-                updateConnetorAndArrow(_fNodeEty, fNodeFea.ShapeCopy as IPoint, _oppArcEty, true);
-                //添加反向的车道为tolane的连接器,TNode是出口交叉口
-                updateConnetorAndArrow(_tNodeEty, tNodeFea.ShapeCopy as IPoint, _oppArcEty, false);
+                    //  7.-----------------------更新反向Arc的上游Arc----------------------------------------
+                    //相反方向的Arc的上游Arc存在，则更新
+                    if (oppPreNodeCutInfor.preArcEty != null)
+                    {
+                        updateArc(oppPreNodeCutInfor.preArcEty);
+                    }
 
 
-    //  9.-----------------------创建反向Arc的Surface----------------------------------------
-                if (linkFlowDir == Link.FLOWDIR_DOUBLE || linkFlowDir == Link.FLOWDIR_OPPOSITION)
-                {
+                    //  8.-----------------------更新反向Arc的下游Arc----------------------------------------
+                    //相反方向的Arc的下游Arc存在，则更新
+                    if (oppNextNodeCutInfor.nextArcEty != null)
+                    {
+                        updateArc(oppNextNodeCutInfor.nextArcEty);
+                    }
+
+                    //添加反向的车道为fromlane的连接器,FNode是入口交叉口
+                    updateConnetorAndArrow(_fNodeEty, fNodeFea.ShapeCopy as IPoint, _oppArcEty, true);
+                    //添加反向的车道为tolane的连接器,TNode是出口交叉口
+                    updateConnetorAndArrow(_tNodeEty, tNodeFea.ShapeCopy as IPoint, _oppArcEty, false);
+
+
+                    //  9.-----------------------创建反向Arc的Surface----------------------------------------
+                    SurfaceService surface = new SurfaceService(_pFeaClsSurface, 0);
+
+                    IPolygon gon = new PolygonClass();
+                    string str = "";
+                    Surface surfaceEty = new Surface();
 
                     surface.CrateSurfaceShape(_pFeaClsKerb, oppNextNodeCutInfor, fNodeFea, tNodeFea, ref gon, ref str);
                     surfaceEty = new Surface();
@@ -803,9 +814,13 @@ namespace RoadNetworkSystem.NetworkEditor.EditorFlow
                     exitArcEty = exitArcEtys[i];
 
                     //去掉断头路
-                    if (exitArcEtys.Length == 1 && exitArcEty.LinkID == arcEty.LinkID)
+                    if (exitArcEtys.Length == 1 && ( exitArcEty == null ||exitArcEty.LinkID == arcEty.LinkID))
                     {
                         return;
+                    }
+                    if (exitArcEty == null)
+                    {
+                        continue;
                     }
 
                     //生成车道连接器，注意，生成前是否要查一下，有没有存在
@@ -840,10 +855,15 @@ namespace RoadNetworkSystem.NetworkEditor.EditorFlow
                     entranceArcEty = entranceArcEtys[i];
 
                     //去掉断头路
-                    if (entranceArcEtys.Length == 1 && entranceArcEty.LinkID == arcEty.LinkID)
+                    if (entranceArcEtys.Length == 1 && (entranceArcEty == null || entranceArcEty.LinkID == arcEty.LinkID))
                     {
                         return;
                     }
+                    if (entranceArcEty == null)
+                    {
+                        continue;
+                    }
+
                     LaneConnectorFeatureService connector = new LaneConnectorFeatureService(_pFeaClsConnector, 0);
                     double angle = PhysicalConnection.GetLinksAngle(entranceArcEty.LinkID, arcEty.LinkID, junctionNodeEty);
 
