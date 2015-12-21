@@ -1256,11 +1256,12 @@ namespace RoadNetworkSystem
                                     if (comboBox_Lane_Rule_Selection.SelectedText.Equals(RoadNetworkSystem.WinForm.RuleSetting.RuleSettingDesigner.LaneRule.横向连通))
                                     {
                                         LaternConnection laternConnection = new LaternConnection(this);
-                                        laternConnection.setLaternConnection();
+                                        laternConnection.LayoutLaternConnection();
                                     }
                                     else if (comboBox_Lane_Rule_Selection.SelectedText.Equals(RoadNetworkSystem.WinForm.RuleSetting.RuleSettingDesigner.LaneRule.转向))
                                     {
- 
+                                        TurningRule turningRule = new TurningRule(this);
+                                        turningRule.LayoutTurnarrowRule();
                                     }
                                 }
                                 else if (comboBox_Layer.SelectedIndex == 
@@ -1328,6 +1329,11 @@ namespace RoadNetworkSystem
             button1.Text = ">>";
             splitContainer4.Panel2Collapsed = false;
             splitContainer3.SplitterDistance = this.Width * 3 / 5;
+        }
+
+        private void 中心线构建ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
         }
 
     }

@@ -15,6 +15,9 @@ namespace RoadNetworkSystem.WinForm.NetworkEditor
     {
         private static Form1 _frm1;
         private const double LANEWEIDTH = 3.5;
+        private const int LANE_NUM_DEFUAL = 3;
+        private const bool IS_ONE_WAY = true;
+        
         //左上角
         private const int LEFTX = 10;
         private const int LEFTY = 25;
@@ -330,7 +333,7 @@ namespace RoadNetworkSystem.WinForm.NetworkEditor
                 new System.Drawing.Point(RIGHTX, _frm1.checkBox_link_SameFlow.Location.Y + 5), DockStyle.None);
 
                 int sameLaneNum_y = _frm1.checkBox_link_SameFlow.Location.Y + _frm1.checkBox_link_SameFlow.Height + LINEWIDTH;
-                WinFormDesigner.layoutNumberupdown(_frm1.upDown_link_SameLaneMun, 2, _frm1.groupBox_Link_Flow.Controls,
+                WinFormDesigner.layoutNumberupdown(_frm1.upDown_link_SameLaneMun, LANE_NUM_DEFUAL, _frm1.groupBox_Link_Flow.Controls,
                     new System.Drawing.Point(RIGHTX + 5, sameLaneNum_y));
 
                 //Opp
@@ -339,9 +342,13 @@ namespace RoadNetworkSystem.WinForm.NetworkEditor
                     new System.Drawing.Point(RIGHTX, oppFlowCheckBox_y + 5), DockStyle.None);
 
                 int oppLaneNum_y = _frm1.label_link_OppFlow.Location.Y + _frm1.label_link_OppFlow.Height + LINEWIDTH;
-                WinFormDesigner.layoutNumberupdown(_frm1.upDown_link_OppLaneMun, 2, _frm1.groupBox_Link_Flow.Controls,
+                WinFormDesigner.layoutNumberupdown(_frm1.upDown_link_OppLaneMun, LANE_NUM_DEFUAL, _frm1.groupBox_Link_Flow.Controls,
                     new System.Drawing.Point(RIGHTX + 5, oppLaneNum_y));
 
+                if (IS_ONE_WAY)
+                {
+                    _frm1.checkBox_link_OppFlow.Checked = false;
+                }
 
                 _frm1.groupBox_Link_BasicAtrr.Height = _frm1.label_link_roadNm.Location.Y + _frm1.label_link_roadNm.Height + LINEWIDTH;
 
@@ -452,7 +459,7 @@ namespace RoadNetworkSystem.WinForm.NetworkEditor
 
             _frm1.upDown_link_SameLaneMun = new NumericUpDown();
             int sameLaneNum_y = _frm1.checkBox_link_SameFlow.Location.Y + _frm1.checkBox_link_SameFlow.Height + LINEWIDTH;
-            WinFormDesigner.layoutNumberupdown(_frm1.upDown_link_SameLaneMun, 2, _frm1.groupBox_Link_Flow.Controls,
+            WinFormDesigner.layoutNumberupdown(_frm1.upDown_link_SameLaneMun, LANE_NUM_DEFUAL, _frm1.groupBox_Link_Flow.Controls,
                 new System.Drawing.Point(RIGHTX + 5, sameLaneNum_y));
             _frm1.upDown_link_SameLaneMun.Width = _textBoxWidth;
 
@@ -477,9 +484,14 @@ namespace RoadNetworkSystem.WinForm.NetworkEditor
             //同向车道数，
             _frm1.upDown_link_OppLaneMun = new NumericUpDown();
             int oppLaneNum_y = _frm1.label_link_OppFlow.Location.Y + _frm1.label_link_OppFlow.Height + LINEWIDTH;
-            WinFormDesigner.layoutNumberupdown(_frm1.upDown_link_OppLaneMun, 2, _frm1.groupBox_Link_Flow.Controls,
+            WinFormDesigner.layoutNumberupdown(_frm1.upDown_link_OppLaneMun, LANE_NUM_DEFUAL, _frm1.groupBox_Link_Flow.Controls,
                 new System.Drawing.Point(RIGHTX + 5, oppLaneNum_y));
             _frm1.upDown_link_OppLaneMun.Width = _textBoxWidth;
+
+            if (IS_ONE_WAY)
+            {
+                _frm1.checkBox_link_OppFlow.Checked = false;
+            }
 
             #endregion  ---------------反向------------------------------
 

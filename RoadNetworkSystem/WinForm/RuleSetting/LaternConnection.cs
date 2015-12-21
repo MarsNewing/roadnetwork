@@ -42,7 +42,7 @@ namespace RoadNetworkSystem.WinForm.RuleSetting
         /// <summary>
         /// 设置横向连通
         /// </summary>
-        public void setLaternConnection()
+        public void LayoutLaternConnection()
         {
             clearModifyGroup();
 

@@ -200,7 +200,7 @@ namespace RoadNetworkSystem.WinForm.RuleSetting
 
             //默认设置为横向连通关系修改
             LaternConnection laternConnection = new LaternConnection(_frm1);
-            laternConnection.setLaternConnection();
+            laternConnection.LayoutLaternConnection();
             
 
 
@@ -218,11 +218,14 @@ namespace RoadNetworkSystem.WinForm.RuleSetting
                 {
 
                     LaternConnection laternConnection = new LaternConnection(_frm1);
-                    laternConnection.setLaternConnection();
+                    laternConnection.LayoutLaternConnection();
                     break;
                 }
                 case (int)LaneRule.转向:
                 {
+                    initTurnArrowRuleParameters();
+                    TurningRule turningRule = new TurningRule(_frm1);
+                    turningRule.LayoutTurnarrowRule();
                     break;
                 }
                 case (int)LaneRule.限高速:
@@ -250,6 +253,12 @@ namespace RoadNetworkSystem.WinForm.RuleSetting
                     break;
                 }
             }
+        }
+
+
+        private void initTurnArrowRuleParameters()
+        {
+            _frm1.SlctLane_Rule = null;
         }
 
         private void setLaneRuleList()

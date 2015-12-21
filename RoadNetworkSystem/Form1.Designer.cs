@@ -57,6 +57,7 @@ namespace RoadNetworkSystem
             this.动态分段ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.新建车道ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.车道连接器ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.规则ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
@@ -75,7 +76,7 @@ namespace RoadNetworkSystem
             this.panel_Top = new System.Windows.Forms.Panel();
             this.axToolbarControl1 = new AxESRI.ArcGIS.Controls.AxToolbarControl();
             this.axLicenseControl1 = new AxESRI.ArcGIS.Controls.AxLicenseControl();
-            this.规则ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.中心线构建ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -227,13 +228,13 @@ namespace RoadNetworkSystem
             // vissimToolStripMenuItem
             // 
             this.vissimToolStripMenuItem.Name = "vissimToolStripMenuItem";
-            this.vissimToolStripMenuItem.Size = new System.Drawing.Size(128, 22);
+            this.vissimToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.vissimToolStripMenuItem.Text = "Vissim";
             // 
             // paramicsToolStripMenuItem
             // 
             this.paramicsToolStripMenuItem.Name = "paramicsToolStripMenuItem";
-            this.paramicsToolStripMenuItem.Size = new System.Drawing.Size(128, 22);
+            this.paramicsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.paramicsToolStripMenuItem.Text = "Paramics";
             // 
             // 基础路网ToolStripMenuItem
@@ -243,7 +244,7 @@ namespace RoadNetworkSystem
             this.paramicsToolStripMenuItem1,
             this.transModelerToolStripMenuItem});
             this.基础路网ToolStripMenuItem.Name = "基础路网ToolStripMenuItem";
-            this.基础路网ToolStripMenuItem.Size = new System.Drawing.Size(128, 22);
+            this.基础路网ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.基础路网ToolStripMenuItem.Text = "基础路网";
             // 
             // vissimToolStripMenuItem1
@@ -270,7 +271,8 @@ namespace RoadNetworkSystem
             // 路网编辑ToolStripMenuItem
             // 
             this.路网编辑ToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.仿真路网构建ToolStripMenuItem});
+            this.仿真路网构建ToolStripMenuItem,
+            this.中心线构建ToolStripMenuItem});
             this.路网编辑ToolStripMenuItem.Name = "路网编辑ToolStripMenuItem";
             this.路网编辑ToolStripMenuItem.Size = new System.Drawing.Size(68, 21);
             this.路网编辑ToolStripMenuItem.Text = "路网编辑";
@@ -278,7 +280,7 @@ namespace RoadNetworkSystem
             // 仿真路网构建ToolStripMenuItem
             // 
             this.仿真路网构建ToolStripMenuItem.Name = "仿真路网构建ToolStripMenuItem";
-            this.仿真路网构建ToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
+            this.仿真路网构建ToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
             this.仿真路网构建ToolStripMenuItem.Text = "仿真路网构建";
             this.仿真路网构建ToolStripMenuItem.Click += new System.EventHandler(this.仿真路网构建ToolStripMenuItem_Click);
             // 
@@ -319,6 +321,13 @@ namespace RoadNetworkSystem
             this.车道连接器ToolStripMenuItem.Size = new System.Drawing.Size(136, 22);
             this.车道连接器ToolStripMenuItem.Text = "车道连接器";
             this.车道连接器ToolStripMenuItem.Click += new System.EventHandler(this.车道连接器ToolStripMenuItem_Click);
+            // 
+            // 规则ToolStripMenuItem
+            // 
+            this.规则ToolStripMenuItem.Name = "规则ToolStripMenuItem";
+            this.规则ToolStripMenuItem.Size = new System.Drawing.Size(44, 21);
+            this.规则ToolStripMenuItem.Text = "规则";
+            this.规则ToolStripMenuItem.Click += new System.EventHandler(this.规则ToolStripMenuItem_Click);
             // 
             // statusStrip1
             // 
@@ -414,7 +423,7 @@ namespace RoadNetworkSystem
             this.tabPage1.Controls.Add(this.axMapControl1);
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
-            this.tabPage1.Padding = new System.Windows.Forms.Padding(3, 3, 3, 3);
+            this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
             this.tabPage1.Size = new System.Drawing.Size(553, 470);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "地图";
@@ -435,8 +444,8 @@ namespace RoadNetworkSystem
             this.tabPage2.Controls.Add(this.axPageLayoutControl1);
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
-            this.tabPage2.Padding = new System.Windows.Forms.Padding(3, 3, 3, 3);
-            this.tabPage2.Size = new System.Drawing.Size(553, 489);
+            this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage2.Size = new System.Drawing.Size(553, 470);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "制版";
             this.tabPage2.UseVisualStyleBackColor = true;
@@ -447,7 +456,7 @@ namespace RoadNetworkSystem
             this.axPageLayoutControl1.Location = new System.Drawing.Point(3, 3);
             this.axPageLayoutControl1.Name = "axPageLayoutControl1";
             this.axPageLayoutControl1.OcxState = ((System.Windows.Forms.AxHost.State)(resources.GetObject("axPageLayoutControl1.OcxState")));
-            this.axPageLayoutControl1.Size = new System.Drawing.Size(547, 483);
+            this.axPageLayoutControl1.Size = new System.Drawing.Size(547, 464);
             this.axPageLayoutControl1.TabIndex = 0;
             // 
             // splitContainer4
@@ -526,12 +535,12 @@ namespace RoadNetworkSystem
             this.axLicenseControl1.Size = new System.Drawing.Size(32, 32);
             this.axLicenseControl1.TabIndex = 0;
             // 
-            // 规则ToolStripMenuItem
+            // 中心线构建ToolStripMenuItem
             // 
-            this.规则ToolStripMenuItem.Name = "规则ToolStripMenuItem";
-            this.规则ToolStripMenuItem.Size = new System.Drawing.Size(44, 21);
-            this.规则ToolStripMenuItem.Text = "规则";
-            this.规则ToolStripMenuItem.Click += new System.EventHandler(this.规则ToolStripMenuItem_Click);
+            this.中心线构建ToolStripMenuItem.Name = "中心线构建ToolStripMenuItem";
+            this.中心线构建ToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
+            this.中心线构建ToolStripMenuItem.Text = "中心线构建仿真路网";
+            this.中心线构建ToolStripMenuItem.Click += new System.EventHandler(this.中心线构建ToolStripMenuItem_Click);
             // 
             // Form1
             // 
@@ -952,11 +961,13 @@ namespace RoadNetworkSystem
         public GroupBox groupBox_Lane_Rule_Setting;
 
 
+
         public SplitContainer spltCtn_Rule_Selectiont_Att;
 
         public GroupBox groupBox_Lane_Rule_Selection;
         public ComboBox comboBox_Lane_Rule_Selection;
 
+        //左右变线
         public Label label_Lane_Rule_Left_Connnection;
         public CheckBox checkBox_Lane_Rule_Left_Connnection;
         
@@ -967,11 +978,17 @@ namespace RoadNetworkSystem
         public Button button_Lane_Rule_Modify;
 
 
-        public Label label_Next_Arcs;   
-        public ComboBox comBox_Next_Arcs;
-        public Label label_Next_Lane_Serial;
-        public NumericUpDown numbericUpDown_Next_Lane_Serial;
+        //导向箭头
+        public Label label_Lane_Rule_Next_Arcs;
+        public ComboBox comBox_Lane_Rule_Next_Arcs;
+        public Label label_Lane_Rule_Next_Lane_Serial;
+
+        public CheckBox checkBox_Lane_Rule_Turning_Left;
+        public CheckBox checkBox_Lane_Rule_Turning_Right;
+        public CheckBox checkBox_Lane_Rule_Turning_Straight;
+        public CheckBox checkBox_Lane_Rule_Turning_UTurn;
         #endregion *********************规则设定***************************
+        private ToolStripMenuItem 中心线构建ToolStripMenuItem;
 
 
     }
