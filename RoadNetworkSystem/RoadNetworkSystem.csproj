@@ -170,7 +170,9 @@
     <Compile Include="WinForm\NetworkEditor\NetworkEditorDesigner.cs" />
     <Compile Include="WinForm\NetworkEditor\NodeEditorDesigner.cs" />
     <Compile Include="WinForm\NetworkExtraction\ExtractionDesigner.cs" />
+    <Compile Include="WinForm\RuleSetting\LaternConnection.cs" />
     <Compile Include="WinForm\RuleSetting\RuleSettingDesigner.cs" />
+    <Compile Include="WinForm\RuleSetting\TurningRule.cs" />
     <Compile Include="WinForm\WinFormDesigner.cs" />
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>

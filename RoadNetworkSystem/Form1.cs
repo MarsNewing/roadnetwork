@@ -1253,7 +1253,15 @@ namespace RoadNetworkSystem
                                     (int)RoadNetworkSystem.WinForm.RuleSetting.RuleSettingDesigner.RuleRoadItem.车道)
                                 {
                                     SlctLane_Rule = pFeature;
-                                    ruleSettingDesigner.setLaternConnection();
+                                    if (comboBox_Lane_Rule_Selection.SelectedText.Equals(RoadNetworkSystem.WinForm.RuleSetting.RuleSettingDesigner.LaneRule.横向连通))
+                                    {
+                                        LaternConnection laternConnection = new LaternConnection(this);
+                                        laternConnection.setLaternConnection();
+                                    }
+                                    else if (comboBox_Lane_Rule_Selection.SelectedText.Equals(RoadNetworkSystem.WinForm.RuleSetting.RuleSettingDesigner.LaneRule.转向))
+                                    {
+ 
+                                    }
                                 }
                                 else if (comboBox_Layer.SelectedIndex == 
                                     (int)RoadNetworkSystem.WinForm.RuleSetting.RuleSettingDesigner.RuleRoadItem.有向子路段)

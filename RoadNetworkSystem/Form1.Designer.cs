@@ -965,6 +965,12 @@ namespace RoadNetworkSystem
 
         public GroupBox groupBox_Lane_Rule_Modify;
         public Button button_Lane_Rule_Modify;
+
+
+        public Label label_Next_Arcs;   
+        public ComboBox comBox_Next_Arcs;
+        public Label label_Next_Lane_Serial;
+        public NumericUpDown numbericUpDown_Next_Lane_Serial;
         #endregion *********************规则设定***************************
 
 
