@@ -43,6 +43,8 @@ namespace RoadNetworkSystem
             this.保存地图ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.退出ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.路网提取ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.中心线到路段路网ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.中心线到仿真路网ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.路网转换ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.vissimToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.paramicsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -210,10 +212,26 @@ namespace RoadNetworkSystem
             // 
             // 路网提取ToolStripMenuItem
             // 
+            this.路网提取ToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.中心线到路段路网ToolStripMenuItem,
+            this.中心线到仿真路网ToolStripMenuItem});
             this.路网提取ToolStripMenuItem.Name = "路网提取ToolStripMenuItem";
             this.路网提取ToolStripMenuItem.Size = new System.Drawing.Size(68, 21);
             this.路网提取ToolStripMenuItem.Text = "路网提取";
-            this.路网提取ToolStripMenuItem.Click += new System.EventHandler(this.路网提取ToolStripMenuItem_Click);
+            // 
+            // 中心线到路段路网ToolStripMenuItem
+            // 
+            this.中心线到路段路网ToolStripMenuItem.Name = "中心线到路段路网ToolStripMenuItem";
+            this.中心线到路段路网ToolStripMenuItem.Size = new System.Drawing.Size(172, 22);
+            this.中心线到路段路网ToolStripMenuItem.Text = "中心线到路段路网";
+            this.中心线到路段路网ToolStripMenuItem.Click += new System.EventHandler(this.中心线到路段路网ToolStripMenuItem_Click);
+            // 
+            // 中心线到仿真路网ToolStripMenuItem
+            // 
+            this.中心线到仿真路网ToolStripMenuItem.Name = "中心线到仿真路网ToolStripMenuItem";
+            this.中心线到仿真路网ToolStripMenuItem.Size = new System.Drawing.Size(172, 22);
+            this.中心线到仿真路网ToolStripMenuItem.Text = "中心线到仿真路网";
+            this.中心线到仿真路网ToolStripMenuItem.Click += new System.EventHandler(this.中心线到仿真路网ToolStripMenuItem_Click);
             // 
             // 路网转换ToolStripMenuItem
             // 
@@ -304,21 +322,21 @@ namespace RoadNetworkSystem
             // 动态分段ToolStripMenuItem
             // 
             this.动态分段ToolStripMenuItem.Name = "动态分段ToolStripMenuItem";
-            this.动态分段ToolStripMenuItem.Size = new System.Drawing.Size(136, 22);
+            this.动态分段ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.动态分段ToolStripMenuItem.Text = "动态分段";
             this.动态分段ToolStripMenuItem.Click += new System.EventHandler(this.动态分段ToolStripMenuItem_Click);
             // 
             // 新建车道ToolStripMenuItem
             // 
             this.新建车道ToolStripMenuItem.Name = "新建车道ToolStripMenuItem";
-            this.新建车道ToolStripMenuItem.Size = new System.Drawing.Size(136, 22);
+            this.新建车道ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.新建车道ToolStripMenuItem.Text = "新建车道";
             this.新建车道ToolStripMenuItem.Click += new System.EventHandler(this.新建车道ToolStripMenuItem_Click);
             // 
             // 车道连接器ToolStripMenuItem
             // 
             this.车道连接器ToolStripMenuItem.Name = "车道连接器ToolStripMenuItem";
-            this.车道连接器ToolStripMenuItem.Size = new System.Drawing.Size(136, 22);
+            this.车道连接器ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.车道连接器ToolStripMenuItem.Text = "车道连接器";
             this.车道连接器ToolStripMenuItem.Click += new System.EventHandler(this.车道连接器ToolStripMenuItem_Click);
             // 
@@ -988,6 +1006,9 @@ namespace RoadNetworkSystem
         public CheckBox checkBox_Lane_Rule_Turning_Straight;
         public CheckBox checkBox_Lane_Rule_Turning_UTurn;
         #endregion *********************规则设定***************************
+
+        private ToolStripMenuItem 中心线到路段路网ToolStripMenuItem;
+        private ToolStripMenuItem 中心线到仿真路网ToolStripMenuItem;
         private ToolStripMenuItem 中心线构建ToolStripMenuItem;
 
 

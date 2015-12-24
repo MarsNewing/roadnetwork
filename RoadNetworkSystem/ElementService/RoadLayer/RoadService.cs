@@ -44,7 +44,6 @@ namespace RoadNetworkSystem.NetworkElement.RoadLayer
             }
         }
 
-
         public Road GetEntity(IFeature FeaRoad)
         {
             Road rsEty = new Road();

@@ -9,6 +9,9 @@ namespace RoadNetworkSystem.GIS
 {
     class LineHelper
     {
+
+        private const int THRESHOLD_CONVERTION_ANGLE = 10; 
+
         /// <summary>
         /// 通过线的偏移得到新的线段
         /// </summary>
@@ -29,6 +32,101 @@ namespace RoadNetworkSystem.GIS
             return newLine;
         }
 
+
+        public static List<IPolyline> ConvertPolyline2Lines(IPolyline polyline)
+        {
+            if (polyline == null)
+            {
+                return null;
+            }
+            IPointCollection pntClt = polyline as IPointCollection;
+
+            List<IPolyline> lines = new List<IPolyline>();
+            
+            if (pntClt.PointCount == 2)
+            {
+                lines.Add(polyline);
+                return lines;
+            }
+            else
+            {
+                IPoint prePrePoint = pntClt.get_Point(0);
+                IPoint prePoint = pntClt.get_Point(1);
+                IPoint cursorPoint = pntClt.get_Point(2);
+                int cursorIndex = 2;
+                double temAngles = 0;
+                IPointCollection temPntClt = new PolylineClass();
+                temPntClt.AddPoint(prePrePoint);
+                temPntClt.AddPoint(prePoint);
+
+                while (cursorIndex < pntClt.PointCount)
+                {
+                    double cursorAngle = 180 - GetAngleInKinkPoint(prePrePoint,prePoint,cursorPoint);
+                    temAngles += cursorAngle;
+
+                    prePrePoint = prePoint;
+                    prePoint = cursorPoint;
+
+                    temPntClt.AddPoint(cursorPoint);
+
+                    //判断是否是生成新的直线段
+                    if (temAngles > THRESHOLD_CONVERTION_ANGLE)
+                    {
+                        IPolyline newLine = temPntClt as IPolyline;
+                        lines.Add(newLine);
+                        temPntClt = new PolylineClass();
+                        //上一个直线段的终点是下一个直线断的起点
+                        temPntClt.AddPoint(cursorPoint);
+                        temAngles = 0;
+                    }
+
+
+                    //更新游标
+                    cursorIndex++;
+                    if (cursorIndex < (pntClt.PointCount))
+                    {
+                        cursorPoint = pntClt.get_Point(cursorIndex);
+                    }
+                    else
+                    {
+                        IPolyline newLine = temPntClt as IPolyline;
+                        lines.Add(newLine);
+                    }
+
+                }
+                return lines;
+            }
+
+        }
+
+
+        public static double GetAngleInKinkPoint(IPoint fromPoint,IPoint kinkPoint,IPoint toPoint)
+        {
+            double vector_x_from_kink = fromPoint.X - kinkPoint.X;
+            double vector_y_from_kink = fromPoint.Y - kinkPoint.Y;
+
+            double vector_x_to_kink = toPoint.X - kinkPoint.X;
+            double vector_y_to_kink = toPoint.Y - kinkPoint.Y;
+
+            double dotProduct = vector_x_to_kink * vector_x_from_kink + vector_y_to_kink * vector_y_from_kink;
+
+            double length_from_kink = PointHelper.GetDistance2Point(fromPoint, kinkPoint);
+            double length_to_kink = PointHelper.GetDistance2Point(toPoint, kinkPoint);
+
+            double cosValue = dotProduct / (length_from_kink * length_to_kink);
+            double angleInArc = Math.Acos(cosValue);
+
+            double angleInDu = angleInArc * 180 / Math.PI;;
+            if(angleInDu < 0 )
+            {
+                return -angleInDu;
+            }
+            else
+            {
+                return angleInDu;
+            }
+ 
+        }
 
         public static IPolyline CreateLine(IPolyline line, double fCut, double tCut)
         {

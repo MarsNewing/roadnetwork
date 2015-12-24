@@ -19,6 +19,7 @@ using RoadNetworkSystem.NetworkElement.RoadLayer;
 using RoadNetworkSystem.NetworkExtraction.FreeWay;
 using RoadNetworkSystem.NetworkExtraction.FreeWay.Service;
 using RoadNetworkSystem.NetworkExtraction.LaneBasedNetwork.DatabaseManager;
+using RoadNetworkSystem.NetworkExtraction.Road2BasicRoadNetwork;
 using RoadNetworkSystem.ParamicsDataTransform;
 using RoadNetworkSystem.VissimDataTransform;
 using RoadNetworkSystem.WinForm.EditTool;
@@ -56,7 +57,7 @@ namespace RoadNetworkSystem
             /// 值域位于FunEnum中
             /// 如果需要添加其他功能，请在该处添加功能对应枚举项
             /// </summary>
-            private int funFlag = -1;
+            private int _functionFlag = -1;
 
             /// <summary>
             /// 枚举出系统所有的功能
@@ -84,9 +85,14 @@ namespace RoadNetworkSystem
                 DataRectify,
 
                 /// <summary>
-                /// 路网提取
+                /// 路网提取(指路标志、路段级路网)
                 /// </summary>
-                NetworkExtraction,
+                NetworkExtraction_GuideSign_Segment,
+
+                /// <summary>
+                /// 路网提取(道路中心线到车道级路网)
+                /// </summary>
+                NetworkExtraction_Road2BasicNetwork,
 
                 /// <summary>
                 /// 规则设定
@@ -427,33 +433,6 @@ namespace RoadNetworkSystem
 
             #region ------------路网提取（指路标志路网，车道级路网路段层）------------
 
-            private void 路网提取ToolStripMenuItem_Click(object sender, EventArgs e)
-            {
-                funFlag = Convert.ToInt32(FunEnum.NetworkExtraction);
-                LayerHelper.ClearSelect(axMapControl1);
-                int dis = splitContainer3.SplitterDistance;
-                int spP2W = splitContainer4.Panel2.Width;
-                button1.Text = ">>";
-                splitContainer4.Panel2Collapsed = false;
-                splitContainer3.SplitterDistance = this.Width * 3 / 5;
-                //splitContainer4.Panel2.Controls.Clear();
-
-                ExtractionDesigner extrctDsgnr = new ExtractionDesigner(this);
-                extrctDsgnr.SetExtractionPlatte();
-
-                if (FeaClsRoad == null)
-                {
-                    MessageBox.Show("请打开Road图层");
-                    Wsp = MapComponent.OpenArcMap(this.axMapControl1,_mdbPath);
-                    getAllFeaClses(Wsp);
-                }
-                else
-                {
-                    System.Collections.Generic.List<string> layerNames = new System.Collections.Generic.List<string>();
-                    layerNames.Add(Road.RoadNm);
-                    LayerHelper.LoadMapLayer(axMapControl1, layerNames);
-                }
-            }
 
             #endregion ------------路网提取（指路标志路网，车道级路网路段层）------------
 
@@ -478,7 +457,7 @@ namespace RoadNetworkSystem
 
             private void 仿真路网构建ToolStripMenuItem_Click(object sender, EventArgs e)
             {
-                funFlag = Convert.ToInt32(FunEnum.NetworkEditor);
+                _functionFlag = Convert.ToInt32(FunEnum.NetworkEditor);
                 LayerHelper.ClearSelect(axMapControl1);
                 int dis = splitContainer3.SplitterDistance;
                 int spP2W = splitContainer4.Panel2.Width;
@@ -497,7 +476,7 @@ namespace RoadNetworkSystem
             {
                 //赋值，操作是编辑
                 object o = (object)0;
-                funFlag = Convert.ToInt32(FunEnum.EditorTool);
+                _functionFlag = Convert.ToInt32(FunEnum.EditorTool);
                 EditToolDesigner edtToolD = new EditToolDesigner(this);
                 edtToolD.SetEditToolPattle();
 
@@ -765,7 +744,7 @@ namespace RoadNetworkSystem
         {
             if (ToolBarFlag == true)
             { return; }
-            switch (funFlag)
+            switch (_functionFlag)
             {
                 case (int)FunEnum.EditorTool:
                     {
@@ -1145,7 +1124,7 @@ namespace RoadNetworkSystem
                         break;
                         #endregion 路网编辑
                     }
-                case (int)FunEnum.NetworkExtraction:
+                case (int)FunEnum.NetworkExtraction_GuideSign_Segment:
                     {
                         #region 路网提取
                         IEnumFeature pEnumFea = axMapControl1.Map.FeatureSelection as IEnumFeature;
@@ -1319,7 +1298,7 @@ namespace RoadNetworkSystem
 
         private void 规则ToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            funFlag = (int)FunEnum.RuleSetting;
+            _functionFlag = (int)FunEnum.RuleSetting;
 
             ruleSettingDesigner = new RuleSettingDesigner(this);
             ruleSettingDesigner.SetRuleSettingPlatte();
@@ -1333,7 +1312,65 @@ namespace RoadNetworkSystem
 
         private void 中心线构建ToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            IFeature pFeature = FeaClsRoad.GetFeature(159);
+            List<IPolyline> lines = LineHelper.ConvertPolyline2Lines(pFeature.Shape as IPolyline);
+            foreach (IPolyline line in lines)
+            {
+                IFeature newRoad = FeaClsRoad.CreateFeature();
+                IPointCollection col = new PolylineClass();
+                col.AddPoint(line.FromPoint);
+                col.AddPoint(line.ToPoint);
+                newRoad.Shape = col as IPolyline;
+                newRoad.Store();
+            }
 
+            int inte = 0;
+        }
+
+        private void 中心线到路段路网ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            _functionFlag = Convert.ToInt32(FunEnum.NetworkExtraction_GuideSign_Segment);
+            ExtractionDesigner extrctDsgnr = new ExtractionDesigner(this);
+            extrctDsgnr.CopyFlag = (int)ExtractionDesigner.CopyFeatureClassAndTable.CopyForGuideSignAndSegmentNetowrk;
+            TriggerRoadNetworkExtractor(extrctDsgnr);
+        }
+
+        /// <summary>
+        /// 触发路网提取
+        /// </summary>
+        public void TriggerRoadNetworkExtractor(ExtractionDesigner extrctDsgnr)
+        {
+            LayerHelper.ClearSelect(axMapControl1);
+            int dis = splitContainer3.SplitterDistance;
+            int spP2W = splitContainer4.Panel2.Width;
+            button1.Text = ">>";
+            splitContainer4.Panel2Collapsed = false;
+            splitContainer3.SplitterDistance = this.Width * 3 / 5;
+            //splitContainer4.Panel2.Controls.Clear();
+
+            
+            extrctDsgnr.SetExtractionPlatte();
+
+            if (FeaClsRoad == null)
+            {
+                MessageBox.Show("请打开Road图层");
+                Wsp = MapComponent.OpenArcMap(this.axMapControl1, _mdbPath);
+                getAllFeaClses(Wsp);
+            }
+            else
+            {
+                System.Collections.Generic.List<string> layerNames = new System.Collections.Generic.List<string>();
+                layerNames.Add(Road.RoadNm);
+                LayerHelper.LoadMapLayer(axMapControl1, layerNames);
+            }
+        }
+
+
+        private void 中心线到仿真路网ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            _functionFlag = Convert.ToInt32(FunEnum.NetworkExtraction_Road2BasicNetwork);
+            Road2BasicRoadNetwork road2BasicRoadNetwork = new Road2BasicRoadNetwork(this);
+            road2BasicRoadNetwork.Convert2BasicRoadNetwork();
         }
 
     }

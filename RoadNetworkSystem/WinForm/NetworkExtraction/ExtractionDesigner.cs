@@ -21,7 +21,7 @@ using System.Windows.Forms;
 
 namespace RoadNetworkSystem.WinForm.NetworkExtraction
 {
-    class ExtractionDesigner
+    public class ExtractionDesigner
     {
         private static Form1 _frm1;
 
@@ -33,7 +33,16 @@ namespace RoadNetworkSystem.WinForm.NetworkExtraction
         //右侧的第一个控件的X坐标
         private static int RIGHTX = 0;
 
+        //
         private const int BTNWIDTH = 25;
+
+        public enum CopyFeatureClassAndTable
+        {
+            CopyForGuideSignAndSegmentNetowrk,  //  仅仅为生成指路标志路网 或 路段级路网
+            CopyForRoad2BasicNetwork            //  仅仅为生成车道级路网
+        }
+
+        public int CopyFlag = (int)CopyFeatureClassAndTable.CopyForGuideSignAndSegmentNetowrk;
 
         /// <summary>
         /// 保存打断规则
@@ -617,11 +626,49 @@ namespace RoadNetworkSystem.WinForm.NetworkExtraction
 
         void button_extration_extract_Click(object sender, EventArgs e)
         {
-            calculateRoadNetwork();
+            createRoadNetwork();
         }
 
 
-        private void calculateRoadNetwork()
+        private void createNewDatabase()
+        {
+            //ISpatialReference spatialReference = spatialReferenceFactory.CreateProjectedCoordinateSystem((int)esriSRProjCS4Type.esriSRProjCS_Xian1980_3_Degree_GK_Zone_38);
+            ISpatialReference spatialReference = (_frm1.FeaClsRoad as IGeoDataset).SpatialReference;
+            IFeatureDataset pFeaDataset = GeodatabaseHelper.CreateGeoDatabase(spatialReference);
+            switch (CopyFlag)
+            {
+                case (int)CopyFeatureClassAndTable.CopyForGuideSignAndSegmentNetowrk:
+                    {
+                        //Copy road featureclass to the new geodatabase
+                        GeodatabaseHelper.CopyFeaClsToDataset(((IDataset)_frm1.FeaClsRoad).Workspace, pFeaDataset,
+                            _frm1.FeaClsRoad.AliasName, "Road");
+                        _frm1.Wsp = pFeaDataset.Workspace;
+
+                        break;
+                    }
+
+                case (int)CopyFeatureClassAndTable.CopyForRoad2BasicNetwork:
+                    {
+                        GeodatabaseHelper.CopyFeaClsToDataset(((IDataset)_frm1.FeaClsRoad).Workspace, pFeaDataset,
+                            _frm1.FeaClsRoad.AliasName,Road.RoadNm);
+
+                        GeodatabaseHelper.CopyFeaClsToDataset(((IDataset)_frm1.FeaClsRoad).Workspace, pFeaDataset,
+                            BreakPoint.BreakPointName, BreakPoint.BreakPointName);
+                        
+                        GeodatabaseHelper.CopyDatatable2Workspace(((IDataset)_frm1.FeaClsRoad).Workspace, pFeaDataset.Workspace,
+                            LaneNumChange.LaneNumChangeName, LaneNumChange.LaneNumChangeName);
+
+                        _frm1.Wsp = pFeaDataset.Workspace;
+                        _frm1.getAllFeaClses(_frm1.Wsp);
+                        break;
+                    }
+                default:
+                    break;
+            }
+        }
+
+
+        private void createRoadNetwork()
         {
             //创建geodatabase
             try
@@ -629,14 +676,7 @@ namespace RoadNetworkSystem.WinForm.NetworkExtraction
                 List<NodeInfor> forbidddonBreakRoads = new List<NodeInfor>();
                 forbidddonBreakRoads = getNodeInforOfForbidden(_frm1.RoadFeaPairs);
 
-                //ISpatialReference spatialReference = spatialReferenceFactory.CreateProjectedCoordinateSystem((int)esriSRProjCS4Type.esriSRProjCS_Xian1980_3_Degree_GK_Zone_38);
-                ISpatialReference spatialReference = (_frm1.FeaClsRoad as IGeoDataset).SpatialReference;
-                IFeatureDataset pFeaDataset = GeodatabaseHelper.CreateGeoDatabase(spatialReference);
-                //Copy road featureclass to the new geodatabase
-                GeodatabaseHelper.ConvertFeaClsToDataset(((IDataset)_frm1.FeaClsRoad).Workspace, pFeaDataset,
-                    _frm1.FeaClsRoad.AliasName, "Road");
-                _frm1.Wsp = pFeaDataset.Workspace;
-
+                createNewDatabase();
 
                 if (_frm1.comBox_extraction_function.SelectedIndex == (int)ExtractionType.车道级路网)
                 {

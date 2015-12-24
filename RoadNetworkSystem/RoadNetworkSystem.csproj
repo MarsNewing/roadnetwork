@@ -64,8 +64,10 @@
     <Compile Include="DataModel\GuideSignNetwork\Arc1.cs" />
     <Compile Include="DataModel\GuideSignNetwork\Node1.cs" />
     <Compile Include="DataModel\LaneBasedNetwork\Arc.cs" />
+    <Compile Include="DataModel\LaneBasedNetwork\BreakPoint.cs" />
     <Compile Include="DataModel\LaneBasedNetwork\LaneConnector.cs" />
     <Compile Include="DataModel\LaneBasedNetwork\Lane.cs" />
+    <Compile Include="DataModel\LaneBasedNetwork\LaneNumChange.cs" />
     <Compile Include="DataModel\LaneBasedNetwork\Link.cs" />
     <Compile Include="DataModel\LaneBasedNetwork\Node.cs" />
     <Compile Include="DataModel\LaneBasedNetwork\Segment.cs" />
@@ -160,6 +162,7 @@
     <Compile Include="NetworkExtraction\LaneBasedNetwork\SegmentLayer\RoadSegmentLayerFactory.cs" />
     <Compile Include="NetworkExtraction\LinkMasterExtraction\LinkMasterLayerFactory.cs" />
     <Compile Include="NetworkExtraction\LinkMasterExtraction\NodeInfor.cs" />
+    <Compile Include="NetworkExtraction\Road2BasicRoadNetwork\Road2BasicRoadNetwork.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TrafficRule\RuleService.cs" />

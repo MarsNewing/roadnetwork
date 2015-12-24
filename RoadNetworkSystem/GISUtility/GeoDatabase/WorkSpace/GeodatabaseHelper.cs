@@ -53,7 +53,7 @@ namespace RoadNetworkSystem.GIS.GeoDatabase.WorkSpace
         /// <param name="targetWorkspace"></param>新要素类的位置
         /// <param name="nameOfSourceFeatureClass"></param>
         /// <param name="nameOfTargetFeatureClass"></param>
-        public static void ConvertFeaClsToDataset(IWorkspace sourceWorkspace, IFeatureDataset targetFeatureDs, string nameOfSourceFeatureClass, string nameOfTargetFeatureClass)
+        public static void CopyFeaClsToDataset(IWorkspace sourceWorkspace, IFeatureDataset targetFeatureDs, string nameOfSourceFeatureClass, string nameOfTargetFeatureClass)
         {
             //create source workspace name
             IDataset sourceWorkspaceDataset = (IDataset)sourceWorkspace;
@@ -144,7 +144,7 @@ namespace RoadNetworkSystem.GIS.GeoDatabase.WorkSpace
         /// <param name="targetWorkspace"></param>新要素类的位置
         /// <param name="nameOfSourceFeatureClass"></param>
         /// <param name="nameOfTargetFeatureClass"></param>
-        public static void ConvertFeaClstoWorkspace(IWorkspace sourceWorkspace, IWorkspace targetWorkspace, 
+        public static void CopyFeaCls2Workspace(IWorkspace sourceWorkspace, IWorkspace targetWorkspace, 
             string nameOfSourceFeatureClass, string nameOfTargetFeatureClass)
         {
             //create source workspace name
@@ -218,6 +218,92 @@ namespace RoadNetworkSystem.GIS.GeoDatabase.WorkSpace
                     IEnumInvalidObject enumErrors = fctofc.ConvertFeatureClass(sourceFeatureClassName, queryFilter, null, targetFeatureClassName, geometryDef, targetFeatureClassFields, "", 1000, 0);
                     break;
                 }
+            }
+        }
+
+
+
+        /// <summary>
+        /// 复制要素类到geodatabse中
+        /// </summary>
+        /// <param name="sourceWorkspace"></param>源要素类的位置
+        /// <param name="targetWorkspace"></param>新要素类的位置
+        /// <param name="nameOfSourceDataTable"></param>
+        /// <param name="nameOfTargetDataTable"></param>
+        public static void CopyDatatable2Workspace(IWorkspace sourceWorkspace, IWorkspace targetWorkspace,
+            string nameOfSourceDataTable, string nameOfTargetDataTable)
+        {
+            //create source workspace name
+            IDataset sourceWorkspaceDataset = (IDataset)sourceWorkspace;
+            IWorkspaceName sourceWorkspaceName = (IWorkspaceName)sourceWorkspaceDataset.FullName;
+
+
+            //create source dataset name
+            ITableName sourceTableName = new TableNameClass();
+
+
+            IDatasetName sourceDatasetName = (IDatasetName)sourceTableName;
+            sourceDatasetName.WorkspaceName = sourceWorkspaceName;
+            sourceDatasetName.Name = nameOfSourceDataTable;
+
+            //create target workspace name
+            IDataset targetWorkspaceDataset = (IDataset)targetWorkspace;
+            IWorkspaceName targetWorkspaceName = (IWorkspaceName)targetWorkspaceDataset.FullName;
+
+
+            //create target dataset name
+            ITableName targetTableName = new TableNameClass();
+            IDatasetName targetDatasetName = (IDatasetName)targetTableName;
+            targetDatasetName.WorkspaceName = targetWorkspaceName;
+            targetDatasetName.Name = nameOfTargetDataTable;
+
+
+            //Open input Featureclass to get field definitions.
+            ESRI.ArcGIS.esriSystem.IName sourceName = (ESRI.ArcGIS.esriSystem.IName)sourceTableName;
+            ITable sourceTable = (ITable)sourceName.Open();
+
+
+            //Validate the field names because you are converting between different workspace types.
+            IFieldChecker fieldChecker = new FieldCheckerClass();
+            IFields targetFeatureClassFields;
+            IFields sourceFeatureClassFields = sourceTable.Fields;
+            IEnumFieldError enumFieldError;
+
+
+            // Most importantly set the input and validate workspaces!
+            fieldChecker.InputWorkspace = sourceWorkspace;
+            fieldChecker.ValidateWorkspace = targetWorkspace;
+            fieldChecker.Validate(sourceFeatureClassFields, out enumFieldError, out targetFeatureClassFields);
+
+
+            // Loop through the output fields to find the geomerty field
+            IField geometryField;
+            for (int i = 0; i < targetFeatureClassFields.FieldCount; i++)
+            {
+                geometryField = targetFeatureClassFields.get_Field(i);
+                // Get the geometry field's geometry defenition
+                //IGeometryDef geometryDef = geometryField.GeometryDef;
+
+
+                ////Give the geometry definition a spatial index grid count and grid size
+                //IGeometryDefEdit targetFCGeoDefEdit = (IGeometryDefEdit)geometryDef;
+
+
+                //targetFCGeoDefEdit.GridCount_2 = 1;
+                //targetFCGeoDefEdit.set_GridSize(0, 0); //Allow ArcGIS to determine a valid grid size for the data loaded
+                //targetFCGeoDefEdit.SpatialReference_2 = geometryField.GeometryDef.SpatialReference;
+
+
+                // we want to convert all of the features
+                IQueryFilter queryFilter = new QueryFilterClass();
+                queryFilter.WhereClause = "";
+
+
+                // Load the feature class
+                IFeatureDataConverter fctofc = new FeatureDataConverterClass();
+                IEnumInvalidObject enumErrors = fctofc.ConvertTable(sourceDatasetName, queryFilter,
+                    targetDatasetName, targetFeatureClassFields, "", 1000, 0);
+                break;
             }
         }
 
