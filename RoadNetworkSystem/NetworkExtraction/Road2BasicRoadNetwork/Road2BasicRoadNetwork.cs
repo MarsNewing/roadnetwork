@@ -1,8 +1,11 @@
 ﻿using ESRI.ArcGIS.Geodatabase;
+using RoadNetworkSystem.ADO.Access;
+using RoadNetworkSystem.DataModel.LaneBasedNetwork;
 using RoadNetworkSystem.GIS.GeoDatabase.WorkSpace;
 using RoadNetworkSystem.WinForm.NetworkExtraction;
 using System;
 using System.Collections.Generic;
+using System.Data.OleDb;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -66,7 +69,20 @@ namespace RoadNetworkSystem.NetworkExtraction.Road2BasicRoadNetwork
             IFeature pFeatureRoad = query.NextFeature();
             while (pFeatureRoad != null)
             {
-                
+                OleDbConnection conn = AccessHelper.OpenConnection(_frm1.Wsp.PathName);
+                string sql = "Select * from " + LaneNumChange.LaneNumChangeName +
+                    " where " + LaneNumChange.RoadID_Name + " = " + Convert.ToInt32(pFeatureRoad.get_Value(pFeatureRoad.Fields.FindField(LaneNumChange.RoadID_Name)));
+                OleDbCommand cmd = new OleDbCommand(sql, conn);
+                OleDbDataReader reader = cmd.ExecuteReader();
+                while (reader.Read())
+                {
+                    int fromBreakPointId = Convert.ToInt32(reader[LaneNumChange.FromBreakPointID_Name]);
+                    int toBreakPointId = Convert.ToInt32(reader[LaneNumChange.ToBreakPointID_Name]);
+                    int laneNum = Convert.ToInt32(reader[LaneNumChange.LaneNum_Name]);
+                    
+
+                }
+
                 pFeatureRoad = query.NextFeature();
             }
 

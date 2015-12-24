@@ -14,5 +14,12 @@ namespace RoadNetworkSystem.DataModel.LaneBasedNetwork
         public int LaneNum { get; set; }
 
         public int RoadID { get; set; }
+
+        public const string FromBreakPointID_Name = "FromBreakPointID";
+        public const string ToBreakPointID_Name = "ToBreakPointID";
+        public const string LaneNum_Name = "LaneNum";
+
+        public const string RoadID_Name = "RoadID";
+
     }
 }

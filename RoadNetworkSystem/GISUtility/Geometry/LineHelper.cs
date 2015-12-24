@@ -315,6 +315,21 @@ namespace RoadNetworkSystem.GIS
             return targetLine;
         }
 
+        public static IPolyline CutPolylineByPointsOnLine(IPolyline originalLine,IPoint point1, IPoint point2)
+        {
+            IPolyline preLine   = new PolylineClass();
+            IPolyline postLine   = new PolylineClass();
+            CutLineAtPoint(originalLine, point1, out preLine, out postLine);
+
+
+            IPolyline preLine2 = new PolylineClass();
+            IPolyline postLine2 = new PolylineClass();
+            CutLineAtPoint(postLine, point2, out preLine2, out postLine2);
+
+            return preLine2;
+        }
+
+
         /// <summary>
         /// 绘制贝塞尔曲线
         /// </summary>

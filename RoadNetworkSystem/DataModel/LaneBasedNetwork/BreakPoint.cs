@@ -11,5 +11,7 @@ namespace RoadNetworkSystem.DataModel.LaneBasedNetwork
         public const string BreakPointName = "BreakPoint";
         public int BreakPointID { get; set; }
 
+        public const string BreakPointIDName = "BreakPointID";
+
     }
 }
