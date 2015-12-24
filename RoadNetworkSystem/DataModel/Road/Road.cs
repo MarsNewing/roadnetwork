@@ -19,6 +19,13 @@ namespace RoadNetworkSystem.DataModel.Road
 
         public int Other { get; set; }
 
+
+        public const string RoadTypeName = "RoadType";
+        public const string RoadNameName = "RoadName";
+
+
+        public const string FlowDirName = "FlowDir";
+
         /// <summary>
         /// 复制实体
         /// </summary>

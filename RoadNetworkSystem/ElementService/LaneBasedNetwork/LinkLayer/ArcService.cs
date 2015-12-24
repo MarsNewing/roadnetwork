@@ -51,6 +51,8 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LinkLayer
 
         public int ArcID;
 
+        
+
         public IFeature ArcFeature;
         public ArcService(IFeatureClass pFeaClsArc,int arcID)
         {
@@ -76,7 +78,19 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LinkLayer
             else
             {
                 if (FeaClsArc.FindField(ArcIDNm) >= 0)
-                    newFea.set_Value(FeaClsArc.FindField(ArcIDNm), newFea.OID);
+                {
+                    int arcId;
+                    if (arcEty.FlowDir == Link.FLOWDIR_SAME)
+                    {
+                        arcId = arcEty.LinkID * 10;
+                    }
+                    else
+                    {
+                        arcId = arcEty.LinkID + 10 + 1;
+                    }
+                    newFea.set_Value(FeaClsArc.FindField(ArcIDNm), arcId);
+                }
+                
             }
           
             if (FeaClsArc.FindField(FlowDirNm) >= 0)

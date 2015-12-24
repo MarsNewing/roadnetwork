@@ -18,7 +18,7 @@ namespace RoadNetworkSystem.ElementService.LaneBasedNetwork.LinkLayer
             _breakPointId = breakPointId;
         }
 
-        IFeature getBreakPointFeature()
+        public IFeature getBreakPointFeature()
         {
             IQueryFilter filter = new QueryFilterClass();
             filter.WhereClause = BreakPoint.BreakPointIDName + " = " + _breakPointId;
@@ -26,7 +26,7 @@ namespace RoadNetworkSystem.ElementService.LaneBasedNetwork.LinkLayer
             return cursor.NextFeature();
         }
 
-        BreakPoint getBreakPoint(IFeature pFeature)
+        public BreakPoint getBreakPoint(IFeature pFeature)
         {
             BreakPoint breakPoint = new BreakPoint();
             breakPoint.BreakPointID = Convert.ToInt32(pFeature.get_Value(pFeature.Fields.FindField(BreakPoint.BreakPointIDName)));
