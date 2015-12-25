@@ -315,6 +315,13 @@ namespace RoadNetworkSystem.GIS
             return targetLine;
         }
 
+        /// <summary>
+        /// 利用线上的两个点截取出一段线段
+        /// </summary>
+        /// <param name="originalLine"></param>
+        /// <param name="point1"></param>
+        /// <param name="point2"></param>
+        /// <returns></returns>
         public static IPolyline CutPolylineByPointsOnLine(IPolyline originalLine,IPoint point1, IPoint point2)
         {
             IPolyline preLine   = new PolylineClass();

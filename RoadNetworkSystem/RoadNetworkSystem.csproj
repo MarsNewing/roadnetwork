@@ -93,6 +93,7 @@
     <Compile Include="EditorTool\IntersectionTool.cs" />
     <Compile Include="EditorTool\MergeTool.cs" />
     <Compile Include="ElementService\LaneBasedNetwork\LinkLayer\BreakPointService.cs" />
+    <Compile Include="ElementService\LaneBasedNetwork\LinkLayer\LaneNumChangeService.cs" />
     <Compile Include="FileDirectory\FileHelper.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>

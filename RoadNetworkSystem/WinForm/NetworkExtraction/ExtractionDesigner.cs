@@ -13,6 +13,7 @@ using RoadNetworkSystem.NetworkElement.RoadLayer;
 using RoadNetworkSystem.NetworkExtraction.GuideSignNetwork;
 using RoadNetworkSystem.NetworkExtraction.LaneBasedNetwork.SegmentLayer;
 using RoadNetworkSystem.NetworkExtraction.LinkMasterExtraction;
+using RoadNetworkSystem.NetworkExtraction.Road2BasicRoadNetwork;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -58,12 +59,14 @@ namespace RoadNetworkSystem.WinForm.NetworkExtraction
         /// <summary>
         /// 用于显现选择对象的颜色
         /// </summary>
-        private const string BTNGUIDESIGN = "提取指路标志路网";
-        private const string BTNSEGMNET = "提取Segment路网";
+        private const string BTN_GUIDESIGN = "提取指路标志路网";
+        private const string BTN_SEGMNET = "提取Segment路网";
+        private const string BTN_ROAD2BASIC = "提取车道级路网";
 
         public enum ExtractionType
         {
             指路标志路网,
+            路段路网,
             车道级路网
         }
 
@@ -130,7 +133,7 @@ namespace RoadNetworkSystem.WinForm.NetworkExtraction
 
         #region ------------------------------设置提取路网的类型------------------------------------------
         //提取功能设计,包含指路标志路网和车道级路网
-        private static void layoutFunction()
+        private void layoutFunction()
         {
             _frm1.groupBox_extraction_function = new System.Windows.Forms.GroupBox();
             _frm1.groupBox_extraction_function.Visible = true;
@@ -148,10 +151,11 @@ namespace RoadNetworkSystem.WinForm.NetworkExtraction
             _frm1.comBox_extraction_function = new System.Windows.Forms.ComboBox();
             //_frm1.comBox_extraction_function.Items.AddRange(Enum.GetNames(typeof(ExtractionType)));
             List<string> items = new List<string>();
-            object o = (object)0;
-            items.Add(Enum.GetName(typeof(ExtractionType), o));
-            o = 1;
-            items.Add(Enum.GetName(typeof(ExtractionType), o));
+            items.AddRange(Enum.GetNames(typeof(ExtractionType)));
+            //object o = (object)0;
+            //items.Add(Enum.GetName(typeof(ExtractionType), o));
+            //o = 1;
+            //items.Add(Enum.GetName(typeof(ExtractionType), o));
             int comBox_y = _frm1.label_extraction_function.Location.Y + _frm1.label_extraction_function.Height + LINEWIDTH;
             WinFormDesigner.layoutComBox(_frm1.comBox_extraction_function, _frm1.groupBox_extraction_function.Controls,
                 new System.Drawing.Point(LEFTX, comBox_y), items, System.Windows.Forms.DockStyle.None);
@@ -163,25 +167,28 @@ namespace RoadNetworkSystem.WinForm.NetworkExtraction
         }
 
 
-        static void comBox_extraction_function_SelectedIndexChanged(object sender, EventArgs e)
+        void comBox_extraction_function_SelectedIndexChanged(object sender, EventArgs e)
         {
-            string selectItem = Convert.ToString(_frm1.comBox_extraction_function.SelectedItem);
-            object o = (object)0;
-            string fun1 = Enum.GetName(typeof(ExtractionType), o);
-            o = 1;
-            string fun2 = Enum.GetName(typeof(ExtractionType), o);
             switch (_frm1.comBox_extraction_function.SelectedIndex)
             {
                 case (int)ExtractionType.指路标志路网:
                     {
-                        _frm1.button_extration_extract.Text = BTNGUIDESIGN;
+                        _frm1.button_extration_extract.Text = BTN_GUIDESIGN;
+                        CopyFlag = (int)ExtractionDesigner.CopyFeatureClassAndTable.CopyForGuideSignAndSegmentNetowrk;
                         testGuideSign();
+                        break;
+                    }
+                case (int)ExtractionType.路段路网:
+                    {
+                        _frm1.button_extration_extract.Text = BTN_SEGMNET;
+                        CopyFlag = (int)ExtractionDesigner.CopyFeatureClassAndTable.CopyForGuideSignAndSegmentNetowrk;
+                        testLaneBased();
                         break;
                     }
                 case (int)ExtractionType.车道级路网:
                     {
-                        _frm1.button_extration_extract.Text = BTNSEGMNET;
-                        testLaneBased();
+                        _frm1.button_extration_extract.Text = BTN_ROAD2BASIC;
+                        CopyFlag = (int)ExtractionDesigner.CopyFeatureClassAndTable.CopyForRoad2BasicNetwork;
                         break;
                     }
                 default:
@@ -678,7 +685,7 @@ namespace RoadNetworkSystem.WinForm.NetworkExtraction
 
                 createNewDatabase();
 
-                if (_frm1.comBox_extraction_function.SelectedIndex == (int)ExtractionType.车道级路网)
+                if (_frm1.comBox_extraction_function.SelectedIndex == (int)ExtractionType.路段路网)
                 {
 
                     SegmentLayerFactory segFactory = new SegmentLayerFactory(_frm1);
@@ -690,6 +697,14 @@ namespace RoadNetworkSystem.WinForm.NetworkExtraction
                 {
                     Arc1LayerFactory rsFactory = new Arc1LayerFactory(_frm1);
                     rsFactory.AssembleSegmentLayer(forbidddonBreakRoads, _ruleList);
+                }
+                else if (_frm1.comBox_extraction_function.SelectedIndex == (int)ExtractionType.车道级路网)
+                {
+                    
+                    SegmentLayerFactory segFactory = new SegmentLayerFactory(_frm1);
+                    segFactory.AssembleSegmentLayer(forbidddonBreakRoads, _ruleList);
+                    Road2BasicRoadNetwork road2BasicRoadNetwork = new Road2BasicRoadNetwork(_frm1);
+                    road2BasicRoadNetwork.Convert2BasicRoadNetwork();
                 }
                 //删除所有的标注
                 IGraphicsContainer graphicsCon = _frm1.axMapControl1.ActiveView as IGraphicsContainer;
