@@ -15,6 +15,7 @@ namespace RoadNetworkSystem.DataModel.LaneBasedNetwork
 
         public int RoadID { get; set; }
         public int DoneFlag { get; set; }
+
         public int FlowDir { get; set; }
 
         public const string FromBreakPointID_Name = "FromBreakPointID";
@@ -23,8 +24,8 @@ namespace RoadNetworkSystem.DataModel.LaneBasedNetwork
 
         public const string RoadID_Name = "RoadID";
         public const string DoneFlag_Name = "DoneFlag";
-        public const string FlowDir_Name = "FlowDir";
 
+        public const string FlowDir_Name = "FlowDir";
         public const int DONEFLAG_UNDO = 0;
         public const int DONEFLAG_DONE = 1;
 

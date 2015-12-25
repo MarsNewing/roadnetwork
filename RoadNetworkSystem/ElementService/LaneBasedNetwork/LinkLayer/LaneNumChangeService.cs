@@ -40,8 +40,8 @@ namespace RoadNetworkSystem.ElementService.LaneBasedNetwork.LinkLayer
                     laneNumChange.ToBreakPointID = toBreakPointId;
                     laneNumChange.LaneNum = laneNum;
                     laneNumChange.DoneFlag = done;
-                    laneNumChange.FlowDir = flowDir;
 
+                    laneNumChange.FlowDir = flowDir;
 
                     reader.Close();
                     reader.Dispose();
@@ -76,15 +76,15 @@ namespace RoadNetworkSystem.ElementService.LaneBasedNetwork.LinkLayer
             {
                 int laneNum = Convert.ToInt32(reader[LaneNumChange.LaneNum_Name]);
                 int done = Convert.ToInt32(reader[LaneNumChange.DoneFlag_Name]);
-                int flowDir = Convert.ToInt32(reader[LaneNumChange.FlowDir_Name]);
 
+                int flowDir = Convert.ToInt32(reader[LaneNumChange.FlowDir_Name]);
                 LaneNumChange laneNumChange = new LaneNumChange();
                 laneNumChange.FromBreakPointID = fromBreakPointId;
                 laneNumChange.ToBreakPointID = toBreakPointId;
                 laneNumChange.LaneNum = laneNum;
                 laneNumChange.DoneFlag = done;
-                laneNumChange.FlowDir = flowDir;
 
+                laneNumChange.FlowDir = flowDir;
                 reader.Close();
                 reader.Dispose();
                 return laneNumChange;

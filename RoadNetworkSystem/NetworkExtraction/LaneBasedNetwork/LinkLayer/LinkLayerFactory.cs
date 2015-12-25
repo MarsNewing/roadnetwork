@@ -39,7 +39,6 @@ namespace RoadNetworkSystem.NetworkExtraction.LaneBasedNetwork.LinkLayer
             IFeature linkFeature = linkService.Create(link, linkLine);
             LinkMaster linkMaster = linkService.GetEntity(linkFeature);
             link = link.Copy(linkMaster);
-
             if (sameDirLaneNum > 0)
             {
                 Arc sameArc = new Arc();
