@@ -4,7 +4,7 @@ using System.Text;
 
 namespace RoadNetworkSystem.DataModel.LaneBasedNetwork
 {
-    class Arc
+    public class Arc
     {
         public const string ArcFeatureName = "Arc";
         public int ArcID { get; set; }
@@ -13,6 +13,13 @@ namespace RoadNetworkSystem.DataModel.LaneBasedNetwork
 
         public int LinkID { get; set; }
         public int Other { get; set; }
+
+        public const string ArcIDNm = "ArcID";
+        public const string LaneNumNm = "LaneNum";
+        public const string LinkIDNm = "LinkID";
+
+        public const string FlowDirNm = "FlowDir";
+        public const string OtherNm = "Other";
 
         /// <summary>
         /// 复制实体

@@ -62,7 +62,7 @@ namespace RoadNetworkSystem.GIS.GeoDatabase.Dataset
             fieldChecker.ValidateWorkspace = (ESRI.ArcGIS.Geodatabase.IWorkspace)workspace;
             fieldChecker.Validate(fields, out enumFieldError, out validatedFields);
 
-            // The enumFieldError enumerator can be inspected at this point to determine 
+            // The enumFieldError enumerator can be inspected at this nodePoint to determine 
             // which fields were modified during validation.
 
 

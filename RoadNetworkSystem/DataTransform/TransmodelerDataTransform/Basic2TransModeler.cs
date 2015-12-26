@@ -398,11 +398,11 @@ namespace RoadNetworkSystem.TransmodelerDataTransform
                 if (dir == 2)
                     dir = 0;
 
-                string Str_1 = "select LaneNum from " + Arc.ArcFeatureName + " where " + ArcService.LinkIDNm + "=" + linkid + " and " + ArcService.FlowDirNm + " =1";
+                string Str_1 = "select LaneNum from " + Arc.ArcFeatureName + " where " + Arc.LinkIDNm + "=" + linkid + " and " + Arc.FlowDirNm + " =1";
                 OleDbCommand Com_1 = new OleDbCommand(Str_1, Conn);
                 lanesAB = Convert.ToInt32(Com_1.ExecuteScalar());
 
-                Str_1 = "select LaneNum from " + Arc.ArcFeatureName + " where " + ArcService.LinkIDNm + "=" + linkid + " and " + ArcService.FlowDirNm + " =-1";
+                Str_1 = "select LaneNum from " + Arc.ArcFeatureName + " where " + Arc.LinkIDNm + "=" + linkid + " and " + Arc.FlowDirNm + " =-1";
                 Com_1 = new OleDbCommand(Str_1, Conn);
                 lanesBA = Convert.ToInt32(Com_1.ExecuteScalar());
 
@@ -472,16 +472,16 @@ namespace RoadNetworkSystem.TransmodelerDataTransform
                 lanepos = Convert.ToInt32(reader[LaneFeatureService.PositionNm]);
                 //lanepos = lanepos - 1;钮中铭修改于20150109,定义Position从0开始结束
                 lanechange = Convert.ToString(reader[LaneFeatureService.ChangeNm]);
-                string Str_1 = "select " + ArcService.LinkIDNm + " from " + Arc.ArcFeatureName + " where " + ArcService.ArcIDNm + "=" + lanearcid;
+                string Str_1 = "select " + Arc.LinkIDNm + " from " + Arc.ArcFeatureName + " where " + Arc.ArcIDNm + "=" + lanearcid;
                 OleDbCommand Com_1 = new OleDbCommand(Str_1, Conn);
                 laneseg = Convert.ToInt32(Com_1.ExecuteScalar());
                 Str_1 = "select ID from Transmodeler_Segments where Link=" + laneseg;
                 Com_1 = new OleDbCommand(Str_1, Conn);
                 laneseg = Convert.ToInt32(Com_1.ExecuteScalar());
-                Str_1 = "select " + ArcService.FlowDirNm + " from " + Arc.ArcFeatureName + " where " + ArcService.ArcIDNm + "=" + lanearcid;
+                Str_1 = "select " + Arc.FlowDirNm + " from " + Arc.ArcFeatureName + " where " + Arc.ArcIDNm + "=" + lanearcid;
                 Com_1 = new OleDbCommand(Str_1, Conn);
                 lanedir = Convert.ToInt32(Com_1.ExecuteScalar());
-                Str_1 = "select " + ArcService.LaneNumNm + " from " + Arc.ArcFeatureName + " where " + ArcService.ArcIDNm + "=" + lanearcid;
+                Str_1 = "select " + Arc.LaneNumNm + " from " + Arc.ArcFeatureName + " where " + Arc.ArcIDNm + "=" + lanearcid;
                 Com_1 = new OleDbCommand(Str_1, Conn);
                 lanenum = Convert.ToInt32(Com_1.ExecuteScalar());
                 if (lanepos == 0)

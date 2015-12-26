@@ -9,6 +9,8 @@ namespace RoadNetworkSystem.DataModel.LaneBasedNetwork
     class LaneNumChange
     {
         public const string LaneNumChangeName = "LaneNumChange";
+
+        public int LaneNumChangeID { get; set; }
         public int FromBreakPointID { get; set; }
         public int ToBreakPointID { get; set; }
         public int LaneNum { get; set; }
@@ -18,6 +20,7 @@ namespace RoadNetworkSystem.DataModel.LaneBasedNetwork
 
         public int FlowDir { get; set; }
 
+        public const string LaneNumChangeID_Name = "LaneNumChangeID";
         public const string FromBreakPointID_Name = "FromBreakPointID";
         public const string ToBreakPointID_Name = "ToBreakPointID";
         public const string LaneNum_Name = "LaneNum";

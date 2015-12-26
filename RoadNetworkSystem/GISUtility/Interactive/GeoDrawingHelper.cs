@@ -171,7 +171,7 @@ namespace IntersectionModel.GIS
                 //更新该元素的位置
                 axMapControl1.ActiveView.GraphicsContainer.UpdateElement(m_element);
                 //重新移动元素
-                movePointFeedback.Stop();//(geometry1 as IPoint, point);
+                movePointFeedback.Stop();//(geometry1 as IPoint, nodePoint);
                 axMapControl1.ActiveView.PartialRefresh(esriViewDrawPhase.esriViewGeography, null, null);
             }
         }

@@ -99,7 +99,6 @@ namespace RoadNetworkSystem.NetworkElement.MasterLayer
             }
         }
 
-
         public LinkMaster GetEntity(IFeature feaLink)
         {
             LinkMaster segEty = new LinkMaster();
@@ -169,6 +168,7 @@ namespace RoadNetworkSystem.NetworkElement.MasterLayer
             }
             return segEty;
         }
+
 
 
     }

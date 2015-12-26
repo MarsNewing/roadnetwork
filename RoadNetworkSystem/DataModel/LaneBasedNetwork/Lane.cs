@@ -7,7 +7,7 @@ namespace RoadNetworkSystem.DataModel.LaneBasedNetwork
     class Lane
     {
         public const string LaneName = "Lane";
-
+        public const double LANE_WEIDTH = 3.5;
         public int LaneID { get; set; }
         public int Position { get; set; }
 

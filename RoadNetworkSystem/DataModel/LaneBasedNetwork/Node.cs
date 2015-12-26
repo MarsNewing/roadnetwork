@@ -9,7 +9,11 @@ namespace RoadNetworkSystem.DataModel.LaneBasedNetwork
     {
          public const string NodeName = "Node";
 
+         public const int NODE_TYPE_JUNCDTION = 1;
+         public const int NODE_TYPE_NO_JUNCDTION = 0;
 
+         public const int NODE_TYPE_PLANE_INTERSECTION = 1;
+         public const int NODE_TYPE_PLANE_OVERPASS = 2;
 
         /// <summary>
         /// 复制实体

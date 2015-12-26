@@ -336,23 +336,23 @@ namespace RoadNetworkSystem.NetworkExtraction.LaneBasedNetwork.DatabaseManager
                 IFields fields = new FieldsClass();
                 IFieldsEdit pFieldsEdit = fields as IFieldsEdit;
 
-                IFieldEdit pFieldEdit = FeatureClassHelper.CreateField(ArcService.ArcIDNm, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
+                IFieldEdit pFieldEdit = FeatureClassHelper.CreateField(Arc.ArcIDNm, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
                 pFieldsEdit.AddField(pFieldEdit);
 
-                pFieldEdit = FeatureClassHelper.CreateField(ArcService.LaneNumNm, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
+                pFieldEdit = FeatureClassHelper.CreateField(Arc.LaneNumNm, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
                 pFieldsEdit.AddField(pFieldEdit);
 
-                pFieldEdit = FeatureClassHelper.CreateField(ArcService.LinkIDNm, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
+                pFieldEdit = FeatureClassHelper.CreateField(Arc.LinkIDNm, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
                 pFieldsEdit.AddField(pFieldEdit);
 
 
-                pFieldEdit = FeatureClassHelper.CreateField(ArcService.FlowDirNm, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
+                pFieldEdit = FeatureClassHelper.CreateField(Arc.FlowDirNm, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
                 pFieldsEdit.AddField(pFieldEdit);
 
-                pFieldEdit = FeatureClassHelper.CreateField(ArcService.OtherNm, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
+                pFieldEdit = FeatureClassHelper.CreateField(Arc.OtherNm, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
                 pFieldsEdit.AddField(pFieldEdit);
 
-                IFeatureClass pArcClass = FeatureClassHelper.CreateFeatureClass(feaDS, Arc.ArcFeatureName, esriGeometryType.esriGeometryPolyline, fields, ArcService.ArcIDNm);
+                IFeatureClass pArcClass = FeatureClassHelper.CreateFeatureClass(feaDS, Arc.ArcFeatureName, esriGeometryType.esriGeometryPolyline, fields, Arc.ArcIDNm);
                 return pArcClass;
             }
         }

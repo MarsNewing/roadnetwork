@@ -308,7 +308,7 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.Connection
             int arcID = laneEty.ArcID;
             ArcService arc = new ArcService(pFeaClsArc, arcID);
             IFeature arcFea = arc.GetArcFeature();
-            int linkID = Convert.ToInt32(arcFea.get_Value(pFeaClsArc.FindField(ArcService.LinkIDNm)));
+            int linkID = Convert.ToInt32(arcFea.get_Value(pFeaClsArc.FindField(Arc.LinkIDNm)));
             LinkService link=new LinkService(pFeaClsLink,linkID);
             int nextNodeID=0;
             int preNodeID=0;

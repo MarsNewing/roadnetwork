@@ -195,16 +195,16 @@ namespace RoadNetworkSystem.VissimDataTransform
                 string rodename = "", FNode = "", TNode = "", OverNode = "";
                 int arcid, linkid, lanenum;
                 m++;
-                f = _pFeaClsArc.FindField(ArcService.ArcIDNm);//当前弧段的ArcID
+                f = _pFeaClsArc.FindField(Arc.ArcIDNm);//当前弧段的ArcID
                 arcid = Convert.ToInt32(pFeatQuery.get_Value(f));
-                b = _pFeaClsArc.FindField(ArcService.LinkIDNm);//当前弧段的LinkID
+                b = _pFeaClsArc.FindField(Arc.LinkIDNm);//当前弧段的LinkID
                 linkid = Convert.ToInt32(pFeatQuery.get_Value(b));
 
                 string Str = "select " + link.RoadNameNm + " from " + Link.LinkName + " where " + link.IDNm + "=" + linkid;
 
                 OleDbCommand Com_1 = new OleDbCommand(Str, Conn);
                 rodename = Convert.ToString(Com_1.ExecuteScalar());
-                c = _pFeaClsArc.FindField(ArcService.LaneNumNm);//当前弧段的LaneNum
+                c = _pFeaClsArc.FindField(Arc.LaneNumNm);//当前弧段的LaneNum
                 lanenum = Convert.ToInt32(pFeatQuery.get_Value(c));
 
                 //当前弧段的弧段长度

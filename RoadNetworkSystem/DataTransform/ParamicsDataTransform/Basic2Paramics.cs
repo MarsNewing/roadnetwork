@@ -160,16 +160,16 @@ namespace RoadNetworkSystem.ParamicsDataTransform
             foreach (DataRow arcrow in ds.Tables[Arc.ArcFeatureName].Rows)
             {
                 Link_Para L_link = new Link_Para();
-                
-                L_link.LaneNum = Convert.ToInt16(arcrow[ArcService.LaneNumNm]);
-                L_link.LinkID = (int)arcrow[ArcService.LinkIDNm];
-                L_link.ArcID = (int)arcrow[ArcService.ArcIDNm];
 
-                string s_Str = "select * from Link where LinkID=" + arcrow[ArcService.LinkIDNm].ToString();
+                L_link.LaneNum = Convert.ToInt16(arcrow[Arc.LaneNumNm]);
+                L_link.LinkID = (int)arcrow[Arc.LinkIDNm];
+                L_link.ArcID = (int)arcrow[Arc.ArcIDNm];
+
+                string s_Str = "select * from Link where LinkID=" + arcrow[Arc.LinkIDNm].ToString();
                 OleDbCommand s_String = new OleDbCommand(s_Str, Conn);
                 OleDbDataReader QuesReader = s_String.ExecuteReader();  //新建一个OleDbDataReader
                 QuesReader.Read();
-                if (Convert.ToInt16(arcrow[ArcService.FlowDirNm]) == 1)
+                if (Convert.ToInt16(arcrow[Arc.FlowDirNm]) == 1)
                 {
                     L_link.FNode = (int)QuesReader[link.FNodeIDNm];
                     L_link.TNode = (int)QuesReader[link.TNodeIDNm];
@@ -367,7 +367,7 @@ namespace RoadNetworkSystem.ParamicsDataTransform
                                     {
 
                                         //查找fromarc的车道数
-                                        s_Str = "select " + ArcService.LaneNumNm + " from " + Arc.ArcFeatureName + " where " + ArcService.ArcIDNm + "="
+                                        s_Str = "select " + Arc.LaneNumNm + " from " + Arc.ArcFeatureName + " where " + Arc.ArcIDNm + "="
                                             + dat.Rows[i][LaneConnectorFeatureService.fromArcIDNm].ToString();
 
                                         s_String = new OleDbCommand(s_Str, Conn);
@@ -376,7 +376,7 @@ namespace RoadNetworkSystem.ParamicsDataTransform
                                         lanenext.LaneNum = Lanenumber1;
 
                                         //查找toarc的车道数
-                                        s_Str = "select " + ArcService.LaneNumNm + "  from " + Arc.ArcFeatureName + " where " + ArcService.ArcIDNm + "=" 
+                                        s_Str = "select " + Arc.LaneNumNm + "  from " + Arc.ArcFeatureName + " where " + Arc.ArcIDNm + "=" 
                                             + dat.Rows[i][LaneConnectorFeatureService.toArcIDNm].ToString();
                                         s_String = new OleDbCommand(s_Str, Conn);
                                         Lanenumber2 = Convert.ToInt16(s_String.ExecuteScalar());
@@ -462,13 +462,13 @@ namespace RoadNetworkSystem.ParamicsDataTransform
                         myDat.Fill(dat);
 
                         //查找fromarc的车道数
-                        string s_Str = "select "+ArcService.LaneNumNm+" from "+Arc.ArcFeatureName+" where "+ArcService.ArcIDNm+"=" + dat.Rows[0][LaneConnectorFeatureService.fromArcIDNm].ToString();
+                        string s_Str = "select " + Arc.LaneNumNm + " from " + Arc.ArcFeatureName + " where " + Arc.ArcIDNm + "=" + dat.Rows[0][LaneConnectorFeatureService.fromArcIDNm].ToString();
                         OleDbCommand s_String = new OleDbCommand(s_Str, Conn);
                         Lanenumber1 = Convert.ToInt16(s_String.ExecuteScalar());
 
 
                         //查找toarc的车道数
-                        s_Str = "select  " + ArcService.LaneNumNm + " from " + Arc.ArcFeatureName + "  where  " + ArcService.ArcIDNm + "=" + dat.Rows[0][LaneConnectorFeatureService.toArcIDNm].ToString();
+                        s_Str = "select  " + Arc.LaneNumNm + " from " + Arc.ArcFeatureName + "  where  " + Arc.ArcIDNm + "=" + dat.Rows[0][LaneConnectorFeatureService.toArcIDNm].ToString();
                         s_String = new OleDbCommand(s_Str, Conn);
                         Lanenumber2 = Convert.ToInt16(s_String.ExecuteScalar());
 
@@ -488,14 +488,14 @@ namespace RoadNetworkSystem.ParamicsDataTransform
                             for (i = 0; i < dat.Rows.Count; i++)//如果有记录，记录相关车道
                             {
                                 //查找fromarc的车道数
-                                s_Str = "select " + ArcService.LaneNumNm + " from " + Arc.ArcFeatureName + "  where " + ArcService.ArcIDNm + "=" + dat.Rows[i][LaneConnectorFeatureService.fromArcIDNm].ToString();
+                                s_Str = "select " + Arc.LaneNumNm + " from " + Arc.ArcFeatureName + "  where " + Arc.ArcIDNm + "=" + dat.Rows[i][LaneConnectorFeatureService.fromArcIDNm].ToString();
                                 s_String = new OleDbCommand(s_Str, Conn);
                                 Lanenumber1 = Convert.ToInt16(s_String.ExecuteScalar());
 
                                 lanenext.LaneNum = Lanenumber1;
 
                                 //查找toarc的车道数
-                                s_Str = "select " + ArcService.LaneNumNm + " from " + Arc.ArcFeatureName + " where " + ArcService.ArcIDNm + "=" + dat.Rows[i][LaneConnectorFeatureService.toArcIDNm].ToString();
+                                s_Str = "select " + Arc.LaneNumNm + " from " + Arc.ArcFeatureName + " where " + Arc.ArcIDNm + "=" + dat.Rows[i][LaneConnectorFeatureService.toArcIDNm].ToString();
                                 s_String = new OleDbCommand(s_Str, Conn);
                                 Lanenumber2 = Convert.ToInt16(s_String.ExecuteScalar());
 

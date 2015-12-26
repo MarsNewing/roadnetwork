@@ -6,6 +6,13 @@ namespace RoadNetworkSystem.DataModel.RoadSign
 {
     class Boundary
     {
+        public const int DASHBOUNSTYLE = -225;
+        public const int SOLIDBOUNSTYLE = -227;
+        public const int OUTSIDEBOUNSTYLE = 227;   //边界线
+        //private const int TURNARROWSTYLE = 227;
+        public const int CENTERLINESTYLE = 241;
+
+
         /// <summary>
         /// 规定了数据模型，请不要在其他类中直接读取数据
         /// </summary>

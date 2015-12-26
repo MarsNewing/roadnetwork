@@ -22,6 +22,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LinkLayer;
 
 namespace RoadNetworkSystem.NetworkExtraction.Road2BasicRoadNetwork
 {
@@ -56,6 +57,7 @@ namespace RoadNetworkSystem.NetworkExtraction.Road2BasicRoadNetwork
              * 2. Segment层 ->   Link层  
              *      交通组织中断处打断
              *      多线段转为直线段
+             *      创建Node
              *      
              * 3. Link层 ->  Lane层
              * 
@@ -80,11 +82,19 @@ namespace RoadNetworkSystem.NetworkExtraction.Road2BasicRoadNetwork
             //2.2   在交通组织变化处打断
             breakSegmentInTrafficDisturb();
 
+            //2.3   多线段转为直线段
             breakSegmentInKinkPoint();
+
+            //2.4   创建Node
+            LinkLayerFactory linkLayerFactory = new LaneBasedNetwork.LinkLayer.LinkLayerFactory(_feaClsLink, _feaClsNode, _feaClsArc);
+            linkLayerFactory.createNodesForLinkAndArc();
+
+            //3   Link层到  Lane层
+
         }
 
 
-        
+        #region ------------------ 在交通组织中断处打断Segment生成Link --------------------
 
         /// <summary>
         /// 在交通组织中断处打断
@@ -105,6 +115,7 @@ namespace RoadNetworkSystem.NetworkExtraction.Road2BasicRoadNetwork
 
                 int flowDir = Convert.ToInt32(pFeatureRoad.get_Value(pFeatureRoad.Fields.FindField(RoadNetworkSystem.DataModel.Road.Road.FlowDirName)));
                
+                //遍历属于同一个Road的各个LaneNumChange
                 OleDbConnection conn = AccessHelper.OpenConnection(_frm1.Wsp.PathName);
                 string sql = "Select * from " + LaneNumChange.LaneNumChangeName +
                     " where " + LaneNumChange.RoadID_Name + " = " + Convert.ToInt32(pFeatureRoad.get_Value(pFeatureRoad.Fields.FindField(LaneNumChange.RoadID_Name))) +
@@ -113,7 +124,6 @@ namespace RoadNetworkSystem.NetworkExtraction.Road2BasicRoadNetwork
                 OleDbDataReader reader = cmd.ExecuteReader();
                 while (reader.Read())
                 {
-
                     int fromBreakPointId  = -1;
                     if(reader[LaneNumChange.FromBreakPointID_Name] != DBNull.Value)
                     {
@@ -127,14 +137,16 @@ namespace RoadNetworkSystem.NetworkExtraction.Road2BasicRoadNetwork
                     }
                     int laneNum = Convert.ToInt32(reader[LaneNumChange.LaneNum_Name]);
                     int breakPointFlowDir = Convert.ToInt32(reader[LaneNumChange.FlowDir_Name]);
+                    int laneNumChangeId = Convert.ToInt32(reader[LaneNumChange.LaneNumChangeID_Name]);
 
                     
                     LaneNumChange currentLaneNumChange = new LaneNumChange();
+                    currentLaneNumChange.LaneNumChangeID = laneNumChangeId;
                     currentLaneNumChange.DoneFlag = LaneNumChange.DONEFLAG_DONE;
                     currentLaneNumChange.FromBreakPointID = fromBreakPointId;
+
                     currentLaneNumChange.ToBreakPointID = toBreakPointId;
                     currentLaneNumChange.LaneNum = laneNum;
-
                     currentLaneNumChange.FlowDir = breakPointFlowDir;
 
                     LaneNumChangeService laneNumChange = new LaneNumChangeService(conn);
@@ -148,20 +160,19 @@ namespace RoadNetworkSystem.NetworkExtraction.Road2BasicRoadNetwork
 
 
 
-                    if (!checkRoadFlowDirValid(flowDir,currentLaneNumChange, oppositionLaneNumChange))
+                    if (!isRoadFlowDirValid(flowDir,currentLaneNumChange, oppositionLaneNumChange))
                     {
                         MessageBox.Show("Road objectid = " + pFeatureRoad.OID + " LaneNumChange 不匹配"); 
                     }
-                    bool isSameDirectionFlag = isCurrentLaneNumChangeSameDirection(pFeatureRoad.Shape as IPolyline, currentLaneNumChange);
+                    LaneNumChangeService laneNumChangeService = new LaneNumChangeService(conn);
+                    bool isSameDirectionFlag = laneNumChangeService.isCurrentLaneNumChangeSameDirection(pFeatureRoad.Shape as IPolyline,
+                        currentLaneNumChange,_feaClsBreakPoint);
                     Link link = new Link();
                     link.FlowDir = flowDir;
                     link.RoadName = road.RoadName;
                     link.RoadType = road.RoadType;
 
                     IPolyline linkLine = createLinkPolylineForTrafficDisturb(fromBreakPointId,toBreakPointId,pFeatureRoad,isSameDirectionFlag);
-
-
-
 
                     LinkLayerFactory linkLayerFactory = new LinkLayerFactory(_feaClsLink,_feaClsNode,_feaClsArc);
                     if (isSameDirectionFlag)
@@ -172,118 +183,21 @@ namespace RoadNetworkSystem.NetworkExtraction.Road2BasicRoadNetwork
                     {
                         linkLayerFactory.createLinkAndArcs(link, linkLine, oppositionLaneNum, laneNum);
                     }
+
+
+
+                    laneNumChangeService.UpdateLaneNumChangeDoneFlag(currentLaneNumChange);
+                    if (oppositionLaneNumChange != null)
+                    {
+                        laneNumChangeService.UpdateLaneNumChangeDoneFlag(oppositionLaneNumChange);
+                    }
                 }
                 reader.Close();
                 reader.Dispose();
-
                 pFeatureRoad = query.NextFeature();
             }
         }
 
-
-        /// <summary>
-        /// 判断LaneNumChange表示的方向与Road的数字化方向是否相同
-        /// </summary>
-        /// <param name="roadLine"></param>
-        /// <param name="currentLaneNumChange"></param>
-        /// <returns></returns>
-        private bool isCurrentLaneNumChangeSameDirection(IPolyline roadLine ,LaneNumChange currentLaneNumChange)
-        {
-            IPoint fromPointPoint = new PointClass();
-
-
-            IPoint toPointPoint = new PointClass();
-            getBreakPointPoints(roadLine, currentLaneNumChange.FromBreakPointID, currentLaneNumChange.ToBreakPointID, currentLaneNumChange.FlowDir == Link.FLOWDIR_SAME?true:false,
-                ref fromPointPoint, ref toPointPoint);
-
-            double vector_x_LaneNumChange = toPointPoint.X - fromPointPoint.X ;
-            double vector_y_LaneNumChange = toPointPoint.Y - fromPointPoint.Y;
-
-            double vector_x_Road = roadLine.ToPoint.X - roadLine.FromPoint.X;
-            double vector_y_Road = roadLine.ToPoint.Y - roadLine.FromPoint.Y;
-
-            double product = vector_x_LaneNumChange * vector_x_Road + vector_y_LaneNumChange * vector_y_Road;
-            if (product > 0)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-
-
-        private void getBreakPointPoints(IPolyline roadLine, int fromBreakPointId, int toBreakPointId,bool breakPointRoadLineSameFlag ,
-            ref IPoint fromBreakPointPoint,ref IPoint toBreakPointPoint)
-        {
-            if (fromBreakPointId > 0)
-            {
-
-                BreakPointService fromBreakPoint = new BreakPointService(_feaClsBreakPoint, fromBreakPointId);
-                IFeature fromBreakPointFeature = fromBreakPoint.getBreakPointFeature();
-                fromBreakPointPoint = fromBreakPointFeature.Shape as IPoint;
-            }
-            else
-            {
-                if (breakPointRoadLineSameFlag)
-                {
-                    fromBreakPointPoint = roadLine.FromPoint;
-                }
-                else
-                {
-                    fromBreakPointPoint = roadLine.ToPoint;
-                }
-            }
-
-            
-            if (toBreakPointId > 0)
-            {
-                BreakPointService toBreakPoint = new BreakPointService(_feaClsBreakPoint, toBreakPointId);
-                IFeature toBreakPointFeature = toBreakPoint.getBreakPointFeature();
-                toBreakPointPoint = toBreakPointFeature.Shape as IPoint;
-            }
-            else
-            {
-                if (breakPointRoadLineSameFlag)
-                {
-                    toBreakPointPoint = roadLine.ToPoint;
-                }
-                else
-                {
-                    toBreakPointPoint = roadLine.FromPoint;
-                }
-            }
-            
-        }
-
-
-        private bool isRoadFlowDirValid(int roadFlowDir, LaneNumChange currentLaneChange, 
-            LaneNumChange oppositionLaneChange)
-        {
-            if (roadFlowDir == Link.FLOWDIR_DOUBLE)
-            {
-                if (currentLaneChange != null && oppositionLaneChange != null)
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-            else
-            {
-                if (currentLaneChange == null || oppositionLaneChange == null)
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-        }
 
         /// <summary>
         /// 根据frombreakPoint和toBreakPoint得到Link的几何
@@ -300,15 +214,22 @@ namespace RoadNetworkSystem.NetworkExtraction.Road2BasicRoadNetwork
             IPoint fromBreakPointPoint = new PointClass();
             IPoint toBreakPointPoint = new PointClass();
 
-
-            getBreakPointPoints(roadLine, fromBreakPointId, toBreakPointId, breakPointRoadLineSameFlag,
+            BreakPointService breakPointService = new BreakPointService(_feaClsBreakPoint, 0);
+            breakPointService.getBreakPointPoints(roadLine, fromBreakPointId, toBreakPointId, breakPointRoadLineSameFlag,
                 ref fromBreakPointPoint, ref toBreakPointPoint);
             
             return LineHelper.CutPolylineByPointsOnLine(roadLine, fromBreakPointPoint, toBreakPointPoint);
         }
 
 
-        private bool checkRoadFlowDirValid(int roadFlowDir, LaneNumChange currentLaneChange, 
+        /// <summary>
+        /// 判断road的FlowDir字段值是否合法
+        /// </summary>
+        /// <param name="roadFlowDir"></param>
+        /// <param name="currentLaneChange"></param>
+        /// <param name="oppositionLaneChange"></param>
+        /// <returns></returns>
+        private bool isRoadFlowDirValid(int roadFlowDir, LaneNumChange currentLaneChange, 
             LaneNumChange oppositionLaneChange)
         {
             if (roadFlowDir == Link.FLOWDIR_DOUBLE)
@@ -348,14 +269,38 @@ namespace RoadNetworkSystem.NetworkExtraction.Road2BasicRoadNetwork
             return LineHelper.CutPolylineByPointsOnLine(roadLine, fromBreakPointFeature.Shape as IPoint, toBreakPointFeature.Shape as IPoint);
         }
 
+        #endregion ------------------ 在交通组织中断处打断Segment生成Link --------------------
 
+        #region ------------------ 把长弧度polyline转换为line --------------------
         /// <summary>
         /// 多线段转为直线段
         /// </summary>
         private void breakSegmentInKinkPoint()
-        { 
+        {
+            IQueryFilter filter = new QueryFilterClass();
+            filter.WhereClause = "";
+            IFeatureCursor cursor = _feaClsLink.Search(filter, false);
+            IFeature pFeatureLink = cursor.NextFeature();
+            while (pFeatureLink != null)
+            {
+                LinkService linkService = new LinkService(_feaClsLink, 0);
+                LinkMaster linkMstr = linkService.GetEntity(pFeatureLink);
+
+                Link link = new Link();
+                link = link.Copy(linkMstr);
+
+                List<IPolyline> lines = LineHelper.ConvertPolyline2Lines(pFeatureLink.Shape as IPolyline);
+                if (lines.Count > 1) 
+                {
+                    linkService.breakLinkIntoLinksWithoutNodeUpdate(pFeatureLink, lines, _feaClsArc);
+                }
+                
+                pFeatureLink = cursor.NextFeature();
+            }
         }
-             
+
+        #endregion ------------------ 把长弧度polyline转换为line --------------------
+
 
     }
 }

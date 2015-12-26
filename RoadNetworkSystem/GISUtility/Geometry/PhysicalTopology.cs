@@ -80,7 +80,7 @@ namespace RoadNetworkSystem.GIS.Geometry
         /// 在一个指定的要素图层上，获取距离一个点最近的要素和距离
         /// </summary>
         /// <param name="pFeaCls"></param>指定的要素类
-        /// <param name="point"></param>指定的点
+        /// <param name="nodePoint"></param>指定的点
         /// <param name="targetFeature"></param>返回值，获取的最近要素
         /// <param name="distance"></param>返回值，指定点与最近要素的距离
         public static void GetClosestFeature(IFeatureClass pFeaCls, IPoint point, ref IFeature targetFeature, ref double distance)

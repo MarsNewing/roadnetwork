@@ -1,4 +1,5 @@
 ﻿using ESRI.ArcGIS.Geodatabase;
+using ESRI.ArcGIS.Geometry;
 using RoadNetworkSystem.DataModel.LaneBasedNetwork;
 using System;
 using System.Collections.Generic;
@@ -32,5 +33,49 @@ namespace RoadNetworkSystem.ElementService.LaneBasedNetwork.LinkLayer
             breakPoint.BreakPointID = Convert.ToInt32(pFeature.get_Value(pFeature.Fields.FindField(BreakPoint.BreakPointIDName)));
             return breakPoint;
         }
+
+        public void getBreakPointPoints(IPolyline roadLine, int fromBreakPointId, int toBreakPointId, bool breakPointRoadLineSameFlag,
+            ref IPoint fromBreakPointPoint, ref IPoint toBreakPointPoint)
+        {
+            if (fromBreakPointId > 0)
+            {
+
+                BreakPointService fromBreakPoint = new BreakPointService(_pFeaClsBreakPoint, fromBreakPointId);
+                IFeature fromBreakPointFeature = fromBreakPoint.getBreakPointFeature();
+                fromBreakPointPoint = fromBreakPointFeature.Shape as IPoint;
+            }
+            else
+            {
+                if (breakPointRoadLineSameFlag)
+                {
+                    fromBreakPointPoint = roadLine.FromPoint;
+                }
+                else
+                {
+                    fromBreakPointPoint = roadLine.ToPoint;
+                }
+            }
+
+
+            if (toBreakPointId > 0)
+            {
+                BreakPointService toBreakPoint = new BreakPointService(_pFeaClsBreakPoint, toBreakPointId);
+                IFeature toBreakPointFeature = toBreakPoint.getBreakPointFeature();
+                toBreakPointPoint = toBreakPointFeature.Shape as IPoint;
+            }
+            else
+            {
+                if (breakPointRoadLineSameFlag)
+                {
+                    toBreakPointPoint = roadLine.ToPoint;
+                }
+                else
+                {
+                    toBreakPointPoint = roadLine.FromPoint;
+                }
+            }
+
+        }
+
     }
 }

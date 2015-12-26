@@ -1,6 +1,9 @@
 ﻿using ESRI.ArcGIS.Geodatabase;
 using ESRI.ArcGIS.Geometry;
 using RoadNetworkSystem.DataModel.RoadSign;
+using RoadNetworkSystem.ElementService.LaneBasedNetwork.NetworkBuilder;
+using RoadNetworkSystem.NetworkEditor;
+using RoadNetworkSystem.NetworkEditor.EditorFlow;
 using System;
 using System.Collections.Generic;
 
@@ -40,7 +43,7 @@ namespace RoadNetworkSystem.NetworkElement.RoadSignElement
             return surfaceEty;
         }
 
-        public void CrateSurfaceShape(IFeatureClass pFeaClsKerb, RoadNetworkSystem.NetworkEditor.EditorFlow.SegmentConstructor.NextNodeCutInfor nextArcCutInfor, IFeature nextFea, IFeature preFea, 
+        public void CrateSurfaceShape(IFeatureClass pFeaClsKerb, NextNodeCutInfor nextArcCutInfor, IFeature nextFea, IFeature preFea, 
             ref IPolygon gon,ref string ctrlPntStrs)
         {
             

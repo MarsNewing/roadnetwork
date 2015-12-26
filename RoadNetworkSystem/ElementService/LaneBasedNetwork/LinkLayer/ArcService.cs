@@ -13,15 +13,9 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LinkLayer
 {
     class ArcService
     {
-        private double _LANEWIDTH = 3.5;
 
+        public const double ARC_CUT_PERCENTAGE = 0.05;
         
-        public const string ArcIDNm = "ArcID";
-        public const string LaneNumNm = "LaneNum";
-        public const string LinkIDNm = "LinkID";
-
-        public const string FlowDirNm = "FlowDir";
-        public const string OtherNm = "Other";
 
         public struct StrctCrtArc
         {
@@ -72,12 +66,12 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LinkLayer
             IFeature newFea = FeaClsArc.CreateFeature();
             if (ArcID > 0)
             {
-                if (FeaClsArc.FindField(ArcIDNm) >= 0)
-                    newFea.set_Value(FeaClsArc.FindField(ArcIDNm), arcEty.ArcID);
+                if (FeaClsArc.FindField(Arc.ArcIDNm) >= 0)
+                    newFea.set_Value(FeaClsArc.FindField(Arc.ArcIDNm), arcEty.ArcID);
             }
             else
             {
-                if (FeaClsArc.FindField(ArcIDNm) >= 0)
+                if (FeaClsArc.FindField(Arc.ArcIDNm) >= 0)
                 {
                     int arcId;
                     if (arcEty.FlowDir == Link.FLOWDIR_SAME)
@@ -88,22 +82,22 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LinkLayer
                     {
                         arcId = arcEty.LinkID + 10 + 1;
                     }
-                    newFea.set_Value(FeaClsArc.FindField(ArcIDNm), arcId);
+                    newFea.set_Value(FeaClsArc.FindField(Arc.ArcIDNm), arcId);
                 }
                 
             }
           
-            if (FeaClsArc.FindField(FlowDirNm) >= 0)
-                newFea.set_Value(FeaClsArc.FindField(FlowDirNm), arcEty.FlowDir);
+            if (FeaClsArc.FindField(Arc.FlowDirNm) >= 0)
+                newFea.set_Value(FeaClsArc.FindField(Arc.FlowDirNm), arcEty.FlowDir);
 
-            if (FeaClsArc.FindField(LaneNumNm) >= 0)
-                newFea.set_Value(FeaClsArc.FindField(LaneNumNm), arcEty.LaneNum);
+            if (FeaClsArc.FindField(Arc.LaneNumNm) >= 0)
+                newFea.set_Value(FeaClsArc.FindField(Arc.LaneNumNm), arcEty.LaneNum);
 
-            if (FeaClsArc.FindField(LinkIDNm) >= 0)
-                newFea.set_Value(FeaClsArc.FindField(LinkIDNm), arcEty.LinkID);
+            if (FeaClsArc.FindField(Arc.LinkIDNm) >= 0)
+                newFea.set_Value(FeaClsArc.FindField(Arc.LinkIDNm), arcEty.LinkID);
 
-            if (FeaClsArc.FindField(OtherNm) >= 0)
-                newFea.set_Value(FeaClsArc.FindField(OtherNm), arcEty.Other);
+            if (FeaClsArc.FindField(Arc.OtherNm) >= 0)
+                newFea.set_Value(FeaClsArc.FindField(Arc.OtherNm), arcEty.Other);
             newFea.Shape = line;
             newFea.Store();
 
@@ -132,7 +126,7 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LinkLayer
                 curcrtArc.ALen = tem;
             }
 
-            arcShape = LineHelper.CreateLineByLRS(linkLine, curcrtArc.Dir * curcrtArc.LaneNum * _LANEWIDTH / 2, curcrtArc.ALen, curcrtArc.BLen);
+            arcShape = LineHelper.CreateLineByLRS(linkLine, curcrtArc.Dir * curcrtArc.LaneNum * Lane.LANE_WEIDTH / 2, curcrtArc.ALen, curcrtArc.BLen);
 
             if (curcrtArc.Dir == -1)
             {
@@ -151,17 +145,24 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LinkLayer
         {
             IFeatureCursor cursor;
             IQueryFilter filer = new QueryFilterClass();
-            filer.WhereClause = String.Format("{0}={1}", ArcIDNm, ArcID);
+            filer.WhereClause = String.Format("{0}={1}", Arc.ArcIDNm, ArcID);
             cursor = FeaClsArc.Search(filer, false);
             IFeature arcFeature = cursor.NextFeature();
             if (arcFeature != null)
             {
+
+                System.GC.Collect();
+                System.GC.WaitForPendingFinalizers();
                 return arcFeature;
             }
             else
             {
+
+                System.GC.Collect();
+                System.GC.WaitForPendingFinalizers();
                 return null;
             }
+            
         }
 
         /// <summary>
@@ -175,20 +176,20 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LinkLayer
                 return null;
             Arc arcEty = new Arc();
 
-            if (FeaClsArc.FindField(ArcIDNm) >= 0)
-                arcEty.ArcID = Convert.ToInt32(arcFea.get_Value(FeaClsArc.FindField(ArcIDNm)));
+            if (FeaClsArc.FindField(Arc.ArcIDNm) >= 0)
+                arcEty.ArcID = Convert.ToInt32(arcFea.get_Value(FeaClsArc.FindField(Arc.ArcIDNm)));
 
-            if (FeaClsArc.FindField(FlowDirNm) >= 0)
-                arcEty.FlowDir = Convert.ToInt32(arcFea.get_Value(FeaClsArc.FindField(FlowDirNm)));
+            if (FeaClsArc.FindField(Arc.FlowDirNm) >= 0)
+                arcEty.FlowDir = Convert.ToInt32(arcFea.get_Value(FeaClsArc.FindField(Arc.FlowDirNm)));
 
-            if (FeaClsArc.FindField(LinkIDNm) >= 0)
-                arcEty.LinkID = Convert.ToInt32(arcFea.get_Value(FeaClsArc.FindField(LinkIDNm)));
+            if (FeaClsArc.FindField(Arc.LinkIDNm) >= 0)
+                arcEty.LinkID = Convert.ToInt32(arcFea.get_Value(FeaClsArc.FindField(Arc.LinkIDNm)));
 
-            if (FeaClsArc.FindField(LaneNumNm) >= 0)
-                arcEty.LaneNum = Convert.ToInt32(arcFea.get_Value(FeaClsArc.FindField(LaneNumNm)));
+            if (FeaClsArc.FindField(Arc.LaneNumNm) >= 0)
+                arcEty.LaneNum = Convert.ToInt32(arcFea.get_Value(FeaClsArc.FindField(Arc.LaneNumNm)));
 
-            if (FeaClsArc.FindField(OtherNm) >= 0)
-                arcEty.Other = Convert.ToInt32(arcFea.get_Value(FeaClsArc.FindField(OtherNm)));
+            if (FeaClsArc.FindField(Arc.OtherNm) >= 0)
+                arcEty.Other = Convert.ToInt32(arcFea.get_Value(FeaClsArc.FindField(Arc.OtherNm)));
 
             return arcEty;
         }
@@ -269,7 +270,7 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LinkLayer
                 arcFeature= cursor.NextFeature();
             if (arcFeature != null)
             {
-                int arcID = Convert.ToInt32(arcFeature.get_Value(arcFeature.Fields.FindField(ArcIDNm)));
+                int arcID = Convert.ToInt32(arcFeature.get_Value(arcFeature.Fields.FindField(Arc.ArcIDNm)));
 
                 return arcFeature;
                 
@@ -279,6 +280,20 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LinkLayer
                 return null;
             }
         }
+
+
+        public Arc GetSameArc(int linkId)
+        {
+            string queryStr = String.Format("{0} = {1} and {2} = {3}", Arc.LinkIDNm, linkId, Arc.FlowDirNm, Link.FLOWDIR_SAME);
+            return GetArcEtyByRule(queryStr);
+        }
+
+        public Arc GetOppositionArc(int linkId)
+        {
+            string queryStr = String.Format("{0} = {1} and {2} = {3}", Arc.LinkIDNm, linkId, Arc.FlowDirNm, Link.FLOWDIR_OPPOSITION);
+            return GetArcEtyByRule(queryStr);
+        }
+
 
         public Arc GetArcEtyByRule(string QueryStr)
         {
@@ -300,7 +315,7 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LinkLayer
             pWorkspaceEdit.StartEditing(false);
             pWorkspaceEdit.StartEditOperation();
             IQueryFilter filter = new QueryFilterClass();
-            filter.WhereClause = String.Format("{0}={1}",ArcIDNm ,ArcID);
+            filter.WhereClause = String.Format("{0}={1}",Arc.ArcIDNm ,ArcID);
             IFeatureCursor pFeatureCuror = FeaClsArc.Update(filter, false);
             IFeature arcFeature = pFeatureCuror.NextFeature();
 
@@ -313,7 +328,7 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LinkLayer
         public double GetArcWidth(IFeatureClass pFeaClsLane)
         {
             IQueryFilter filter = new QueryFilterClass();
-            filter.WhereClause = String.Format("{0} = {1}", ArcService.ArcIDNm, ArcID);
+            filter.WhereClause = String.Format("{0} = {1}", Arc.ArcIDNm, ArcID);
             IFeatureCursor cursor;
             cursor = pFeaClsLane.Search(filter, false);
             IFeature pFeatureLane = cursor.NextFeature();
@@ -343,7 +358,7 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LinkLayer
         public double GetLanesWidth(IFeatureClass pFeaClsLane,int serial)
         {
             IQueryFilter filter = new QueryFilterClass();
-            filter.WhereClause = String.Format("{0} = {1}", ArcService.ArcIDNm, ArcID);
+            filter.WhereClause = String.Format("{0} = {1}", Arc.ArcIDNm, ArcID);
             IFeatureCursor cursor;
             cursor = pFeaClsLane.Search(filter, false);
             IFeature pFeatureLane = cursor.NextFeature();

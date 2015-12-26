@@ -14,17 +14,7 @@ namespace RoadNetworkSystem.DataModel.LaneBasedNetwork
         public const int FLOWDIR_SAME = 1;
         public const int FLOWDIR_OPPOSITION = -1;
 
-        //public int ID { get; set; }
-        //public int FNodeID { get; set; }
-        //public int TNodeID { get; set; }
-
-        //public int RelID { get; set; }
-        //public string RoadName { get; set; }
-        //public int RoadType { get; set; }
-
-        //public int RoadLevel { get; set; }
-        //public int FlowDir { get; set; }
-        //public int Other { get; set; }
+     
 
         /// <summary>
         /// 复制实体

@@ -37,7 +37,7 @@ namespace RoadNetworkSystem.NetworkElement.MasterLayer
         private IPoint _pnt;
         
 
-        public struct DataInfo
+        public struct LinkID_AdjControlPointCordinate
         {
             public int LinkID;  //弧段ID
             public double X;    //弧段的邻近控制点坐标
@@ -155,9 +155,8 @@ namespace RoadNetworkSystem.NetworkElement.MasterLayer
             IFeature pFeatureNode = GetFeature();
 
 
-
             //获取相邻LInk的信息（ID, 领接点的坐标）
-            List<DataInfo> linkDataInf = new List<DataInfo>();
+            List<LinkID_AdjControlPointCordinate> linkDataInf = new List<LinkID_AdjControlPointCordinate>();
             linkDataInf = GetAdjInfo(seg);
             //获取_node相邻的Link以及其与正北方向的夹角
             Dictionary<int, int> adjDic = new Dictionary<int, int>();
@@ -181,7 +180,12 @@ namespace RoadNetworkSystem.NetworkElement.MasterLayer
             pFeatureNode.Store();
         }
 
-        private Dictionary<int, int> GetAdjData(List<DataInfo> linkInforList)
+        /// <summary>
+        /// 返回LinkID - Angle对值
+        /// </summary>
+        /// <param name="linkInforList"></param>
+        /// <returns></returns>
+        private Dictionary<int, int> GetAdjData(List<LinkID_AdjControlPointCordinate> linkInforList)
         {
             double X = _pnt.X;
             double Y = _pnt.Y;
@@ -263,9 +267,14 @@ namespace RoadNetworkSystem.NetworkElement.MasterLayer
             return adjDic;
         }
 
-        private List<DataInfo> GetAdjInfo(LinkMasterService seg)
+        /// <summary>
+        /// 获取相邻Link的信息（ID, Link端点领接点的坐标）
+        /// </summary>
+        /// <param name="seg"></param>
+        /// <returns></returns>
+        private List<LinkID_AdjControlPointCordinate> GetAdjInfo(LinkMasterService seg)
         {
-            List<DataInfo> listLinkData = new List<DataInfo>();
+            List<LinkID_AdjControlPointCordinate> listLinkData = new List<LinkID_AdjControlPointCordinate>();
             IFeatureCursor fCursorLink;
             IQueryFilter pFilter = new QueryFilterClass();
             pFilter.WhereClause = String.Format("{0} = {1}", seg.FNodeIDNm, Id);
@@ -275,7 +284,7 @@ namespace RoadNetworkSystem.NetworkElement.MasterLayer
             int lFld = 0;
             while (pFeatLink != null)
             {
-                DataInfo linkData = new DataInfo();
+                LinkID_AdjControlPointCordinate linkData = new LinkID_AdjControlPointCordinate();
 
                 lFld = fCursorLink.FindField(seg.IDNm);
                 linkData.LinkID = Convert.ToInt32(pFeatLink.get_Value(lFld)); //记录下对应的弧段ID
@@ -300,7 +309,7 @@ namespace RoadNetworkSystem.NetworkElement.MasterLayer
             pFeatLink = fCursorLink.NextFeature();
             while (pFeatLink != null)
             {
-                DataInfo linkData = new DataInfo();
+                LinkID_AdjControlPointCordinate linkData = new LinkID_AdjControlPointCordinate();
                 lFld = fCursorLink.FindField(seg.IDNm);
                 linkData.LinkID = Convert.ToInt32(pFeatLink.get_Value(lFld)); //记录下对应的LinkID
 

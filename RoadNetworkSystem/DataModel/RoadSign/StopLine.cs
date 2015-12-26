@@ -18,7 +18,7 @@ namespace RoadNetworkSystem.DataModel.RoadSign
         //public const string OtherNm = "Other";
         public const string StopLineName = "StopLine";
 
-
+        public const int STOPLINESTYLE = -247;
 
         public int StopLineID { get; set; }
         public int NodeID { get; set; }
