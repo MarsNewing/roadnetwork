@@ -14,9 +14,19 @@ namespace RoadNetworkSystem.DataModel.RoadSign
         //public const string ArcIDNm = "ArcID";
 
         //public const string LaneIDNm = "LaneID";
-        //public const string StyleIDNm = "StyleID";
+        //public const string Boundary.STYLEID_NAME = "StyleID";
         //public const string OtherNm = "Other";
         public const string StopLineName = "StopLine";
+
+        public const string StopLineIDNm = "StopLineID";
+        public const string STYLEID_NAME = "StyleID";
+        public const string NodeIDNm = "NodeID";
+
+
+        public const string LaneIDNm = "LaneID";
+        public const string ArcIDNm = "ArcID";
+        public const string OtherNm = "Other";
+
 
         public const int STOPLINESTYLE = -247;
 

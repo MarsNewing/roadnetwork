@@ -361,7 +361,7 @@ namespace RoadNetworkSystem.NetworkExtraction.LaneBasedNetwork.DatabaseManager
 
 
         #region --------------创建Lane图层-------------------------
-            #region --------------创建Lane图层,表格式-------------------------
+        #region --------------创建Lane图层,表格式-------------------------
                 public static ITable CreateLaneTable(IWorkspace2 workspace)
                 {
 
@@ -488,197 +488,354 @@ namespace RoadNetworkSystem.NetworkExtraction.LaneBasedNetwork.DatabaseManager
             }
             #endregion --------------创建Lane图层，表格式-------------------------
 
-        #region --------------创建Lane图层,表格式-------------------------
+            #region --------------创建Lane图层,要素类-------------------------
 
-                public static IFeatureClass CreateLaneClass(IFeatureDataset feaDS)
-                {
-                    if (feaDS == null)
+            public static IFeatureClass CreateLaneClass(IFeatureDataset feaDS)
                     {
-                        return null;
-                    }
-                    else
-                    {
-
-                        IFeatureWorkspace pFeatWorkspace = feaDS.Workspace as IFeatureWorkspace;
-                        if (DatasetHelper.ExistDataset(pFeatWorkspace, Lane.LaneName))
+                        if (feaDS == null)
                         {
-                            return pFeatWorkspace.OpenFeatureClass(Lane.LaneName);
+                            return null;
                         }
-
-                        IFields fields = new FieldsClass();
-                        IFieldsEdit pFieldsEdit = fields as IFieldsEdit;
-
-                        IFieldEdit pFieldEdit = FeatureClassHelper.CreateField(LaneFeatureService.ArcIDNm, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
-                        pFieldsEdit.AddField(pFieldEdit);
-
-                        pFieldEdit = FeatureClassHelper.CreateField(LaneFeatureService.PositionNm, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
-                        pFieldsEdit.AddField(pFieldEdit);
-
-
-                        pFieldEdit = FeatureClassHelper.CreateField(LaneFeatureService.ArcIDNm, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
-                        pFieldsEdit.AddField(pFieldEdit);
-
-                        pFieldEdit = FeatureClassHelper.CreateField(LaneFeatureService.ChangeNm, esriFieldType.esriFieldTypeString, 50, 0, "", true, true);
-                        pFieldsEdit.AddField(pFieldEdit);
-
-                        pFieldEdit = FeatureClassHelper.CreateField(LaneFeatureService.LeftBoundaryIDNm, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
-                        pFieldsEdit.AddField(pFieldEdit);
-
-
-                        pFieldEdit = FeatureClassHelper.CreateField(LaneFeatureService.RightBoundaryIDNm, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
-                        pFieldsEdit.AddField(pFieldEdit);
-
-                        pFieldEdit = FeatureClassHelper.CreateField(LaneFeatureService.VehClassesNm, esriFieldType.esriFieldTypeString, 50, 0, "", true, true);
-                        pFieldsEdit.AddField(pFieldEdit);
-
-                        pFieldEdit = FeatureClassHelper.CreateField(LaneFeatureService.LaneClosedNm, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
-                        pFieldsEdit.AddField(pFieldEdit);
-
-
-                        pFieldEdit = FeatureClassHelper.CreateField(LaneFeatureService.WidthNm, esriFieldType.esriFieldTypeDouble, 50, 0, "", true, true);
-                        pFieldsEdit.AddField(pFieldEdit);
-
-                        pFieldEdit = FeatureClassHelper.CreateField(LaneFeatureService.OtherNm, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
-                        pFieldsEdit.AddField(pFieldEdit);
-
-                        IFeatureClass pLaneClass = FeatureClassHelper.CreateFeatureClass(feaDS, Lane.LaneName, esriGeometryType.esriGeometryPolyline, fields, LaneFeatureService.LaneIDNm);
-                        return pLaneClass;
-
-                    }
-                }
-
-                public static IFeatureClass CreateConnectorClass(IFeatureDataset feaDS)
-                {
-                    if (feaDS == null)
-                    {
-                        return null;
-                    }
-                    else
-                    {
-
-                        IFeatureWorkspace pFeatWorkspace = feaDS.Workspace as IFeatureWorkspace;
-                        if (DatasetHelper.ExistDataset(pFeatWorkspace, LaneConnector.ConnectorName))
-                        {
-                            return pFeatWorkspace.OpenFeatureClass(LaneConnector.ConnectorName);
-                        }
-
                         else
                         {
+
+                            IFeatureWorkspace pFeatWorkspace = feaDS.Workspace as IFeatureWorkspace;
+                            if (DatasetHelper.ExistDataset(pFeatWorkspace, Lane.LaneName))
+                            {
+                                return pFeatWorkspace.OpenFeatureClass(Lane.LaneName);
+                            }
+
                             IFields fields = new FieldsClass();
                             IFieldsEdit pFieldsEdit = fields as IFieldsEdit;
 
-                            IFieldEdit pFieldEdit = FeatureClassHelper.CreateField(LaneConnectorTableService.ConnectorIDNm, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
+
+                            IFieldEdit pFieldEdit = FeatureClassHelper.CreateField(LaneFeatureService.ArcIDNm, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
                             pFieldsEdit.AddField(pFieldEdit);
 
-                            pFieldEdit = FeatureClassHelper.CreateField(LaneConnectorTableService.fromLaneIDNm, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
-                            pFieldsEdit.AddField(pFieldEdit);
-
-                            pFieldEdit = FeatureClassHelper.CreateField(LaneConnectorTableService.toLaneIDNm, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
-                            pFieldsEdit.AddField(pFieldEdit);
-
-
-                            pFieldEdit = FeatureClassHelper.CreateField(LaneConnectorTableService.fromArcIDNm, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
-                            pFieldsEdit.AddField(pFieldEdit);
-
-                            pFieldEdit = FeatureClassHelper.CreateField(LaneConnectorTableService.TurningDirNm, esriFieldType.esriFieldTypeString, 50, 0, "", true, true);
-                            pFieldsEdit.AddField(pFieldEdit);
-
-                            pFieldEdit = FeatureClassHelper.CreateField(LaneConnectorTableService.toArcIDNm, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
+                            pFieldEdit = FeatureClassHelper.CreateField(LaneFeatureService.LaneIDNm, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
                             pFieldsEdit.AddField(pFieldEdit);
 
 
-                            pFieldEdit = FeatureClassHelper.CreateField(LaneConnectorTableService.fromLinkIDNm, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
-                            pFieldsEdit.AddField(pFieldEdit);
-
-                            pFieldEdit = FeatureClassHelper.CreateField(LaneConnectorTableService.fromDirNm, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
-                            pFieldsEdit.AddField(pFieldEdit);
-
-                            pFieldEdit = FeatureClassHelper.CreateField(LaneConnectorTableService.toLinkIDNm, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
+                            pFieldEdit = FeatureClassHelper.CreateField(LaneFeatureService.PositionNm, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
                             pFieldsEdit.AddField(pFieldEdit);
 
 
-                            pFieldEdit = FeatureClassHelper.CreateField(LaneConnectorTableService.toDirNm, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
+                            pFieldEdit = FeatureClassHelper.CreateField(LaneFeatureService.ArcIDNm, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
                             pFieldsEdit.AddField(pFieldEdit);
 
-                            pFieldEdit = FeatureClassHelper.CreateField(LaneConnectorTableService.OtherNm, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
+                            pFieldEdit = FeatureClassHelper.CreateField(LaneFeatureService.ChangeNm, esriFieldType.esriFieldTypeString, 50, 0, "", true, true);
                             pFieldsEdit.AddField(pFieldEdit);
 
-                            IFeatureClass pConnectorClass = FeatureClassHelper.CreateFeatureClass(feaDS, LaneConnector.ConnectorName, esriGeometryType.esriGeometryPolyline, fields, LaneConnectorTableService.ConnectorIDNm);
-                            return pConnectorClass;
+                            pFieldEdit = FeatureClassHelper.CreateField(LaneFeatureService.LeftBoundaryIDNm, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
+                            pFieldsEdit.AddField(pFieldEdit);
+
+
+                            pFieldEdit = FeatureClassHelper.CreateField(LaneFeatureService.RightBoundaryIDNm, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
+                            pFieldsEdit.AddField(pFieldEdit);
+
+                            pFieldEdit = FeatureClassHelper.CreateField(LaneFeatureService.VehClassesNm, esriFieldType.esriFieldTypeString, 50, 0, "", true, true);
+                            pFieldsEdit.AddField(pFieldEdit);
+
+                            pFieldEdit = FeatureClassHelper.CreateField(LaneFeatureService.LaneClosedNm, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
+                            pFieldsEdit.AddField(pFieldEdit);
+
+
+                            pFieldEdit = FeatureClassHelper.CreateField(LaneFeatureService.WidthNm, esriFieldType.esriFieldTypeDouble, 50, 0, "", true, true);
+                            pFieldsEdit.AddField(pFieldEdit);
+
+                            pFieldEdit = FeatureClassHelper.CreateField(LaneFeatureService.OtherNm, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
+                            pFieldsEdit.AddField(pFieldEdit);
+
+                            IFeatureClass pLaneClass = FeatureClassHelper.CreateFeatureClass(feaDS, Lane.LaneName, esriGeometryType.esriGeometryPolyline, fields, LaneFeatureService.LaneIDNm);
+                            return pLaneClass;
 
                         }
                     }
-                }
 
-        #endregion --------------创建Lane图层，表格式-------------------------
-
-                public static IFeatureClass CreateBoudaryClass(IFeatureDataset feaDS)
-                {
-                    if (feaDS == null)
+            public static IFeatureClass CreateConnectorClass(IFeatureDataset feaDS)
                     {
-                        return null;
-                    }
-                    else
-                    {
-
-                        IFeatureWorkspace pFeatWorkspace = feaDS.Workspace as IFeatureWorkspace;
-                        if (DatasetHelper.ExistDataset(pFeatWorkspace, Boundary.BoundaryName))
+                        if (feaDS == null)
                         {
-                            return pFeatWorkspace.OpenFeatureClass(Boundary.BoundaryName);
+                            return null;
                         }
+                        else
+                        {
 
-                        IFields fields = new FieldsClass();
-                        IFieldsEdit pFieldsEdit = fields as IFieldsEdit;
+                            IFeatureWorkspace pFeatWorkspace = feaDS.Workspace as IFeatureWorkspace;
+                            if (DatasetHelper.ExistDataset(pFeatWorkspace, LaneConnector.ConnectorName))
+                            {
+                                return pFeatWorkspace.OpenFeatureClass(LaneConnector.ConnectorName);
+                            }
 
-                        IFieldEdit pFieldEdit = FeatureClassHelper.CreateField(LaneFeatureService.ArcIDNm, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
-                        pFieldsEdit.AddField(pFieldEdit);
+                            else
+                            {
+                                IFields fields = new FieldsClass();
+                                IFieldsEdit pFieldsEdit = fields as IFieldsEdit;
 
-                        pFieldEdit = FeatureClassHelper.CreateField(LaneFeatureService.PositionNm, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
-                        pFieldsEdit.AddField(pFieldEdit);
+                                IFieldEdit pFieldEdit = FeatureClassHelper.CreateField(LaneConnectorTableService.ConnectorIDNm, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
+                                pFieldsEdit.AddField(pFieldEdit);
 
+                                pFieldEdit = FeatureClassHelper.CreateField(LaneConnectorTableService.fromLaneIDNm, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
+                                pFieldsEdit.AddField(pFieldEdit);
 
-                        pFieldEdit = FeatureClassHelper.CreateField(LaneFeatureService.ArcIDNm, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
-                        pFieldsEdit.AddField(pFieldEdit);
-
-                        pFieldEdit = FeatureClassHelper.CreateField(LaneFeatureService.ChangeNm, esriFieldType.esriFieldTypeString, 50, 0, "", true, true);
-                        pFieldsEdit.AddField(pFieldEdit);
-
-                        pFieldEdit = FeatureClassHelper.CreateField(LaneFeatureService.LeftBoundaryIDNm, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
-                        pFieldsEdit.AddField(pFieldEdit);
-
-
-                        pFieldEdit = FeatureClassHelper.CreateField(LaneFeatureService.RightBoundaryIDNm, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
-                        pFieldsEdit.AddField(pFieldEdit);
-
-                        pFieldEdit = FeatureClassHelper.CreateField(LaneFeatureService.VehClassesNm, esriFieldType.esriFieldTypeString, 50, 0, "", true, true);
-                        pFieldsEdit.AddField(pFieldEdit);
-
-                        pFieldEdit = FeatureClassHelper.CreateField(LaneFeatureService.LaneClosedNm, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
-                        pFieldsEdit.AddField(pFieldEdit);
+                                pFieldEdit = FeatureClassHelper.CreateField(LaneConnectorTableService.toLaneIDNm, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
+                                pFieldsEdit.AddField(pFieldEdit);
 
 
-                        pFieldEdit = FeatureClassHelper.CreateField(LaneFeatureService.WidthNm, esriFieldType.esriFieldTypeDouble, 50, 0, "", true, true);
-                        pFieldsEdit.AddField(pFieldEdit);
+                                pFieldEdit = FeatureClassHelper.CreateField(LaneConnectorTableService.fromArcIDNm, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
+                                pFieldsEdit.AddField(pFieldEdit);
 
-                        pFieldEdit = FeatureClassHelper.CreateField(LaneFeatureService.OtherNm, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
-                        pFieldsEdit.AddField(pFieldEdit);
+                                pFieldEdit = FeatureClassHelper.CreateField(LaneConnectorTableService.TurningDirNm, esriFieldType.esriFieldTypeString, 50, 0, "", true, true);
+                                pFieldsEdit.AddField(pFieldEdit);
 
-                        IFeatureClass pLaneClass = FeatureClassHelper.CreateFeatureClass(feaDS, Lane.LaneName, esriGeometryType.esriGeometryPolyline, fields, LaneFeatureService.LaneIDNm);
-                        return pLaneClass;
+                                pFieldEdit = FeatureClassHelper.CreateField(LaneConnectorTableService.toArcIDNm, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
+                                pFieldsEdit.AddField(pFieldEdit);
 
+
+                                pFieldEdit = FeatureClassHelper.CreateField(LaneConnectorTableService.fromLinkIDNm, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
+                                pFieldsEdit.AddField(pFieldEdit);
+
+                                pFieldEdit = FeatureClassHelper.CreateField(LaneConnectorTableService.fromDirNm, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
+                                pFieldsEdit.AddField(pFieldEdit);
+
+                                pFieldEdit = FeatureClassHelper.CreateField(LaneConnectorTableService.toLinkIDNm, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
+                                pFieldsEdit.AddField(pFieldEdit);
+
+
+                                pFieldEdit = FeatureClassHelper.CreateField(LaneConnectorTableService.toDirNm, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
+                                pFieldsEdit.AddField(pFieldEdit);
+
+                                pFieldEdit = FeatureClassHelper.CreateField(LaneConnectorTableService.OtherNm, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
+                                pFieldsEdit.AddField(pFieldEdit);
+
+                                IFeatureClass pConnectorClass = FeatureClassHelper.CreateFeatureClass(feaDS, LaneConnector.ConnectorName, esriGeometryType.esriGeometryPolyline, fields, LaneConnectorTableService.ConnectorIDNm);
+                                return pConnectorClass;
+
+                            }
+                        }
                     }
-                }
 
+            #endregion --------------创建Lane图层，要素类-------------------------
+
+        
         #endregion --------------创建Lane图层-------------------------
 
         #region -----------------------------创建标志标线--------------------------
+
+            public static IFeatureClass CreateBoudaryClass(IFeatureDataset feaDS)
+            {
+                if (feaDS == null)
+                {
+                    return null;
+                }
+                else
+                {
+
+                    IFeatureWorkspace pFeatWorkspace = feaDS.Workspace as IFeatureWorkspace;
+                    if (DatasetHelper.ExistDataset(pFeatWorkspace, Boundary.BoundaryName))
+                    {
+                        return pFeatWorkspace.OpenFeatureClass(Boundary.BoundaryName);
+                    }
+
+                    IFields fields = new FieldsClass();
+                    IFieldsEdit pFieldsEdit = fields as IFieldsEdit;
+
+                    IFieldEdit pFieldEdit = FeatureClassHelper.CreateField(Boundary.BOUNDARYID_NAME, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
+                    pFieldsEdit.AddField(pFieldEdit);
+
+                    pFieldEdit = FeatureClassHelper.CreateField(Boundary.STYLEID_NAME, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
+                    pFieldsEdit.AddField(pFieldEdit);
+
+
+                    pFieldEdit = FeatureClassHelper.CreateField(Boundary.DIR_NAME, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
+                    pFieldsEdit.AddField(pFieldEdit);
+
+                    IFeatureClass pLaneClass = FeatureClassHelper.CreateFeatureClass(feaDS, Boundary.BoundaryName,
+                        esriGeometryType.esriGeometryPolyline, fields,Boundary.BOUNDARYID_NAME);
+                    return pLaneClass;
+
+                }
+            }
+
+            public static IFeatureClass CreateTurnArrowClass(IFeatureDataset feaDS)
+            {
+                if (feaDS == null)
+                {
+                    return null;
+                }
+                else
+                {
+
+                    IFeatureWorkspace pFeatWorkspace = feaDS.Workspace as IFeatureWorkspace;
+                    if (DatasetHelper.ExistDataset(pFeatWorkspace, TurnArrow.TurnArrowName))
+                    {
+                        return pFeatWorkspace.OpenFeatureClass(TurnArrow.TurnArrowName);
+                    }
+
+                    IFields fields = new FieldsClass();
+                    IFieldsEdit pFieldsEdit = fields as IFieldsEdit;
+
+                    IFieldEdit pFieldEdit = FeatureClassHelper.CreateField(TurnArrow.ANGLENm, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
+                    pFieldsEdit.AddField(pFieldEdit);
+
+                    pFieldEdit = FeatureClassHelper.CreateField(TurnArrow.ArcIDNm, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
+                    pFieldsEdit.AddField(pFieldEdit);
+
+
+                    pFieldEdit = FeatureClassHelper.CreateField(TurnArrow.ArrowIDNm, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
+                    pFieldsEdit.AddField(pFieldEdit);
+
+
+                    pFieldEdit = FeatureClassHelper.CreateField(TurnArrow.ArrowTypeNm, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
+                    pFieldsEdit.AddField(pFieldEdit);
+
+
+                    pFieldEdit = FeatureClassHelper.CreateField(TurnArrow.LaneIDNm, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
+                    pFieldsEdit.AddField(pFieldEdit);
+
+                    pFieldEdit = FeatureClassHelper.CreateField(TurnArrow.PrecedeArrowsNm, esriFieldType.esriFieldTypeString, 50, 0, "", true, true);
+                    pFieldsEdit.AddField(pFieldEdit);
+
+
+                    pFieldEdit = FeatureClassHelper.CreateField(TurnArrow.SerialNm, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
+                    pFieldsEdit.AddField(pFieldEdit);
+
+
+                    pFieldEdit = FeatureClassHelper.CreateField(TurnArrow.STYLEID_NAME, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
+                    pFieldsEdit.AddField(pFieldEdit);
+
+                    IFeatureClass pLaneClass = FeatureClassHelper.CreateFeatureClass(feaDS, TurnArrow.TurnArrowName, 
+                        esriGeometryType.esriGeometryPoint, fields, TurnArrow.ArrowIDNm);
+                    return pLaneClass;
+
+                }
+            }
+
+
+            public static IFeatureClass CreateStopLineClass(IFeatureDataset feaDS)
+            {
+                if (feaDS == null)
+                {
+                    return null;
+                }
+                else
+                {
+                    IFeatureWorkspace pFeatWorkspace = feaDS.Workspace as IFeatureWorkspace;
+                    if (DatasetHelper.ExistDataset(pFeatWorkspace, StopLine.StopLineName))
+                    {
+                        return pFeatWorkspace.OpenFeatureClass(StopLine.StopLineName);
+                    }
+
+                    IFields fields = new FieldsClass();
+                    IFieldsEdit pFieldsEdit = fields as IFieldsEdit;
+
+                    IFieldEdit pFieldEdit = FeatureClassHelper.CreateField(StopLine.ArcIDNm, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
+                    pFieldsEdit.AddField(pFieldEdit);
+
+                    pFieldEdit = FeatureClassHelper.CreateField(StopLine.LaneIDNm, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
+                    pFieldsEdit.AddField(pFieldEdit);
+
+
+                    pFieldEdit = FeatureClassHelper.CreateField(StopLine.NodeIDNm, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
+                    pFieldsEdit.AddField(pFieldEdit);
+
+
+                    pFieldEdit = FeatureClassHelper.CreateField(StopLine.OtherNm, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
+                    pFieldsEdit.AddField(pFieldEdit);
+
+
+                    pFieldEdit = FeatureClassHelper.CreateField(StopLine.StopLineIDNm, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
+                    pFieldsEdit.AddField(pFieldEdit);
+
+                    IFeatureClass pLaneClass = FeatureClassHelper.CreateFeatureClass(feaDS, StopLine.StopLineName,
+                        esriGeometryType.esriGeometryPolyline, fields, StopLine.StopLineIDNm);
+                    return pLaneClass;
+                }
+            }
+
+
+            public static IFeatureClass CreateSurfaceClass(IFeatureDataset feaDS)
+            {
+                if (feaDS == null)
+                {
+                    return null;
+                }
+                else
+                {
+                    IFeatureWorkspace pFeatWorkspace = feaDS.Workspace as IFeatureWorkspace;
+                    if (DatasetHelper.ExistDataset(pFeatWorkspace, Surface.SurfaceName))
+                    {
+                        return pFeatWorkspace.OpenFeatureClass(Surface.SurfaceName);
+                    }
+
+                    IFields fields = new FieldsClass();
+                    IFieldsEdit pFieldsEdit = fields as IFieldsEdit;
+
+                    IFieldEdit pFieldEdit = FeatureClassHelper.CreateField(Surface.SurfaceIDNm, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
+                    pFieldsEdit.AddField(pFieldEdit);
+
+                    pFieldEdit = FeatureClassHelper.CreateField(Surface.ArcIDNm, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
+                    pFieldsEdit.AddField(pFieldEdit);
+
+
+                    pFieldEdit = FeatureClassHelper.CreateField(Surface.ControlIDsNm, esriFieldType.esriFieldTypeString, 50, 0, "", true, true);
+                    pFieldsEdit.AddField(pFieldEdit);
+
+
+                    pFieldEdit = FeatureClassHelper.CreateField(Surface.OtherNm, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
+                    pFieldsEdit.AddField(pFieldEdit);
+
+
+                    IFeatureClass pLaneClass = FeatureClassHelper.CreateFeatureClass(feaDS, Surface.SurfaceName,
+                        esriGeometryType.esriGeometryPolygon, fields, Surface.SurfaceIDNm);
+                    return pLaneClass;
+                }
+            }
+
+            public static IFeatureClass CreateKerbClass(IFeatureDataset feaDS)
+            {
+                if (feaDS == null)
+                {
+                    return null;
+                }
+                else
+                {
+                    IFeatureWorkspace pFeatWorkspace = feaDS.Workspace as IFeatureWorkspace;
+                    if (DatasetHelper.ExistDataset(pFeatWorkspace, Kerb.KerbName))
+                    {
+                        return pFeatWorkspace.OpenFeatureClass(Kerb.KerbName);
+                    }
+
+                    IFields fields = new FieldsClass();
+                    IFieldsEdit pFieldsEdit = fields as IFieldsEdit;
+
+                    IFieldEdit pFieldEdit = FeatureClassHelper.CreateField(Kerb.KerbIDNm, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
+                    pFieldsEdit.AddField(pFieldEdit);
+
+                    pFieldEdit = FeatureClassHelper.CreateField(Kerb.ArcIDNm, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
+                    pFieldsEdit.AddField(pFieldEdit);
+
+
+                    pFieldEdit = FeatureClassHelper.CreateField(Kerb.SerialNm, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
+                    pFieldsEdit.AddField(pFieldEdit);
+
+
+                    pFieldEdit = FeatureClassHelper.CreateField(Surface.OtherNm, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
+                    pFieldsEdit.AddField(pFieldEdit);
+
+
+                    IFeatureClass pLaneClass = FeatureClassHelper.CreateFeatureClass(feaDS, Kerb.KerbName,
+                        esriGeometryType.esriGeometryPoint, fields, Kerb.KerbIDNm);
+                    return pLaneClass;
+                }
+            }
 
 
         #endregion -----------------------------创建标志标线--------------------------
 
         #region --------------创建指路标志路网-------------------------
 
-                public static IFeatureClass CreateNode1Class(IFeatureDataset feaDS)
+        public static IFeatureClass CreateNode1Class(IFeatureDataset feaDS)
         {
 
             if (feaDS == null)
@@ -786,7 +943,6 @@ namespace RoadNetworkSystem.NetworkExtraction.LaneBasedNetwork.DatabaseManager
 
         #endregion --------------创建指路标志路网-------------------------
 
-        
 
     }
 }

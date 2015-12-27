@@ -470,7 +470,7 @@ namespace RoadNetworkSystem.NetworkEditor.EditorFlow
                 //删除Arc层次上的东东
                 IFeatureCursor cursorKerb;
                 IQueryFilter filterKerb = new QueryFilterClass();
-                filterKerb.WhereClause = KerbService.ArcIDNm + " = " + arcEty.ArcID;
+                filterKerb.WhereClause = Kerb.ArcIDNm + " = " + arcEty.ArcID;
                 cursorKerb = _pFeaClsKerb.Search(filterKerb, false);
                 IFeature kerbFea = cursorKerb.NextFeature();
                 while (kerbFea != null)
@@ -482,7 +482,7 @@ namespace RoadNetworkSystem.NetworkEditor.EditorFlow
 
                 IFeatureCursor cursorSurface;
                 IQueryFilter filterSurface= new QueryFilterClass();
-                filterSurface.WhereClause = SurfaceService.ArcIDNm + " = " + arcEty.ArcID;
+                filterSurface.WhereClause = Arc.ArcIDNm + " = " + arcEty.ArcID;
                 cursorSurface = _pFeaClsSurface.Search(filterSurface, false);
                 IFeature surfaceFea = cursorSurface.NextFeature();
                 while (surfaceFea != null)

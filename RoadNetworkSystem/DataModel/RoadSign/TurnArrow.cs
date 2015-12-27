@@ -9,17 +9,17 @@ namespace RoadNetworkSystem.DataModel.RoadSign
         /// <summary>
         /// 规定了数据模型，请不要在其他类中直接读取数据
         /// </summary>
-        //public const string ArrowIDNm = "ArrowID";
-        //public const string StyleIDNm = "StyleID";
-        //public const string ArrowTypeNm = "ArrowType";
+        public const string ArrowIDNm = "ArrowID";
+        public const string STYLEID_NAME = "StyleID";
+        public const string ArrowTypeNm = "ArrowType";
         
-        //public const string SerialNm = "Serial";
-        //public const string ANGLENm = "ANGLE";
-        //public const string ArcIDNm = "ArcID";
+        public const string SerialNm = "Serial";
+        public const string ANGLENm = "ANGLE";
+        public const string ArcIDNm = "ArcID";
 
-        //public const string LaneIDNm = "LaneID";
-        //public const string PrecedeArrowsNm = "PrecedeArrows";
-        //public const string OtherNm = "Other";
+        public const string LaneIDNm = "LaneID";
+        public const string PrecedeArrowsNm = "PrecedeArrows";
+        public const string OtherNm = "Other";
         public const string TurnArrowName = "TurnArrow";
 
         public int ArrowID { get; set; }

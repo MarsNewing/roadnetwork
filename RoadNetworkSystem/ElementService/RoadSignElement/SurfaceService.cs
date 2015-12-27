@@ -11,10 +11,6 @@ namespace RoadNetworkSystem.NetworkElement.RoadSignElement
 {
     class SurfaceService
     {
-        public const string SurfaceIDNm = "SurfaceID";
-        public const string ArcIDNm = "ArcID";
-        public const string ControlIDsNm = "ControlIDs";
-        public const string OtherNm = "Other";
 
         public IFeatureClass FeaClsSurface;
         public int SurfaceID;
@@ -29,21 +25,21 @@ namespace RoadNetworkSystem.NetworkElement.RoadSignElement
             Surface surfaceEty = new Surface();
             if (pFeature != null)
             {
-                if (FeaClsSurface.FindField(SurfaceIDNm) > 0)
-                    surfaceEty.SurfaceID = Convert.ToInt32(pFeature.get_Value(FeaClsSurface.FindField(SurfaceIDNm)));
+                if (FeaClsSurface.FindField(Surface.SurfaceIDNm) > 0)
+                    surfaceEty.SurfaceID = Convert.ToInt32(pFeature.get_Value(FeaClsSurface.FindField(Surface.SurfaceIDNm)));
 
-                if (FeaClsSurface.FindField(ArcIDNm) > 0)
-                    surfaceEty.ArcID = Convert.ToInt32(pFeature.get_Value(FeaClsSurface.FindField(ArcIDNm)));
-                if (FeaClsSurface.FindField(ControlIDsNm) > 0)
-                    surfaceEty.ControlIDs = Convert.ToString(pFeature.get_Value(FeaClsSurface.FindField(ControlIDsNm)));
+                if (FeaClsSurface.FindField(Surface.ArcIDNm) > 0)
+                    surfaceEty.ArcID = Convert.ToInt32(pFeature.get_Value(FeaClsSurface.FindField(Surface.ArcIDNm)));
+                if (FeaClsSurface.FindField(Surface.ControlIDsNm) > 0)
+                    surfaceEty.ControlIDs = Convert.ToString(pFeature.get_Value(FeaClsSurface.FindField(Surface.ControlIDsNm)));
 
-                if (FeaClsSurface.FindField(OtherNm) > 0)
-                    surfaceEty.Other = Convert.ToInt32(pFeature.get_Value(FeaClsSurface.FindField(OtherNm)));
+                if (FeaClsSurface.FindField(Surface.OtherNm) > 0)
+                    surfaceEty.Other = Convert.ToInt32(pFeature.get_Value(FeaClsSurface.FindField(Surface.OtherNm)));
             }
             return surfaceEty;
         }
 
-        public void CrateSurfaceShape(IFeatureClass pFeaClsKerb, NextNodeCutInfor nextArcCutInfor, IFeature nextFea, IFeature preFea, 
+        public void CrateSurfaceShape(IFeatureClass pFeaClsKerb, NextNodeCutInfor nextArcCutInfor, IFeature nextNodeFea, IFeature preNodeFea, 
             ref IPolygon gon,ref string ctrlPntStrs)
         {
             
@@ -54,29 +50,40 @@ namespace RoadNetworkSystem.NetworkElement.RoadSignElement
             for (int i = 0; i < 4; i++)
             {
                 IFeature pFeature = kerb.GetKerbByArcAndSerial(nextArcCutInfor.curArcID, i);
+                if (pFeature == null)
+                {
+                    continue;
+                }
                 ctrlPnts.Add(i, pFeature.Shape as IPoint);
                 if (i < 2)
                 {
-                    ctrlIndexs.Add(i, Convert.ToInt32(pFeature.get_Value(pFeaClsKerb.FindField(KerbService.KerbIDNm))));
+                    ctrlIndexs.Add(i, Convert.ToInt32(pFeature.get_Value(pFeaClsKerb.FindField(Kerb.KerbIDNm))));
                 }
                 else
                 {
-                    ctrlIndexs.Add(i+1, Convert.ToInt32(pFeature.get_Value(pFeaClsKerb.FindField(KerbService.KerbIDNm))));
+                    ctrlIndexs.Add(i + 1, Convert.ToInt32(pFeature.get_Value(pFeaClsKerb.FindField(Kerb.KerbIDNm))));
                 }
 
+            }
+
+            if (ctrlPnts.Count == 0)
+            {
+                gon = null;
+                ctrlPntStrs = null;
+                return;
             }
 
             IPointCollection pntClt = new PolygonClass();
             pntClt.AddPoint(ctrlPnts[0]);
             pntClt.AddPoint(ctrlPnts[1]);
-            pntClt.AddPoint(preFea.Shape as IPoint);
+            pntClt.AddPoint(preNodeFea.Shape as IPoint);
             pntClt.AddPoint(ctrlPnts[2]);
             pntClt.AddPoint(ctrlPnts[3]);
-            pntClt.AddPoint(nextFea.Shape as IPoint);
+            pntClt.AddPoint(nextNodeFea.Shape as IPoint);
             
 
-            int preNodeIndex=Convert.ToInt32(preFea.get_Value(preFea.Fields.FindField("NodeID")));
-            int nextNodeIndex=Convert.ToInt32(nextFea.get_Value(preFea.Fields.FindField("NodeID")));
+            int preNodeIndex=Convert.ToInt32(preNodeFea.get_Value(preNodeFea.Fields.FindField("NodeID")));
+            int nextNodeIndex=Convert.ToInt32(nextNodeFea.get_Value(preNodeFea.Fields.FindField("NodeID")));
 
             ctrlIndexs.Add(2, preNodeIndex);
             ctrlIndexs.Add(5, nextNodeIndex);
@@ -88,7 +95,7 @@ namespace RoadNetworkSystem.NetworkElement.RoadSignElement
                 if (nextArc1Kerb != null)
                 {
                     pntClt.AddPoint(nextArc1Kerb.Shape as IPoint);
-                    ctrlIndexs.Add(6, Convert.ToInt32(nextArc1Kerb.get_Value(pFeaClsKerb.FindField(KerbService.KerbIDNm))));
+                    ctrlIndexs.Add(6, Convert.ToInt32(nextArc1Kerb.get_Value(pFeaClsKerb.FindField(Kerb.KerbIDNm))));
                 }
             }
 
@@ -110,26 +117,26 @@ namespace RoadNetworkSystem.NetworkElement.RoadSignElement
 
             if (surfaceEty.SurfaceID > 0)
             {
-                if (FeaClsSurface.FindField(SurfaceIDNm) >= 0)
-                    surFeature.set_Value(FeaClsSurface.FindField(SurfaceIDNm), surfaceEty.SurfaceID);
+                if (FeaClsSurface.FindField(Surface.SurfaceIDNm) >= 0)
+                    surFeature.set_Value(FeaClsSurface.FindField(Surface.SurfaceIDNm), surfaceEty.SurfaceID);
             }
             else
             {
-                if (FeaClsSurface.FindField(SurfaceIDNm) >= 0)
-                    surFeature.set_Value(FeaClsSurface.FindField(SurfaceIDNm), surFeature.OID);
+                if (FeaClsSurface.FindField(Surface.SurfaceIDNm) >= 0)
+                    surFeature.set_Value(FeaClsSurface.FindField(Surface.SurfaceIDNm), surFeature.OID);
             }
 
-            if (FeaClsSurface.FindField(ControlIDsNm) >= 0)
-                surFeature.set_Value(FeaClsSurface.FindField(ControlIDsNm), surfaceEty.ControlIDs);
+            if (FeaClsSurface.FindField(Surface.ControlIDsNm) >= 0)
+                surFeature.set_Value(FeaClsSurface.FindField(Surface.ControlIDsNm), surfaceEty.ControlIDs);
 
 
           
-            if (FeaClsSurface.FindField(ArcIDNm) >= 0)
-                surFeature.set_Value(FeaClsSurface.FindField(ArcIDNm), surfaceEty.ArcID);
+            if (FeaClsSurface.FindField(Surface.ArcIDNm) >= 0)
+                surFeature.set_Value(FeaClsSurface.FindField(Surface.ArcIDNm), surfaceEty.ArcID);
 
 
-            if (FeaClsSurface.FindField(OtherNm) >= 0)
-                surFeature.set_Value(FeaClsSurface.FindField(OtherNm), surfaceEty.Other);
+            if (FeaClsSurface.FindField(Surface.OtherNm) >= 0)
+                surFeature.set_Value(FeaClsSurface.FindField(Surface.OtherNm), surfaceEty.Other);
 
             surFeature.Shape = gon;
             surFeature.Store();

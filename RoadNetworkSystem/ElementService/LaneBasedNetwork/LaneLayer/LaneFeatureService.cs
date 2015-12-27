@@ -96,7 +96,7 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LaneLayer
             readCmd.Connection = Conn;
             OleDbDataReader read;
             read = readCmd.ExecuteReader();
-            IFeature featureArc = null;
+            IFeature featureLane = null;
             while (read.Read())
             {
                 LaneID = Convert.ToInt32(read[LaneIDNm]);
@@ -105,8 +105,8 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LaneLayer
             read.Close();
             Conn.Close();
             Conn.Dispose();
-            featureArc = GetFeature();
-            return featureArc;
+            featureLane = GetFeature();
+            return featureLane;
         }
 
         public Lane GetEntity(IFeature pFeature)

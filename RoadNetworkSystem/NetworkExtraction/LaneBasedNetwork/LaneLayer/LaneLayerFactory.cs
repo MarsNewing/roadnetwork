@@ -47,6 +47,7 @@ namespace RoadNetworkSystem.NetworkExtraction.LaneBasedNetwork.LaneLayer
             _pFeaClsNode = feaClsDic[Node.NodeName];
             _pFeaClsSurface = feaClsDic[Surface.SurfaceName];
             _pFeaClsTurnArrow = feaClsDic[TurnArrow.TurnArrowName];
+            _pFeaClsStopLine = feaClsDic[StopLine.StopLineName];
         }
 
         public void CreateLinkTopologyBatch()
@@ -74,6 +75,23 @@ namespace RoadNetworkSystem.NetworkExtraction.LaneBasedNetwork.LaneLayer
             ArcService arcService = new ArcService(_pFeaClsArc, 0);
             Arc sameArc = arcService.GetSameArc(link.ID);
             Arc oppositionArc = arcService.GetOppositionArc(link.ID);
+
+            NodeService fNodeService = new NodeService(_pFeaClsNode, link.FNodeID,null);
+            IFeature fNodeFeature = fNodeService.GetFeature();
+            
+            NodeService tNodeService = new NodeService(_pFeaClsNode, link.TNodeID, null);
+            IFeature tNodeFeature = tNodeService.GetFeature();
+
+            if (sameArc != null)
+            {
+                CreateArcTopology(linkFea, fNodeFeature, tNodeFeature, sameArc);
+            }
+            if (oppositionArc != null)
+            {
+                CreateArcTopology(linkFea, fNodeFeature, tNodeFeature, oppositionArc);
+            }
+
+            UpdateCenterLine(link.ID);
         }
 
         public void CreateArcTopology(IFeature linkFea, IFeature fNodeFea, 
@@ -140,8 +158,10 @@ namespace RoadNetworkSystem.NetworkExtraction.LaneBasedNetwork.LaneLayer
             surfaceEty.ControlIDs = str;
             surfaceEty.SurfaceID = 0;
             surfaceEty.Other = 0;
-            surface.CreateSurface(surfaceEty, gon);
-
+            if (gon != null)
+            {
+                surface.CreateSurface(surfaceEty, gon);
+            }
         }
 
         /// <summary>
@@ -259,7 +279,7 @@ namespace RoadNetworkSystem.NetworkExtraction.LaneBasedNetwork.LaneLayer
             //删除Arc的所有的Kerb
             IFeatureCursor curseorKerb;
             IQueryFilter filterKerb = new QueryFilterClass();
-            filterKerb.WhereClause = KerbService.ArcIDNm + " = " + arcEty.ArcID;
+            filterKerb.WhereClause = Kerb.ArcIDNm + " = " + arcEty.ArcID;
             curseorKerb = _pFeaClsSurface.Search(filterKerb, false);
             IFeature pFeaKerb = curseorKerb.NextFeature();
             while (pFeaKerb != null)
@@ -274,7 +294,7 @@ namespace RoadNetworkSystem.NetworkExtraction.LaneBasedNetwork.LaneLayer
             //删除Arc的Surface
             IFeatureCursor curseorSurface;
             IQueryFilter filterSurface = new QueryFilterClass();
-            filterSurface.WhereClause = SurfaceService.ArcIDNm + " = " + arcEty.ArcID;
+            filterSurface.WhereClause = Surface.ArcIDNm + " = " + arcEty.ArcID;
             curseorSurface = _pFeaClsKerb.Search(filterSurface, false);
             IFeature pFeaSurface = curseorSurface.NextFeature();
             while (pFeaSurface != null)
@@ -482,7 +502,7 @@ namespace RoadNetworkSystem.NetworkExtraction.LaneBasedNetwork.LaneLayer
                     }
 
                     IFeature bounFea = boun.CreateBoundary(bounEty, boundryLine);
-                    curBounID = Convert.ToInt32(bounFea.get_Value(_pFeaClsBoundary.FindField(BoundaryService.BoundaryIDNm)));
+                    curBounID = Convert.ToInt32(bounFea.get_Value(_pFeaClsBoundary.FindField(Boundary.BOUNDARYID_NAME)));
 
                     //第一个车道先只生成右侧边界线
                     //更新车道的边界线
@@ -572,7 +592,7 @@ namespace RoadNetworkSystem.NetworkExtraction.LaneBasedNetwork.LaneLayer
                         kerbEty0.Serial = 0;
                         kerbEty0.Other = 0;
                         //修改最右侧的道路边界线的类型
-                        bounFea.set_Value(_pFeaClsBoundary.FindField(BoundaryService.StyleIDNm), Boundary.OUTSIDEBOUNSTYLE);
+                        bounFea.set_Value(_pFeaClsBoundary.FindField(Boundary.STYLEID_NAME), Boundary.OUTSIDEBOUNSTYLE);
                         bounFea.Store();
 
                         IPoint pnt0 = null;
@@ -727,9 +747,10 @@ namespace RoadNetworkSystem.NetworkExtraction.LaneBasedNetwork.LaneLayer
                 surfaceEty.ControlIDs = str;
                 surfaceEty.SurfaceID = 0;
                 surfaceEty.Other = 0;
-
-                surface.CreateSurface(surfaceEty, gon);
-
+                if (gon != null)
+                {
+                    surface.CreateSurface(surfaceEty, gon);
+                }
                 //那就更新CenterLine
                 UpdateCenterLine(arcEty.LinkID);
 
@@ -794,6 +815,11 @@ namespace RoadNetworkSystem.NetworkExtraction.LaneBasedNetwork.LaneLayer
                         //删除旧的CenterLine
                         LaneFeatureService lane = new LaneFeatureService(_pFeaClsLane, 0);
                         IFeature laneFea = lane.QueryFeatureBuRule(sameArcID, 0);
+                        if (laneFea == null)
+                        {
+                            pArcFea = cursor.NextFeature();
+                            continue;
+                        }
                         int centerLineID = Convert.ToInt32(laneFea.get_Value(_pFeaClsLane.FindField(LaneFeatureService.LeftBoundaryIDNm)));
                         BoundaryService boun = new BoundaryService(_pFeaClsBoundary, centerLineID);
                         IFeature bounFea = boun.GetFeature();
@@ -824,6 +850,11 @@ namespace RoadNetworkSystem.NetworkExtraction.LaneBasedNetwork.LaneLayer
                         oppArcID = Convert.ToInt32(pArcFea.get_Value(_pFeaClsArc.FindField(Arc.ArcIDNm)));
                         KerbService kerb = new KerbService(_pFeaClsKerb, 0);
                         IFeature kerb3 = kerb.GetKerbByArcAndSerial(oppArcID, 3);
+                        if (kerb3 == null)
+                        {
+                            pArcFea = cursor.NextFeature();
+                            continue;
+                        }
                         oppKerb3 = kerb3.ShapeCopy as IPoint;
 
                         if (centerLiuneDltFlag == false)
@@ -891,7 +922,7 @@ namespace RoadNetworkSystem.NetworkExtraction.LaneBasedNetwork.LaneLayer
             //创建道路中心线
             BoundaryService boun1 = new BoundaryService(_pFeaClsBoundary, 0);
             IFeature bounFea1 = boun1.CreateBoundary(bounEty, cneterLine);
-            int bounID = Convert.ToInt32(bounFea1.get_Value(_pFeaClsBoundary.FindField(BoundaryService.BoundaryIDNm)));
+            int bounID = Convert.ToInt32(bounFea1.get_Value(_pFeaClsBoundary.FindField(Boundary.BOUNDARYID_NAME)));
 
             LaneFeatureService lane1 = new LaneFeatureService(_pFeaClsLane, 0);
 

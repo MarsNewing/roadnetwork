@@ -82,11 +82,15 @@ namespace RoadNetworkSystem.ElementService.LaneBasedNetwork.NetworkBuilder
                 Link clockLinkEty = new Link();
                 clockLinkEty = clockLinkEty.Copy(linkMasterEty);
 
-                //下一段Arc
+                //上一段Arc
                 IFeature preArcFea = LogicalConnection.GetEntranceArc(_pFeaClsArc, preNodeEty.ID, clockLinkEty);
                 ArcService preArc = new ArcService(_pFeaClsArc, 0);
-                if (preArcFea != null)
-                { }
+                if (preArcFea == null)
+                {
+                    preNodeCurInfor.preArcEty = null;
+                    preNodeCurInfor.clockAngle = 0;
+                    return preNodeCurInfor;
+                }
 
                 preArcEty = preArc.GetArcEty(preArcFea);
                 preArc = new ArcService(_pFeaClsArc, preArcEty.ArcID);

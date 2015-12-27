@@ -23,6 +23,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LinkLayer;
+using RoadNetworkSystem.NetworkExtraction.LaneBasedNetwork.LaneLayer;
+using RoadNetworkSystem.DataModel.RoadSign;
 
 namespace RoadNetworkSystem.NetworkExtraction.Road2BasicRoadNetwork
 {
@@ -37,6 +39,18 @@ namespace RoadNetworkSystem.NetworkExtraction.Road2BasicRoadNetwork
         IFeatureClass _feaClsLink;
         IFeatureClass _feaClsNode;
         IFeatureClass _feaClsArc;
+
+        IFeatureClass _feaClsLane;
+        IFeatureClass _feaClsConnector;
+        IFeatureClass _feaClsKerb;
+
+        IFeatureClass _feaClsSurface;
+        IFeatureClass _feaClsBoundary;
+        IFeatureClass _feaClsTurnArrow;
+
+        IFeatureClass _feaClsStopLine;
+
+
 
         public Road2BasicRoadNetwork(Form1 frm1)
         {
@@ -89,8 +103,40 @@ namespace RoadNetworkSystem.NetworkExtraction.Road2BasicRoadNetwork
             LinkLayerFactory linkLayerFactory = new LaneBasedNetwork.LinkLayer.LinkLayerFactory(_feaClsLink, _feaClsNode, _feaClsArc);
             linkLayerFactory.createNodesForLinkAndArc();
 
+
+
             //3   Link层到  Lane层
 
+            _feaClsBoundary = DatabaseDesigner.CreateBoudaryClass(_feaClsBreakPoint.FeatureDataset);
+            _feaClsConnector = DatabaseDesigner.CreateConnectorClass(_feaClsBreakPoint.FeatureDataset);
+            _feaClsKerb = DatabaseDesigner.CreateKerbClass(_feaClsBreakPoint.FeatureDataset);
+
+
+            _feaClsLane = DatabaseDesigner.CreateLaneClass(_feaClsBreakPoint.FeatureDataset);
+            _feaClsStopLine = DatabaseDesigner.CreateStopLineClass(_feaClsBreakPoint.FeatureDataset);
+            _feaClsSurface = DatabaseDesigner.CreateSurfaceClass(_feaClsBreakPoint.FeatureDataset);
+
+            _feaClsTurnArrow = DatabaseDesigner.CreateTurnArrowClass(_feaClsBreakPoint.FeatureDataset);
+
+            Dictionary<string, IFeatureClass> feaClsDic = new Dictionary<string, IFeatureClass>();
+            feaClsDic.Add(Arc.ArcFeatureName, _feaClsArc);
+            feaClsDic.Add(Boundary.BoundaryName, _feaClsBoundary);
+            feaClsDic.Add(LaneConnector.ConnectorName, _feaClsConnector);
+
+
+
+            feaClsDic.Add(Node.NodeName, _feaClsNode);
+            feaClsDic.Add(Lane.LaneName, _feaClsLane);
+            feaClsDic.Add(Link.LinkName, _feaClsLink);
+
+            feaClsDic.Add(Kerb.KerbName, _feaClsKerb);
+            feaClsDic.Add(StopLine.StopLineName, _feaClsStopLine);
+            feaClsDic.Add(Surface.SurfaceName, _feaClsSurface);
+
+            feaClsDic.Add(TurnArrow.TurnArrowName, _feaClsTurnArrow);
+
+            LaneLayerFactory laneLayerFactory = new LaneLayerFactory(feaClsDic);
+            laneLayerFactory.CreateLinkTopologyBatch();
         }
 
 

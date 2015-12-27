@@ -7,14 +7,7 @@ namespace RoadNetworkSystem.NetworkElement.RoadSignElement
 {
     class BoundaryService
     {
-        /// <summary>
-        /// 规定了数据模型，请不要在其他类中直接读取数据
-        /// </summary>
-        public const string BoundaryIDNm = "BoundaryID";
-        public const string StyleIDNm = "StyleID";
-        public const string DirNm = "Dir";
-
-        public const string OtherNm = "Other";
+        
         public IFeatureClass FeaClsBoundary;
         public int BouddaryID;
         public BoundaryService(IFeatureClass pFeaClsBoun, int boundaryID)
@@ -26,7 +19,7 @@ namespace RoadNetworkSystem.NetworkElement.RoadSignElement
         public IFeature GetFeature()
         {
             IQueryFilter queryFilter = new QueryFilterClass();
-            queryFilter.WhereClause = String.Format("{0}={1}", BoundaryIDNm, BouddaryID);
+            queryFilter.WhereClause = String.Format("{0}={1}", Boundary.BOUNDARYID_NAME, BouddaryID);
             IFeatureCursor cursor = FeaClsBoundary.Search(queryFilter, false);
             IFeature pFeature = cursor.NextFeature();
             if (pFeature != null)
@@ -44,15 +37,15 @@ namespace RoadNetworkSystem.NetworkElement.RoadSignElement
             Boundary bounEty = new Boundary();
             if (pFeature != null)
             {
-                if (FeaClsBoundary.FindField(BoundaryIDNm) > 0)
-                    bounEty.BoundaryID = Convert.ToInt32(pFeature.get_Value(FeaClsBoundary.FindField(BoundaryIDNm)));
+                if (FeaClsBoundary.FindField(Boundary.BOUNDARYID_NAME) > 0)
+                    bounEty.BoundaryID = Convert.ToInt32(pFeature.get_Value(FeaClsBoundary.FindField(Boundary.BOUNDARYID_NAME)));
 
-                if (FeaClsBoundary.FindField(StyleIDNm) > 0)
-                    bounEty.StyleID = Convert.ToInt32(pFeature.get_Value(FeaClsBoundary.FindField(StyleIDNm)));
-                if (FeaClsBoundary.FindField(DirNm) > 0)
-                    bounEty.Dir = Convert.ToInt32(pFeature.get_Value(FeaClsBoundary.FindField(DirNm)));
-                if (FeaClsBoundary.FindField(OtherNm) > 0)
-                    bounEty.Other = Convert.ToInt32(pFeature.get_Value(FeaClsBoundary.FindField(OtherNm)));
+                if (FeaClsBoundary.FindField(Boundary.STYLEID_NAME) > 0)
+                    bounEty.StyleID = Convert.ToInt32(pFeature.get_Value(FeaClsBoundary.FindField(Boundary.STYLEID_NAME)));
+                if (FeaClsBoundary.FindField(Boundary.DIR_NAME) > 0)
+                    bounEty.Dir = Convert.ToInt32(pFeature.get_Value(FeaClsBoundary.FindField(Boundary.DIR_NAME)));
+                if (FeaClsBoundary.FindField(Boundary.OTHER_NAME) > 0)
+                    bounEty.Other = Convert.ToInt32(pFeature.get_Value(FeaClsBoundary.FindField(Boundary.OTHER_NAME)));
             }
             return bounEty;
         }
@@ -65,25 +58,25 @@ namespace RoadNetworkSystem.NetworkElement.RoadSignElement
             if (bounEty.BoundaryID > 0)
             {
                 bounID = bounEty.BoundaryID;
-                if (FeaClsBoundary.FindField(BoundaryIDNm) >= 0)
-                    bounFeature.set_Value(FeaClsBoundary.FindField(BoundaryIDNm), bounEty.BoundaryID);
+                if (FeaClsBoundary.FindField(Boundary.BOUNDARYID_NAME) >= 0)
+                    bounFeature.set_Value(FeaClsBoundary.FindField(Boundary.BOUNDARYID_NAME), bounEty.BoundaryID);
             }
             else
             {
 
-                if (FeaClsBoundary.FindField(BoundaryIDNm) >= 0)
-                    bounFeature.set_Value(FeaClsBoundary.FindField(BoundaryIDNm), bounFeature.OID);
+                if (FeaClsBoundary.FindField(Boundary.BOUNDARYID_NAME) >= 0)
+                    bounFeature.set_Value(FeaClsBoundary.FindField(Boundary.BOUNDARYID_NAME), bounFeature.OID);
                 bounID = bounFeature.OID;
             }
-            if (FeaClsBoundary.FindField(StyleIDNm) >= 0)
-                bounFeature.set_Value(FeaClsBoundary.FindField(StyleIDNm), bounEty.StyleID);
+            if (FeaClsBoundary.FindField(Boundary.STYLEID_NAME) >= 0)
+                bounFeature.set_Value(FeaClsBoundary.FindField(Boundary.STYLEID_NAME), bounEty.StyleID);
 
 
-            if (FeaClsBoundary.FindField(DirNm) >= 0)
-                bounFeature.set_Value(FeaClsBoundary.FindField(DirNm), bounEty.Dir);
+            if (FeaClsBoundary.FindField(Boundary.DIR_NAME) >= 0)
+                bounFeature.set_Value(FeaClsBoundary.FindField(Boundary.DIR_NAME), bounEty.Dir);
 
-            if (FeaClsBoundary.FindField(OtherNm) >= 0)
-                bounFeature.set_Value(FeaClsBoundary.FindField(OtherNm), bounEty.Other);
+            if (FeaClsBoundary.FindField(Boundary.OTHER_NAME) >= 0)
+                bounFeature.set_Value(FeaClsBoundary.FindField(Boundary.OTHER_NAME), bounEty.Other);
 
             bounFeature.Shape = line;
             bounFeature.Store();

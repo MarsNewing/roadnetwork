@@ -459,10 +459,18 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LaneLayer
                                             toLanePosition = i;
 
                                             fromLaneFea = lane.QueryFeatureBuRule(fromArcID, fromLanePostition);
+                                            if (fromLaneFea == null)
+                                            {
+                                                return;
+                                            }
                                             fromLaneID = Convert.ToInt32(fromLaneFea.get_Value(pFeaClsLane.FindField(LaneFeatureService.LaneIDNm)));
                                             fromLine = fromLaneFea.ShapeCopy as IPolyline;
 
                                             toLaneFea = lane.QueryFeatureBuRule(toArcID, toLanePosition);
+                                            if (toLaneFea == null)
+                                            {
+                                                return;
+                                            }
                                             toLaneID = Convert.ToInt32(toLaneFea.get_Value(pFeaClsLane.FindField(LaneFeatureService.LaneIDNm)));
                                             toLine = toLaneFea.ShapeCopy as IPolyline;
                                             bezierLine = GetConnectorShape(fromLine, toLine, null, true);
@@ -488,10 +496,18 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LaneLayer
                                                 toLanePosition = i;
 
                                                 fromLaneFea = lane.QueryFeatureBuRule(fromArcID, fromLanePostition);
+                                                if (fromLaneFea == null)
+                                                {
+                                                    return;
+                                                }
                                                 fromLaneID = Convert.ToInt32(fromLaneFea.get_Value(pFeaClsLane.FindField(LaneFeatureService.LaneIDNm)));
                                                 fromLine = fromLaneFea.ShapeCopy as IPolyline;
 
                                                 toLaneFea = lane.QueryFeatureBuRule(toArcID, toLanePosition);
+                                                if (toLaneFea == null)
+                                                {
+                                                    return;
+                                                }
                                                 toLaneID = Convert.ToInt32(toLaneFea.get_Value(pFeaClsLane.FindField(LaneFeatureService.LaneIDNm)));
                                                 toLine = toLaneFea.ShapeCopy as IPolyline;
                                                 bezierLine = GetConnectorShape(fromLine, toLine, null, true);
@@ -506,9 +522,17 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LaneLayer
                                                 toLanePosition = toArcLaneNum - i - 1;
 
                                                 fromLaneFea = lane.QueryFeatureBuRule(fromArcID, fromLanePostition);
+                                                if (fromLaneFea == null)
+                                                {
+                                                    return;
+                                                }
                                                 fromLaneID = Convert.ToInt32(fromLaneFea.get_Value(pFeaClsLane.FindField(LaneFeatureService.LaneIDNm)));
                                                 fromLine = fromLaneFea.ShapeCopy as IPolyline;
 
+                                                if (toLaneFea == null)
+                                                {
+                                                    return;
+                                                }
                                                 toLaneFea = lane.QueryFeatureBuRule(toArcID, toLanePosition);
                                                 toLaneID = Convert.ToInt32(toLaneFea.get_Value(pFeaClsLane.FindField(LaneFeatureService.LaneIDNm)));
                                                 toLine = toLaneFea.ShapeCopy as IPolyline;
@@ -528,10 +552,18 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LaneLayer
                                                 toLanePosition = (int)rdm.Next((int)toArcLaneNum / 2, (fromArcLaneNum - (int)(toArcLaneNum / 2) - 1));
 
                                                 fromLaneFea = lane.QueryFeatureBuRule(fromArcID, fromLanePostition);
+                                                if (fromLaneFea == null)
+                                                {
+                                                    return;
+                                                }
                                                 fromLaneID = Convert.ToInt32(fromLaneFea.get_Value(pFeaClsLane.FindField(LaneFeatureService.LaneIDNm)));
                                                 fromLine = fromLaneFea.ShapeCopy as IPolyline;
 
                                                 toLaneFea = lane.QueryFeatureBuRule(toArcID, toLanePosition);
+                                                if (toLaneFea == null)
+                                                {
+                                                    return;
+                                                }
                                                 toLaneID = Convert.ToInt32(toLaneFea.get_Value(pFeaClsLane.FindField(LaneFeatureService.LaneIDNm)));
                                                 toLine = toLaneFea.ShapeCopy as IPolyline;
                                                 bezierLine = GetConnectorShape(fromLine, toLine, null, true);
@@ -557,10 +589,18 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LaneLayer
                                                 toLanePosition = i;
 
                                                 fromLaneFea = lane.QueryFeatureBuRule(fromArcID, fromLanePostition);
+                                                if (fromLaneFea == null)
+                                                {
+                                                    return;
+                                                }
                                                 fromLaneID = Convert.ToInt32(fromLaneFea.get_Value(pFeaClsLane.FindField(LaneFeatureService.LaneIDNm)));
                                                 fromLine = fromLaneFea.ShapeCopy as IPolyline;
 
                                                 toLaneFea = lane.QueryFeatureBuRule(toArcID, toLanePosition);
+                                                if (toLaneFea == null)
+                                                {
+                                                    return;
+                                                }
                                                 toLaneID = Convert.ToInt32(toLaneFea.get_Value(pFeaClsLane.FindField(LaneFeatureService.LaneIDNm)));
                                                 toLine = toLaneFea.ShapeCopy as IPolyline;
                                                 bezierLine = GetConnectorShape( fromLine, toLine,null,true);
@@ -575,10 +615,18 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LaneLayer
                                                 toLanePosition = toArcLaneNum - i - 1;
 
                                                 fromLaneFea = lane.QueryFeatureBuRule(fromArcID, fromLanePostition);
+                                                if (fromLaneFea == null)
+                                                {
+                                                    return;
+                                                }
                                                 fromLaneID = Convert.ToInt32(fromLaneFea.get_Value(pFeaClsLane.FindField(LaneFeatureService.LaneIDNm)));
                                                 fromLine = fromLaneFea.ShapeCopy as IPolyline;
 
                                                 toLaneFea = lane.QueryFeatureBuRule(toArcID, toLanePosition);
+                                                if (toLaneFea == null)
+                                                {
+                                                    return;
+                                                }
                                                 toLaneID = Convert.ToInt32(toLaneFea.get_Value(pFeaClsLane.FindField(LaneFeatureService.LaneIDNm)));
                                                 toLine = toLaneFea.ShapeCopy as IPolyline;
                                                 bezierLine = GetConnectorShape( fromLine, toLine,null,true);
@@ -598,10 +646,20 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LaneLayer
                                                 toLanePosition = i;
 
                                                 fromLaneFea = lane.QueryFeatureBuRule(fromArcID, fromLanePostition);
+                                                if (fromLaneFea == null)
+                                                {
+                                                    return;
+                                                }
+
                                                 fromLaneID = Convert.ToInt32(fromLaneFea.get_Value(pFeaClsLane.FindField(LaneFeatureService.LaneIDNm)));
                                                 fromLine = fromLaneFea.ShapeCopy as IPolyline;
 
                                                 toLaneFea = lane.QueryFeatureBuRule(toArcID, toLanePosition);
+                                                if (toLaneFea == null)
+                                                {
+                                                    return;
+                                                }
+
                                                 toLaneID = Convert.ToInt32(toLaneFea.get_Value(pFeaClsLane.FindField(LaneFeatureService.LaneIDNm)));
                                                 toLine = toLaneFea.ShapeCopy as IPolyline;
                                                 bezierLine = GetConnectorShape(fromLine, toLine, null, true);
@@ -623,10 +681,18 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LaneLayer
                                         toLanePosition = i;
 
                                         fromLaneFea = lane.QueryFeatureBuRule(fromArcID, fromLanePostition);
+                                        if (fromLaneFea == null)
+                                        {
+                                            return;
+                                        }
                                         fromLaneID = Convert.ToInt32(fromLaneFea.get_Value(pFeaClsLane.FindField(LaneFeatureService.LaneIDNm)));
                                         fromLine = fromLaneFea.ShapeCopy as IPolyline;
 
                                         toLaneFea = lane.QueryFeatureBuRule(toArcID, toLanePosition);
+                                        if (toLaneFea == null)
+                                        {
+                                            return;
+                                        }
                                         toLaneID = Convert.ToInt32(toLaneFea.get_Value(pFeaClsLane.FindField(LaneFeatureService.LaneIDNm)));
                                         toLine = toLaneFea.ShapeCopy as IPolyline;
                                         bezierLine = GetConnectorShape(fromLine, toLine, null, true);
@@ -651,10 +717,18 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LaneLayer
                                         toLanePosition = i;
 
                                         fromLaneFea = lane.QueryFeatureBuRule(fromArcID, fromLanePostition);
+                                        if (fromLaneFea == null)
+                                        {
+                                            return;
+                                        }
                                         fromLaneID = Convert.ToInt32(fromLaneFea.get_Value(pFeaClsLane.FindField(LaneFeatureService.LaneIDNm)));
                                         fromLine = fromLaneFea.ShapeCopy as IPolyline;
 
                                         toLaneFea = lane.QueryFeatureBuRule(toArcID, toLanePosition);
+                                        if(toLaneFea == null)
+                                        {
+                                            return;
+                                        }
                                         toLaneID = Convert.ToInt32(toLaneFea.get_Value(pFeaClsLane.FindField(LaneFeatureService.LaneIDNm)));
                                         toLine = toLaneFea.ShapeCopy as IPolyline;
                                         bezierLine = GetConnectorShape(fromLine, toLine, null, true);
@@ -673,10 +747,19 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LaneLayer
                                         toLanePosition = i;
 
                                         fromLaneFea = lane.QueryFeatureBuRule(fromArcID, fromLanePostition);
+                                        if (fromLaneFea == null)
+                                        {
+                                            return;
+                                        }
                                         fromLaneID = Convert.ToInt32(fromLaneFea.get_Value(pFeaClsLane.FindField(LaneFeatureService.LaneIDNm)));
                                         fromLine = fromLaneFea.ShapeCopy as IPolyline;
 
                                         toLaneFea = lane.QueryFeatureBuRule(toArcID, toLanePosition);
+                                        if (toLaneFea == null)
+                                        {
+                                            return;
+                                        }
+
                                         toLaneID = Convert.ToInt32(toLaneFea.get_Value(pFeaClsLane.FindField(LaneFeatureService.LaneIDNm)));
                                         toLine = toLaneFea.ShapeCopy as IPolyline;
                                         bezierLine = GetConnectorShape(fromLine, toLine, null, true);

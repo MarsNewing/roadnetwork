@@ -85,6 +85,14 @@ namespace RoadNetworkSystem.ElementService.LaneBasedNetwork.NetworkBuilder
 
                 //下一段Arc
                 IFeature nextArcFea = LogicalConnection.GetExitArc(_pFeaClsArc, nextNodeEty.ID, antiClockLinkEty);
+
+                if (nextArcFea == null)
+                {
+                    nextNodeCurInfor.nextArcEty = null;
+                    nextNodeCurInfor.antiClockAngle = 0;
+                    return nextNodeCurInfor;
+                }
+
                 ArcService nextArc = new ArcService(_pFeaClsArc, 0);
 
                 nextArcEty = nextArc.GetArcEty(nextArcFea);

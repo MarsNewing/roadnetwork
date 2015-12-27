@@ -95,12 +95,28 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LinkLayer
                 }
                 IFeature temLinkFeature = Create(link, line);
                 IPolyline temLinkLine = temLinkFeature.Shape as IPolyline;
+                LinkService linkService = new LinkService(_pFeaClsLink, 0);
+                LinkMaster temLInkMaster = linkService.GetEntity(temLinkFeature);
+                Link temLink = new Link();
+                temLink = temLink.Copy(temLInkMaster);
+
                 ArcService sameArcService = new ArcService(pFeaClsArc, 0);
                 if(sameArc != null)
                 {
-                   IPolyline sameArcLine = LineHelper.CreateLineByLRS(temLinkLine,sameArc.LaneNum *Lane.LANE_WEIDTH/2,
+                    sameArc.LinkID = temLink.ID;
+                    IPolyline sameArcLine = LineHelper.CreateLineByLRS(temLinkLine,sameArc.LaneNum *Lane.LANE_WEIDTH/2,
                        ArcService.ARC_CUT_PERCENTAGE*temLinkLine.Length,ArcService.ARC_CUT_PERCENTAGE*temLinkLine.Length);
-                   sameArcService.CreateArc(sameArc, sameArcLine);
+                    sameArcService.CreateArc(sameArc, sameArcLine);
+                }
+
+                if (oppositionArc != null)
+                {
+                    oppositionArc.LinkID = temLink.ID;
+                    IPolyline oppositionArcLine = LineHelper.CreateLineByLRS(temLinkLine, sameArc.LaneNum * Lane.LANE_WEIDTH / 2,
+                       ArcService.ARC_CUT_PERCENTAGE * temLinkLine.Length, ArcService.ARC_CUT_PERCENTAGE * temLinkLine.Length);
+
+                    oppositionArcLine.ReverseOrientation();
+                    sameArcService.CreateArc(oppositionArc, oppositionArcLine);
                 }
             }
 

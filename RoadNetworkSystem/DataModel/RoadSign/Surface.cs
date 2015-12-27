@@ -6,15 +6,11 @@ namespace RoadNetworkSystem.DataModel.RoadSign
 {
     class Surface
     {
-        /// <summary>
-        /// 规定了数据模型，请不要在其他类中直接读取数据
-        /// </summary>
-        //public const string SurfaceIDNm = "SurfaceID";
-        //public const string ArcIDNm = "ArcID";
-        //public const string ControlIDsNm = "ControlIDs";
+        public const string SurfaceIDNm = "SurfaceID";
+        public const string ArcIDNm = "ArcID";
+        public const string ControlIDsNm = "ControlIDs";
+        public const string OtherNm = "Other";
 
-
-        //public const string OtherNm = "Other";
         public const string SurfaceName = "Surface";
 
 

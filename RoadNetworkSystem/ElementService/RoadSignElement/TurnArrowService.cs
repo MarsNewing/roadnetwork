@@ -14,7 +14,7 @@ namespace RoadNetworkSystem.NetworkElement.RoadSignElement
     {
         private double ARROWPOSITION = 8;
         public const string ArrowIDNm = "ArrowID";
-        public const string StyleIDNm = "StyleID";
+        public const string STYLEID_NAME = "StyleID";
         public const string ArrowTypeNm = "ArrowType";
 
         public const string SerialNm = "Serial";
@@ -57,8 +57,8 @@ namespace RoadNetworkSystem.NetworkElement.RoadSignElement
             {
                 if (FeaClsTurnArrow.FindField(ArrowIDNm) > 0)
                     bounEty.ArrowID = Convert.ToInt32(pFeature.get_Value(FeaClsTurnArrow.FindField(ArrowIDNm)));
-                if (FeaClsTurnArrow.FindField(StyleIDNm) > 0)
-                    bounEty.StyleID = Convert.ToInt32(pFeature.get_Value(FeaClsTurnArrow.FindField(StyleIDNm)));
+                if (FeaClsTurnArrow.FindField(Boundary.STYLEID_NAME) > 0)
+                    bounEty.StyleID = Convert.ToInt32(pFeature.get_Value(FeaClsTurnArrow.FindField(Boundary.STYLEID_NAME)));
                 if (FeaClsTurnArrow.FindField(ArrowTypeNm) > 0)
                     bounEty.ArrowType = Convert.ToInt32(pFeature.get_Value(FeaClsTurnArrow.FindField(ArrowTypeNm)));
 
@@ -98,8 +98,8 @@ namespace RoadNetworkSystem.NetworkElement.RoadSignElement
                     arrowFeature.set_Value(FeaClsTurnArrow.FindField(ArrowIDNm), arrowFeature.OID);
             }
 
-            if (FeaClsTurnArrow.FindField(StyleIDNm) >= 0)
-                arrowFeature.set_Value(FeaClsTurnArrow.FindField(StyleIDNm), turnArrowEty.StyleID);
+            if (FeaClsTurnArrow.FindField(Boundary.STYLEID_NAME) >= 0)
+                arrowFeature.set_Value(FeaClsTurnArrow.FindField(Boundary.STYLEID_NAME), turnArrowEty.StyleID);
             if (FeaClsTurnArrow.FindField(ArrowTypeNm) >= 0)
                 arrowFeature.set_Value(FeaClsTurnArrow.FindField(ArrowTypeNm), turnArrowEty.ArrowType);
 

@@ -21,14 +21,15 @@ namespace RoadNetworkSystem.DataModel.RoadSign
         public int BoundaryID { get; set; }
         public int StyleID { get; set; }
         public int Dir { get; set; }
+        public int Other { get; set; }
 
 
         public const string BOUNDARYID_NAME = "BoundaryID";
         public const string STYLEID_NAME = "StyleID";
         public const string DIR_NAME = "Dir";
+        public const string OTHER_NAME = "Other";
   
-        public int Other { get; set; }
-
+        
         /// <summary>
         /// 复制实体
         /// </summary>
