@@ -1,5 +1,6 @@
 ﻿using ESRI.ArcGIS.Geodatabase;
 using ESRI.ArcGIS.Geometry;
+using RoadNetworkSystem.ADO.Access;
 using RoadNetworkSystem.DataModel.LaneBasedNetwork;
 using RoadNetworkSystem.GIS;
 using RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LaneLayer;
@@ -251,32 +252,23 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LinkLayer
 
         public IFeature QueryArcFeatureByRule(string QueryStr)
         {
-
-            IFeatureCursor cursor = null;
-            IQueryFilter filer = new QueryFilterClass();
-            filer.WhereClause = QueryStr;
-            filer.SubFields = "LinkID,FlowDir";
-            try
+            OleDbConnection conn = AccessHelper.OpenConnection(FeaClsArc.FeatureDataset.Workspace.PathName);
+            string sql = "Select * from " + Arc.ArcFeatureName + " where " + QueryStr;
+            OleDbCommand cmd = new OleDbCommand(sql,conn);
+            OleDbDataReader readrer = cmd.ExecuteReader();
+            if (readrer.Read())
             {
-
-                cursor = FeaClsArc.Search(filer, true);
+                int oid = Convert.ToInt32(readrer["OBJECTID"]);
+                readrer.Close();
+                readrer.Dispose();
+                cmd.Dispose();
+                return FeaClsArc.GetFeature(oid);
             }
-            catch (Exception ex)
+            else 
             {
-                MessageBox.Show(ex.ToString());
-
-            }
-            IFeature arcFeature=null;
-                arcFeature= cursor.NextFeature();
-            if (arcFeature != null)
-            {
-                int arcID = Convert.ToInt32(arcFeature.get_Value(arcFeature.Fields.FindField(Arc.ArcIDNm)));
-
-                return arcFeature;
-                
-            }
-            else
-            {
+                readrer.Close();
+                readrer.Dispose();
+                cmd.Dispose();
                 return null;
             }
         }

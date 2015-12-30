@@ -182,6 +182,172 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.Connection
              
         }
 
+
+
+        public static int getPreNodeLateralOffsideLanes(IFeatureClass pFeaClsLink,IFeatureClass pFeaClsArc,IFeatureClass pFeaClsNode, 
+            Node preNode, int currentArcId)
+        {
+            Arc[] entranceArcs = GetNodeEntranceArcs(pFeaClsLink, pFeaClsArc, preNode);
+            List<Arc> entranceArcList = filterInvalidArcs(entranceArcs);
+
+            ArcService arcService = new ArcService(pFeaClsArc, currentArcId);
+            IFeature arcFeature = arcService.GetArcFeature();
+            Arc currentArc = arcService.GetArcEty(arcFeature);
+
+            //上游没有Arc,或者当前为双向的
+            if (entranceArcList == null || entranceArcList.Count == 0 || (!isOnewayArc(currentArc, pFeaClsLink)))
+            {
+                return 0;
+            }
+            else
+            {
+                if (entranceArcList.Count == 1)
+                {
+                    int entranceArcId = entranceArcList[0].ArcID;
+
+                    Arc[] exitArcs = GetNodeExitArcs(pFeaClsLink, pFeaClsArc, preNode);
+                    List<Arc> exitArcList = filterInvalidArcs(exitArcs);
+                    if (exitArcList.Count == 1)
+                    {
+                        return 0;
+                    }
+
+
+                    int clockLinkId = 0;
+                    double clockAngle = 0;
+                    PhysicalConnection.GetClockLinkInfor(entranceArcList[0].LinkID, preNode, ref clockLinkId, ref clockAngle);
+
+                    Arc leftestArc = getRequiredArcByLinkId(exitArcList, clockLinkId);
+                    int lateralLaneNum = leftestArc.LaneNum;
+                    int loop = 0;
+                    while (clockLinkId != currentArc.LinkID && loop < 5)
+                    {
+                        PhysicalConnection.GetClockLinkInfor(clockLinkId, preNode, ref clockLinkId, ref clockAngle);
+                        Arc cursorArc = getRequiredArcByLinkId(exitArcList, clockLinkId);
+                        if (cursorArc.ArcID != currentArc.ArcID)
+                        {
+                            lateralLaneNum += cursorArc.LaneNum;
+                        }
+                        loop++;
+                    }
+                    return lateralLaneNum;
+                }
+                else
+                {
+                    return 0;
+                }
+            }
+        }
+
+
+        public static List<Arc> filterInvalidArcs(Arc[] arcs)
+        {
+            List<Arc> arcList = new List<Arc>();
+            foreach (Arc arc in arcs)
+            {
+                if (arc != null)
+                {
+                    arcList.Add(arc);
+                }
+            }
+
+            return arcList;
+        }
+
+        public static int getNextNodeLateralOffsideLanes(IFeatureClass pFeaClsLink, IFeatureClass pFeaClsArc, IFeatureClass pFeaClsNode, 
+            Node nextNode, int currentArcId)
+        {
+
+            Arc[] exitArcs = GetNodeExitArcs(pFeaClsLink, pFeaClsArc, nextNode);
+            List<Arc> exitArcList = filterInvalidArcs(exitArcs);
+
+            ArcService arcService = new ArcService(pFeaClsArc, currentArcId);
+            IFeature arcFeature = arcService.GetArcFeature();
+            Arc currentArc = arcService.GetArcEty(arcFeature);
+
+            //上游没有Arc,或者当前为双向的
+            if (exitArcList == null || exitArcList.Count == 0 || (!isOnewayArc(currentArc, pFeaClsLink)))
+            {
+                return 0;
+            }
+            else
+            {
+                if (exitArcList.Count == 1)
+                {
+                    int entranceArcId = exitArcList[0].ArcID;
+
+
+                    Arc[] entranceArcs = GetNodeEntranceArcs(pFeaClsLink, pFeaClsArc, nextNode);
+                    List<Arc> entranceArcList = filterInvalidArcs(entranceArcs);
+
+                    if (entranceArcList.Count == 1)
+                    {
+                        return 0;
+                    }
+
+                    int antiCclockLinkId = 0;
+                    double antiClockAngle = 0;
+
+                    PhysicalConnection.GetAntiClockLinkInfor(exitArcList[0].LinkID, nextNode, ref antiCclockLinkId, ref antiClockAngle);
+
+                    Arc leftestArc = getRequiredArcByLinkId(entranceArcList, antiCclockLinkId);
+                    int lateralLaneNum = leftestArc.LaneNum;
+                    int loop = 0;
+                    while (antiCclockLinkId != currentArc.LinkID && loop < 5)
+                    {
+                        PhysicalConnection.GetAntiClockLinkInfor(antiCclockLinkId, nextNode, ref antiCclockLinkId, ref antiClockAngle);
+                        Arc cursorArc = getRequiredArcByLinkId(entranceArcList, antiCclockLinkId);
+                        if (cursorArc.ArcID != currentArc.ArcID)
+                        {
+                            lateralLaneNum += cursorArc.LaneNum;
+                        }
+                        loop++;
+                    }
+                    return lateralLaneNum;
+                }
+                else
+                {
+                    return 0;
+                }
+            }
+        }
+
+
+        private static Arc getRequiredArcByLinkId(List<Arc> arcs, int linkId)
+        {
+            foreach (Arc temArc in arcs)
+            {
+                if (temArc.LinkID == linkId)
+                {
+                    return temArc;
+                }
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// 判断Arc是否为单向
+        /// </summary>
+        /// <param name="currentArc"></param>
+        /// <param name="pFeaClsLink"></param>
+        /// <returns></returns>
+        public static bool isOnewayArc(Arc currentArc,IFeatureClass pFeaClsLink)
+        {
+            LinkService linkService = new LinkService(pFeaClsLink, currentArc.LinkID);
+            IFeature linkFea = linkService.GetFeature();
+            LinkMaster linkMaster = linkService.GetEntity(linkFea);
+            Link link = new Link();
+            link = link.Copy(linkMaster);
+            if (link.FlowDir == Link.FLOWDIR_OPPOSITION || link.FlowDir == Link.FLOWDIR_SAME)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
         /// <summary>
         /// 获取给定交叉口和入口Link的入口Arc
         /// </summary>

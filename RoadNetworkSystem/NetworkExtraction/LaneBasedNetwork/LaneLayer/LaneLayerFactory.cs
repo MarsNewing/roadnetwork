@@ -307,7 +307,29 @@ namespace RoadNetworkSystem.NetworkExtraction.LaneBasedNetwork.LaneLayer
             //System.GC.WaitForPendingFinalizers();
             #endregion ----------------------------删除旧的Kerb Surface--------------------------------------------------
 
-            double curWidth = 0;
+            if (arcEty.ArcID == 10)
+            {
+                int text = 1;
+            }
+
+            //notice 存在这种情况：y字形交叉口，均为单向，获取下游右侧分支的的起始车道的位置
+            int nextLateralLaneNum = 0;
+            int preLateralLaneNum = 0;
+            if (nextNodeCutInfor.nextArcEty != null)
+            {
+                nextLateralLaneNum = LogicalConnection.getNextNodeLateralOffsideLanes(_pFeaClsLink, _pFeaClsArc, _pFeaClsNode, 
+                    nextNodeCutInfor.nextNodeEty, arcEty.ArcID);
+            }
+            
+            if(preNodeCutInfor.preArcEty != null)
+            {
+                preLateralLaneNum = LogicalConnection.getPreNodeLateralOffsideLanes(_pFeaClsLink, _pFeaClsArc, _pFeaClsNode, 
+                    preNodeCutInfor.preNodeEty, arcEty.ArcID);
+            }
+
+            
+            int lateralLaneNum = nextLateralLaneNum > preLateralLaneNum ? nextLateralLaneNum : preLateralLaneNum;
+            double curWidth = lateralLaneNum * Lane.LANE_WEIDTH;
 
             //当前车道右侧边界线
             int curBounID = 0;
@@ -672,8 +694,6 @@ namespace RoadNetworkSystem.NetworkExtraction.LaneBasedNetwork.LaneLayer
             #endregion ----------------------------2 生成Arc的Lane、Boundary、StopLine、Kerb--------------------------------------------------
         }
 
-
-
         /// <summary>
         /// 更新Arc所有的拓扑，用于当前Arc变化后，更新上游或下游的Arc
         /// </summary>
@@ -725,6 +745,8 @@ namespace RoadNetworkSystem.NetworkExtraction.LaneBasedNetwork.LaneLayer
 
                     nextNodeCutInfor = nextNodeCutInforService.GetNextNodeCutInfor(fNodeEty, arcEty, linkEty);
                 }
+
+
                 createLaneTopo(linkFea, linkEty.FlowDir, arcEty, preNodeCutInfor, nextNodeCutInfor);
 
                 SurfaceService surface = new SurfaceService(_pFeaClsSurface, 0);
