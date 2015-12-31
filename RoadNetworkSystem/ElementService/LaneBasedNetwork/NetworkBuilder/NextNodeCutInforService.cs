@@ -36,6 +36,7 @@ namespace RoadNetworkSystem.ElementService.LaneBasedNetwork.NetworkBuilder
             nextNodeCurInfor.cutType = -1;
             nextNodeCurInfor.nextArcEty = new Arc();
             nextNodeCurInfor.curArcID = curArcEty.ArcID;
+            
 
             int cutType = -1;
 
@@ -89,6 +90,7 @@ namespace RoadNetworkSystem.ElementService.LaneBasedNetwork.NetworkBuilder
                 if (nextArcFea == null)
                 {
                     nextNodeCurInfor.nextArcEty = null;
+                    nextNodeCurInfor.nextNodeEty = nextNodeEty;
                     nextNodeCurInfor.antiClockAngle = 0;
                     return nextNodeCurInfor;
                 }

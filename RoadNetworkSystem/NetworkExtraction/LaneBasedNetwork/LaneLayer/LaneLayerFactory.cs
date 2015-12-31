@@ -117,6 +117,10 @@ namespace RoadNetworkSystem.NetworkExtraction.LaneBasedNetwork.LaneLayer
             PreNodeCutInforService preNodeCutInforService = new PreNodeCutInforService(_pFeaClsLink, _pFeaClsArc);
             PreNodeCutInfor samePreNodeCutInfor = preNodeCutInforService.GetPreNodeCutInfor(fNode, arc, link);
 
+            if (arc.ArcID == 70)
+            {
+                int test = 0;
+            }
             NextNodeCutInforService nextNodeCutInforService = new NextNodeCutInforService(_pFeaClsLink, _pFeaClsArc);
             NextNodeCutInfor sameNextNodeCutInfor = nextNodeCutInforService.GetNextNodeCutInfor(tNode, arc, link);
             //  2.-----------------------创建与Link同向的车道、边界线、Kerb----------------------------------------
@@ -650,40 +654,48 @@ namespace RoadNetworkSystem.NetworkExtraction.LaneBasedNetwork.LaneLayer
 
                     #region ********************* 2.5.3 创建StopLine***************************
 
-                    //路段数大于2时，才生产停车线   
-                    if (nextNodeCutInfor.nextNodeEty.AdjIDs.Split('\\').Length > 2)
+                    try
                     {
 
-                        if (arcEty.FlowDir == 1)
+                        //路段数大于2时，才生产停车线   
+                        if (nextNodeCutInfor.nextNodeEty.AdjIDs.Split('\\').Length > 2)
                         {
-                            rightStopLinePnt = boundryLine.ToPoint;
+
+                            if (arcEty.FlowDir == 1)
+                            {
+                                rightStopLinePnt = boundryLine.ToPoint;
+                            }
+                            else
+                            {
+                                rightStopLinePnt = boundryLine.FromPoint;
+                            }
+
+                            //当前车道的右侧的车道边界线为右侧相邻车道的左侧边界线
+                            leftStopLinePnt = PhysicalTopology.GetNearestPointOnLine(rightStopLinePnt, leftBoundaryLine);
+                            IPointCollection stoplineClt = new PolylineClass();
+                            stoplineClt.AddPoint(leftStopLinePnt);
+                            stoplineClt.AddPoint(rightStopLinePnt);
+                            IPolyline stopLineLine = stoplineClt as IPolyline;
+
+                            leftBoundaryLine = boundryLine;
+
+
+                            StopLineService stopLine = new StopLineService(_pFeaClsStopLine, 0);
+                            StopLine stopLineEty = new StopLine();
+                            stopLineEty.StopLineID = 0;
+                            stopLineEty.ArcID = arcEty.ArcID;
+                            stopLineEty.NodeID = nextNodeCutInfor.nextNodeEty.ID;
+                            stopLineEty.LaneID = newLaneEty.LaneID;
+                            stopLineEty.StyleID = StopLine.STOPLINESTYLE;
+
+                            stopLine.CreateStopLine(stopLineEty, stopLineLine);
                         }
-                        else
-                        {
-                            rightStopLinePnt = boundryLine.FromPoint;
-                        }
 
-                        //当前车道的右侧的车道边界线为右侧相邻车道的左侧边界线
-                        leftStopLinePnt = PhysicalTopology.GetNearestPointOnLine(rightStopLinePnt, leftBoundaryLine);
-                        IPointCollection stoplineClt = new PolylineClass();
-                        stoplineClt.AddPoint(leftStopLinePnt);
-                        stoplineClt.AddPoint(rightStopLinePnt);
-                        IPolyline stopLineLine = stoplineClt as IPolyline;
-
-                        leftBoundaryLine = boundryLine;
-
-
-                        StopLineService stopLine = new StopLineService(_pFeaClsStopLine, 0);
-                        StopLine stopLineEty = new StopLine();
-                        stopLineEty.StopLineID = 0;
-                        stopLineEty.ArcID = arcEty.ArcID;
-                        stopLineEty.NodeID = nextNodeCutInfor.nextNodeEty.ID;
-                        stopLineEty.LaneID = newLaneEty.LaneID;
-                        stopLineEty.StyleID = StopLine.STOPLINESTYLE;
-
-                        stopLine.CreateStopLine(stopLineEty, stopLineLine);
                     }
-
+                    catch (Exception ex)
+                    {
+                        Node temNode2 = nextNodeCutInfor.nextNodeEty;
+                    }
                     #endregion ********************* 2.5.3 创建StopLine***************************
 
                 }

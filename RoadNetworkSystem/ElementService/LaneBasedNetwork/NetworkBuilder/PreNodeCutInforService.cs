@@ -89,6 +89,7 @@ namespace RoadNetworkSystem.ElementService.LaneBasedNetwork.NetworkBuilder
                 {
                     preNodeCurInfor.preArcEty = null;
                     preNodeCurInfor.clockAngle = 0;
+                    preNodeCurInfor.preNodeEty = preNodeEty;
                     return preNodeCurInfor;
                 }
 

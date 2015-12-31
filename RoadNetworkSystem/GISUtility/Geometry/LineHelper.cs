@@ -329,8 +329,13 @@ namespace RoadNetworkSystem.GIS
             CutLineAtPoint(originalLine, point1, out preLine, out postLine);
 
 
+            if (postLine.Length < 0.5)
+            {
+                return null;
+            }
             IPolyline preLine2 = new PolylineClass();
             IPolyline postLine2 = new PolylineClass();
+           
             CutLineAtPoint(postLine, point2, out preLine2, out postLine2);
 
             return preLine2;

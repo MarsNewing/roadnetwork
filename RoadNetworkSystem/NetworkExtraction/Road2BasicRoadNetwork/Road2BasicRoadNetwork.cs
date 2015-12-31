@@ -219,6 +219,10 @@ namespace RoadNetworkSystem.NetworkExtraction.Road2BasicRoadNetwork
                     link.RoadType = road.RoadType;
 
                     IPolyline linkLine = createLinkPolylineForTrafficDisturb(fromBreakPointId,toBreakPointId,pFeatureRoad,isSameDirectionFlag);
+                    if (linkLine == null)
+                    {
+                        continue;
+                    }
 
                     LinkLayerFactory linkLayerFactory = new LinkLayerFactory(_feaClsLink,_feaClsNode,_feaClsArc);
                     if (isSameDirectionFlag)
@@ -263,7 +267,12 @@ namespace RoadNetworkSystem.NetworkExtraction.Road2BasicRoadNetwork
             BreakPointService breakPointService = new BreakPointService(_feaClsBreakPoint, 0);
             breakPointService.getBreakPointPoints(roadLine, fromBreakPointId, toBreakPointId, breakPointRoadLineSameFlag,
                 ref fromBreakPointPoint, ref toBreakPointPoint);
-            
+
+            if (roadLine.Length == 0)
+            {
+                return null;
+            }
+
             return LineHelper.CutPolylineByPointsOnLine(roadLine, fromBreakPointPoint, toBreakPointPoint);
         }
 
@@ -312,6 +321,10 @@ namespace RoadNetworkSystem.NetworkExtraction.Road2BasicRoadNetwork
             IFeature toBreakPointFeature = toBreakPoint.getBreakPointFeature();
 
             IPolyline roadLine = roadFeature.Shape as IPolyline;
+            if (roadLine.Length == 0)
+            {
+                return null;
+            }
             return LineHelper.CutPolylineByPointsOnLine(roadLine, fromBreakPointFeature.Shape as IPoint, toBreakPointFeature.Shape as IPoint);
         }
 
