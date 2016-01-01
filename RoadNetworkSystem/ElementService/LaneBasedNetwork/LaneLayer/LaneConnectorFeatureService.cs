@@ -770,6 +770,11 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LaneLayer
                                         toLine = toLaneFea.ShapeCopy as IPolyline;
                                         bezierLine = GetConnectorShape(fromLine, toLine, null, true);
 
+                                        if (bezierLine == null)
+                                        {
+                                            int test = 0;
+                                        }
+
                                         LaneConnector connectorEntity = InitConnectorEty(0, fromLinkID, toLinkID, fromArcID, toArcID,
                                             fromArcDir, toArcDir, fromLaneID, toLaneID, TurningDir);
 
