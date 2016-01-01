@@ -311,10 +311,7 @@ namespace RoadNetworkSystem.NetworkExtraction.LaneBasedNetwork.LaneLayer
             //System.GC.WaitForPendingFinalizers();
             #endregion ----------------------------删除旧的Kerb Surface--------------------------------------------------
 
-            if (arcEty.ArcID == 10)
-            {
-                int text = 1;
-            }
+
 
             //notice 存在这种情况：y字形交叉口，均为单向，获取下游右侧分支的的起始车道的位置
             int nextLateralLaneNum = 0;
@@ -331,7 +328,11 @@ namespace RoadNetworkSystem.NetworkExtraction.LaneBasedNetwork.LaneLayer
                     preNodeCutInfor.preNodeEty, arcEty.ArcID);
             }
 
-            
+            if (preNodeCutInfor.preNodeEty.ID == 141 || nextNodeCutInfor.nextNodeEty.ID == 141)
+            {
+                int test = 1;
+            }
+
             int lateralLaneNum = nextLateralLaneNum > preLateralLaneNum ? nextLateralLaneNum : preLateralLaneNum;
             double curWidth = lateralLaneNum * Lane.LANE_WEIDTH;
 

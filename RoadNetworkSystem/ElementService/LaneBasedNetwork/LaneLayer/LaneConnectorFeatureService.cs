@@ -285,6 +285,10 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LaneLayer
                                     toLine = toLaneFea.ShapeCopy as IPolyline;
                                     bezierLine = GetConnectorShape(fromLine, toLine, null, false);
 
+                                    if (bezierLine == null)
+                                    {
+                                        int test = 0;
+                                    }
                                     LaneConnector connectorEntity1 = InitConnectorEty(0, fromLinkID, toLinkID, fromArcID, toArcID,
                                         fromArcDir, toArcDir, fromLaneID, toLaneID, TurningDir);
 
@@ -305,6 +309,10 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LaneLayer
                                     toLine = toLaneFea.ShapeCopy as IPolyline;
                                     bezierLine = GetConnectorShape(fromLine, toLine, null, false);
 
+                                    if (bezierLine == null)
+                                    {
+                                        int test = 0;
+                                    }
                                     LaneConnector connectorEntity1 = InitConnectorEty(0, fromLinkID, toLinkID, fromArcID, toArcID,
                                         fromArcDir, toArcDir, fromLaneID, toLaneID, TurningDir);
 
@@ -322,6 +330,11 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LaneLayer
                                     toLaneID = Convert.ToInt32(toLaneFea.get_Value(pFeaClsLane.FindField(LaneFeatureService.LaneIDNm)));
                                     toLine = toLaneFea.ShapeCopy as IPolyline;
                                     bezierLine = GetConnectorShape(fromLine, toLine, null, false);
+
+                                    if (bezierLine == null)
+                                    {
+                                        int test = 0;
+                                    }
 
                                     LaneConnector connectorEntity2 = InitConnectorEty(0, fromLinkID, toLinkID, fromArcID, toArcID,
                                         fromArcDir, toArcDir, fromLaneID, toLaneID, TurningDir);
@@ -343,6 +356,11 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LaneLayer
                                 toLaneID = Convert.ToInt32(toLaneFea.get_Value(pFeaClsLane.FindField(LaneFeatureService.LaneIDNm)));
                                 toLine = toLaneFea.ShapeCopy as IPolyline;
                                 bezierLine = GetConnectorShape(fromLine, toLine, null, false);
+
+                                if (bezierLine == null)
+                                {
+                                    int test = 0;
+                                }
 
                                 LaneConnector connectorEntity2 = InitConnectorEty(0, fromLinkID, toLinkID, fromArcID, toArcID,
                                     fromArcDir, toArcDir, fromLaneID, toLaneID, TurningDir);
@@ -374,6 +392,11 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LaneLayer
                                     toLine = toLaneFea.ShapeCopy as IPolyline;
                                     bezierLine = GetConnectorShape(fromLine, toLine,nodePnt,false);
 
+                                    if (bezierLine == null)
+                                    {
+                                        int test = 0;
+                                    }
+
                                     LaneConnector connectorEntity2 = InitConnectorEty(0, fromLinkID, toLinkID, fromArcID, toArcID,
                                         fromArcDir, toArcDir, fromLaneID, toLaneID, TurningDir);
 
@@ -391,6 +414,11 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LaneLayer
                                     toLaneID = Convert.ToInt32(toLaneFea.get_Value(pFeaClsLane.FindField(LaneFeatureService.LaneIDNm)));
                                     toLine = toLaneFea.ShapeCopy as IPolyline;
                                     bezierLine = GetConnectorShape(fromLine, toLine, nodePnt, false);
+
+                                    if (bezierLine == null)
+                                    {
+                                        int test = 0;
+                                    }
 
                                     LaneConnector connectorEntity = InitConnectorEty(0, fromLinkID, toLinkID, fromArcID, toArcID,
                                         fromArcDir, toArcDir, fromLaneID, toLaneID, TurningDir);
@@ -412,6 +440,11 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LaneLayer
                                     toLine = toLaneFea.ShapeCopy as IPolyline;
                                     bezierLine = GetConnectorShape(fromLine, toLine, nodePnt, false);
 
+                                    if (bezierLine == null)
+                                    {
+                                        int test = 0;
+                                    }
+
                                     LaneConnector connectorEntity = InitConnectorEty(0, fromLinkID, toLinkID, fromArcID, toArcID,
                                         fromArcDir, toArcDir, fromLaneID, toLaneID, TurningDir);
 
@@ -431,6 +464,11 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LaneLayer
                                 toLaneID = Convert.ToInt32(toLaneFea.get_Value(pFeaClsLane.FindField(LaneFeatureService.LaneIDNm)));
                                 toLine = toLaneFea.ShapeCopy as IPolyline;
                                 bezierLine = GetConnectorShape(fromLine, toLine, nodePnt, false);
+
+                                if (bezierLine == null)
+                                {
+                                    int test = 0;
+                                }
 
                                 LaneConnector connectorEntity = InitConnectorEty(0, fromLinkID, toLinkID, fromArcID, toArcID,
                                     fromArcDir, toArcDir, fromLaneID, toLaneID, TurningDir);
@@ -475,6 +513,11 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LaneLayer
                                             toLine = toLaneFea.ShapeCopy as IPolyline;
                                             bezierLine = GetConnectorShape(fromLine, toLine, null, true);
 
+                                            if (bezierLine == null)
+                                            {
+                                                int test = 0;
+                                            }
+
                                             LaneConnector connectorEntity = InitConnectorEty(0, fromLinkID, toLinkID, fromArcID, toArcID,
                                                 fromArcDir, toArcDir, fromLaneID, toLaneID, TurningDir);
 
@@ -512,6 +555,11 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LaneLayer
                                                 toLine = toLaneFea.ShapeCopy as IPolyline;
                                                 bezierLine = GetConnectorShape(fromLine, toLine, null, true);
 
+                                                if (bezierLine == null)
+                                                {
+                                                    int test = 0;
+                                                }
+
                                                 LaneConnector connectorEntity = InitConnectorEty(0, fromLinkID, toLinkID, fromArcID, toArcID,
                                                     fromArcDir, toArcDir, fromLaneID, toLaneID, TurningDir);
 
@@ -537,6 +585,11 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LaneLayer
                                                 toLaneID = Convert.ToInt32(toLaneFea.get_Value(pFeaClsLane.FindField(LaneFeatureService.LaneIDNm)));
                                                 toLine = toLaneFea.ShapeCopy as IPolyline;
                                                 bezierLine = GetConnectorShape(fromLine, toLine, null, true);
+
+                                                if (bezierLine == null)
+                                                {
+                                                    int test = 0;
+                                                }
 
                                                 LaneConnector connectorEntity1 = InitConnectorEty(0, fromLinkID, toLinkID, fromArcID, toArcID,
                                                     fromArcDir, toArcDir, fromLaneID, toLaneID, TurningDir);
@@ -567,6 +620,11 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LaneLayer
                                                 toLaneID = Convert.ToInt32(toLaneFea.get_Value(pFeaClsLane.FindField(LaneFeatureService.LaneIDNm)));
                                                 toLine = toLaneFea.ShapeCopy as IPolyline;
                                                 bezierLine = GetConnectorShape(fromLine, toLine, null, true);
+
+                                                if (bezierLine == null)
+                                                {
+                                                    int test = 0;
+                                                }
 
                                                 LaneConnector connectorEntity1 = InitConnectorEty(0, fromLinkID, toLinkID, fromArcID, toArcID,
                                                     fromArcDir, toArcDir, fromLaneID, toLaneID, TurningDir);
@@ -605,6 +663,11 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LaneLayer
                                                 toLine = toLaneFea.ShapeCopy as IPolyline;
                                                 bezierLine = GetConnectorShape( fromLine, toLine,null,true);
 
+                                                if (bezierLine == null)
+                                                {
+                                                    int test = 0;
+                                                }
+
                                                 LaneConnector connectorEntity = InitConnectorEty(0, fromLinkID, toLinkID, fromArcID, toArcID,
                                                     fromArcDir, toArcDir, fromLaneID, toLaneID, TurningDir);
 
@@ -630,6 +693,11 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LaneLayer
                                                 toLaneID = Convert.ToInt32(toLaneFea.get_Value(pFeaClsLane.FindField(LaneFeatureService.LaneIDNm)));
                                                 toLine = toLaneFea.ShapeCopy as IPolyline;
                                                 bezierLine = GetConnectorShape( fromLine, toLine,null,true);
+
+                                                if (bezierLine == null)
+                                                {
+                                                    int test = 0;
+                                                }
 
                                                 LaneConnector connectorEntity1 = InitConnectorEty(0, fromLinkID, toLinkID, fromArcID, toArcID,
                                                     fromArcDir, toArcDir, fromLaneID, toLaneID, TurningDir);
@@ -663,6 +731,11 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LaneLayer
                                                 toLaneID = Convert.ToInt32(toLaneFea.get_Value(pFeaClsLane.FindField(LaneFeatureService.LaneIDNm)));
                                                 toLine = toLaneFea.ShapeCopy as IPolyline;
                                                 bezierLine = GetConnectorShape(fromLine, toLine, null, true);
+
+                                                if (bezierLine == null)
+                                                {
+                                                    int test = 0;
+                                                }
 
                                                 LaneConnector connectorEntity1 = InitConnectorEty(0, fromLinkID, toLinkID, fromArcID, toArcID,
                                                     fromArcDir, toArcDir, fromLaneID, toLaneID, TurningDir);
@@ -733,6 +806,11 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LaneLayer
                                         toLine = toLaneFea.ShapeCopy as IPolyline;
                                         bezierLine = GetConnectorShape(fromLine, toLine, null, true);
 
+                                        if (bezierLine == null)
+                                        {
+                                            int test = 0;
+                                        }
+
                                         LaneConnector connectorEntity = InitConnectorEty(0, fromLinkID, toLinkID, fromArcID, toArcID,
                                             fromArcDir, toArcDir, fromLaneID, toLaneID, TurningDir);
 
@@ -764,6 +842,11 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LaneLayer
                                         toLine = toLaneFea.ShapeCopy as IPolyline;
                                         bezierLine = GetConnectorShape(fromLine, toLine, null, true);
 
+                                        if (bezierLine == null)
+                                        {
+                                            int test = 0;
+                                        }
+
                                         LaneConnector connectorEntity = InitConnectorEty(0, fromLinkID, toLinkID, fromArcID, toArcID,
                                             fromArcDir, toArcDir, fromLaneID, toLaneID, TurningDir);
 
@@ -791,6 +874,11 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LaneLayer
                                 toLaneID = Convert.ToInt32(toLaneFea.get_Value(pFeaClsLane.FindField(LaneFeatureService.LaneIDNm)));
                                 toLine = toLaneFea.ShapeCopy as IPolyline;
                                 bezierLine = GetConnectorShape(fromLine, toLine, null,true);
+
+                                if (bezierLine == null)
+                                {
+                                    int test = 0;
+                                }
 
                                 LaneConnector connectorEntity = InitConnectorEty(0, fromLinkID, toLinkID, fromArcID, toArcID,
                                     fromArcDir, toArcDir, fromLaneID, toLaneID, TurningDir);
