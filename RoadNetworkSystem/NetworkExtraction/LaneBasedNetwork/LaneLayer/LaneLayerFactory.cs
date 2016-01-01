@@ -33,6 +33,7 @@ namespace RoadNetworkSystem.NetworkExtraction.LaneBasedNetwork.LaneLayer
         IFeatureClass _pFeaClsTurnArrow;
 
         IFeatureClass _pFeaClsStopLine;
+        Dictionary<int, int> roadLateralLaneNumPair;
 
         public LaneLayerFactory(Dictionary<string, IFeatureClass> feaClsDic)
         {
@@ -48,6 +49,8 @@ namespace RoadNetworkSystem.NetworkExtraction.LaneBasedNetwork.LaneLayer
             _pFeaClsSurface = feaClsDic[Surface.SurfaceName];
             _pFeaClsTurnArrow = feaClsDic[TurnArrow.TurnArrowName];
             _pFeaClsStopLine = feaClsDic[StopLine.StopLineName];
+
+            roadLateralLaneNumPair = new Dictionary<int, int>();
         }
 
         public void CreateLinkTopologyBatch()
@@ -277,6 +280,10 @@ namespace RoadNetworkSystem.NetworkExtraction.LaneBasedNetwork.LaneLayer
         private void createLaneTopo(IFeature linkFea, int linkFlowDir, Arc arcEty, PreNodeCutInfor preNodeCutInfor,
             NextNodeCutInfor nextNodeCutInfor)
         {
+            LinkService linkService = new LinkService(_pFeaClsLink, 0);
+            LinkMaster linkMstr = linkService.GetEntity(linkFea);
+            Link link = new Link();
+            link = link.Copy(linkMstr);
 
             IPolyline refLinkLine = linkFea.ShapeCopy as IPolyline;
             #region ----------------------------1 删除旧的Kerb Surface--------------------------------------------------
@@ -332,10 +339,21 @@ namespace RoadNetworkSystem.NetworkExtraction.LaneBasedNetwork.LaneLayer
             {
                 int test = 1;
             }
+            double curWidth= 0;
 
-            int lateralLaneNum = nextLateralLaneNum > preLateralLaneNum ? nextLateralLaneNum : preLateralLaneNum;
-            double curWidth = lateralLaneNum * Lane.LANE_WEIDTH;
+            if (roadLateralLaneNumPair.ContainsKey(link.RelID))
+            {
+                curWidth = roadLateralLaneNumPair[link.RelID] * Lane.LANE_WEIDTH;
+            }
+            else
+            {
+                int lateralLaneNum = nextLateralLaneNum > preLateralLaneNum ? nextLateralLaneNum : preLateralLaneNum;
+                curWidth = lateralLaneNum * Lane.LANE_WEIDTH;
+                roadLateralLaneNumPair.Add(link.RelID, lateralLaneNum);
+            }
 
+
+            
             //当前车道右侧边界线
             int curBounID = 0;
             //其一车道的右侧边界线，即当前车道的左侧边界线

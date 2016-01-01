@@ -181,6 +181,8 @@ namespace RoadNetworkSystem.NetworkExtraction.Road2BasicRoadNetwork
                     {
                         toBreakPointId = Convert.ToInt32(reader[LaneNumChange.ToBreakPointID_Name]);
                     }
+
+
                     int laneNum = Convert.ToInt32(reader[LaneNumChange.LaneNum_Name]);
                     int breakPointFlowDir = Convert.ToInt32(reader[LaneNumChange.FlowDir_Name]);
                     int laneNumChangeId = Convert.ToInt32(reader[LaneNumChange.LaneNumChangeID_Name]);
@@ -194,6 +196,7 @@ namespace RoadNetworkSystem.NetworkExtraction.Road2BasicRoadNetwork
                     currentLaneNumChange.ToBreakPointID = toBreakPointId;
                     currentLaneNumChange.LaneNum = laneNum;
                     currentLaneNumChange.FlowDir = breakPointFlowDir;
+                    currentLaneNumChange.RoadID = road.RoadID;
 
                     LaneNumChangeService laneNumChange = new LaneNumChangeService(conn);
                     LaneNumChange oppositionLaneNumChange = laneNumChange.GetOppositeDirectionLaneNumChange(fromBreakPointId, toBreakPointId);
@@ -217,6 +220,7 @@ namespace RoadNetworkSystem.NetworkExtraction.Road2BasicRoadNetwork
                     link.FlowDir = flowDir;
                     link.RoadName = road.RoadName;
                     link.RoadType = road.RoadType;
+                    link.RelID = road.RoadID;
 
                     IPolyline linkLine = createLinkPolylineForTrafficDisturb(fromBreakPointId,toBreakPointId,pFeatureRoad,isSameDirectionFlag);
                     if (linkLine == null)
