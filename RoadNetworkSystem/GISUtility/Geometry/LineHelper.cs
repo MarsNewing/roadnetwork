@@ -73,6 +73,11 @@ namespace RoadNetworkSystem.GIS
                     if (temAngles > THRESHOLD_CONVERTION_ANGLE)
                     {
                         IPolyline newLine = temPntClt as IPolyline;
+                        IPointCollection newLineCollection = new PolylineClass();
+                        newLineCollection.AddPoint(newLine.FromPoint);
+                        newLineCollection.AddPoint(newLine.ToPoint);
+                        newLine = newLineCollection as IPolyline;
+
                         lines.Add(newLine);
                         temPntClt = new PolylineClass();
                         //上一个直线段的终点是下一个直线断的起点
@@ -90,6 +95,11 @@ namespace RoadNetworkSystem.GIS
                     else
                     {
                         IPolyline newLine = temPntClt as IPolyline;
+                        IPointCollection newLineCollection = new PolylineClass();
+                        newLineCollection.AddPoint(newLine.FromPoint);
+                        newLineCollection.AddPoint(newLine.ToPoint);
+                        newLine = newLineCollection as IPolyline;
+
                         lines.Add(newLine);
                     }
 
