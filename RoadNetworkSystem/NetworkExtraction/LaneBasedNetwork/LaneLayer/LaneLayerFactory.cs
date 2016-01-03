@@ -335,10 +335,7 @@ namespace RoadNetworkSystem.NetworkExtraction.LaneBasedNetwork.LaneLayer
                     preNodeCutInfor.preNodeEty, arcEty.ArcID);
             }
 
-            if (preNodeCutInfor.preNodeEty.ID == 141 || nextNodeCutInfor.nextNodeEty.ID == 141)
-            {
-                int test = 1;
-            }
+
             double curWidth= 0;
 
             if (roadLateralLaneNumPair.ContainsKey(link.RelID))
@@ -365,13 +362,13 @@ namespace RoadNetworkSystem.NetworkExtraction.LaneBasedNetwork.LaneLayer
 
             #region ----------------------------2 生成Arc的Lane、Boundary、StopLine、Kerb--------------------------------------------------
 
-            for (int i = 0; i < arcEty.LaneNum; i++)
+            for (int i = Lane.leftPosition; i <= arcEty.LaneNum - Lane.rightPositionOffset; i++)
             {
                 #region ++++++++++++++++++++++++ 2.1 删除旧的Lane要素，保留属性++++++++++++++++++++++++
 
                 //先给LaneEntity赋值，因为，后面计算偏移量时要用到车道宽度
                 Lane newLaneEty = new Lane();
-                newLaneEty.LaneID = arcEty.ArcID * 10 + (i + 1);
+                newLaneEty.LaneID = LaneFeatureService.GetLaneID(arcEty.ArcID,i);
                 newLaneEty.ArcID = arcEty.ArcID;
                 newLaneEty.LaneClosed = 0;
 
@@ -571,7 +568,7 @@ namespace RoadNetworkSystem.NetworkExtraction.LaneBasedNetwork.LaneLayer
 
                     #region ********************* 2.5.2 创建Kerb***************************
                     //编号2、3的kerb
-                    if (i == 0)
+                    if (i == Lane.leftPosition)
                     {
                         KerbService kerb = new KerbService(_pFeaClsKerb, 0);
                         Kerb kerbEty2 = new Kerb();
@@ -627,7 +624,7 @@ namespace RoadNetworkSystem.NetworkExtraction.LaneBasedNetwork.LaneLayer
                     }
 
                     //编号0、1的kerb
-                    if (i == arcEty.LaneNum - 1)
+                    if (i == arcEty.LaneNum - Lane.rightPositionOffset)
                     {
                         KerbService kerb = new KerbService(_pFeaClsKerb, 0);
                         Kerb kerbEty0 = new Kerb();
@@ -996,6 +993,64 @@ namespace RoadNetworkSystem.NetworkExtraction.LaneBasedNetwork.LaneLayer
             }
 
 
+        }
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public void InitLaneBatch()
+        {
+            IQueryFilter filter = new QueryFilterClass();
+            filter.WhereClause = "";
+            IFeatureCursor cursor = _pFeaClsArc.Search(filter, false);
+            IFeature pFeature = cursor.NextFeature();
+            while (pFeature != null)
+            {
+                ArcService arcService = new ArcService(_pFeaClsArc, 0);
+                Arc cursorArc = arcService.GetArcEty(pFeature);
+                LinkService linkService = new LinkService(_pFeaClsLink,cursorArc.LinkID);
+                IFeature linkFeature = linkService.GetFeature();
+                for (int i = Lane.leftPosition; i <= (cursorArc.LaneNum - Lane.rightPositionOffset); i++)
+                {
+                    Lane lane = new Lane();
+                    lane.LaneID = LaneFeatureService.GetLaneID(cursorArc.ArcID, i);
+                    lane.ArcID=  cursorArc.ArcID;
+                    lane.Position = i;
+                    lane.LaneClosed= Lane.LANE_UNCLOSED;
+                    if(i == Lane.leftPosition)
+                    {
+                         
+                        if(i ==  cursorArc.LaneNum - Lane.rightPositionOffset)
+                        {
+                            lane.Change = Lane.CHANGE_NEITHER;
+                        }
+                        else
+                        {
+                            lane.Change = Lane.CHANGE_RIGHT;
+                        }
+                    }
+
+                    else if(i == cursorArc.LaneNum - Lane.rightPositionOffset)
+                    {
+                        lane.Change = Lane.CHANGE_LEFT;
+                    }
+                    else
+                    {
+                        lane.Change = Lane.CHANGE_BOTH;
+                    }
+                    lane.Width= Lane.LANE_WEIDTH;
+
+                    IPolyline laneLine = LineHelper.CreateLineByLRS(linkFeature.Shape as IPolyline,(lane.Position-0.5)*Lane.LANE_WEIDTH,0,0);
+
+                    LaneFeatureService laneFeatureService = new LaneFeatureService(_pFeaClsLane, lane.LaneID);
+                    laneFeatureService.CreateLane(lane, laneLine);
+
+                }
+                pFeature = cursor.NextFeature();
+            }
+            System.GC.Collect();
+            System.GC.WaitForPendingFinalizers();
         }
 
     }

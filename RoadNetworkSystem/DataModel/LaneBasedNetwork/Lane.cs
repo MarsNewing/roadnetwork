@@ -7,6 +7,17 @@ namespace RoadNetworkSystem.DataModel.LaneBasedNetwork
     class Lane
     {
         public const string LaneName = "Lane";
+        public const int leftPosition = 1;
+        public const int rightPositionOffset = 0;
+        public const int LANE_CLOSED = 1;
+        public const int LANE_UNCLOSED = 0;
+
+        public const string CHANGE_RIGHT = "Right";
+        public const string CHANGE_LEFT = "Left";
+        public const string CHANGE_NEITHER = "Neither";
+        public const string CHANGE_BOTH = "Both";
+
+
         public const double LANE_WEIDTH = 3.5;
         public int LaneID { get; set; }
         public int Position { get; set; }

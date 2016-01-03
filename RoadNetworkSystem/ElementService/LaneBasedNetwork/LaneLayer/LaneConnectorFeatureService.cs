@@ -2,7 +2,9 @@
 using ESRI.ArcGIS.Geometry;
 using RoadNetworkSystem.DataModel.LaneBasedNetwork;
 using RoadNetworkSystem.DataModel.Road;
+using RoadNetworkSystem.ElementService.LaneBasedNetwork.NetworkBuilder;
 using RoadNetworkSystem.GIS;
+using RoadNetworkSystem.GIS.GeoDatabase.Dataset;
 using RoadNetworkSystem.NetworkElement.LaneBasedNetwork.Connection;
 using RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LinkLayer;
 using System;
@@ -32,6 +34,8 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LaneLayer
 
         public const string toDirNm = "toDir";
         public const string OtherNm = "Other";
+
+        private bool CREATE_UTURN_FLAG = false;
 
         private int _connectorID = 0;
         private IFeatureClass _pFeaClsConnector;
@@ -223,6 +227,10 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LaneLayer
  
         }
 
+
+        
+
+
         /// <summary>
         /// 默认规则生成两个Arc间的车道连接器
         /// </summary>
@@ -241,654 +249,74 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LaneLayer
             else
             {
 
+                IFeatureClass pFeaClsNode = (pFeaClsLane.FeatureDataset.Workspace as IFeatureWorkspace).OpenFeatureClass(Node.NodeName);
+                IFeatureClass pFeaClsLink = (pFeaClsLane.FeatureDataset.Workspace as IFeatureWorkspace).OpenFeatureClass(Link.LinkName);
+                IFeatureClass pFeaClsArc = (pFeaClsLane.FeatureDataset.Workspace as IFeatureWorkspace).OpenFeatureClass(Arc.ArcFeatureName);
+
                 int toLinkID = toArcEty.LinkID;
                 int toArcID = toArcEty.ArcID;
                 int toArcDir = toArcEty.FlowDir;
                 int toArcLaneNum = toArcEty.LaneNum;
-                int toLanePosition = -1;
-                int toLaneID;
-                IFeature toLaneFea = null;
-                IPolyline toLine = null;
 
                 int fromLinkID = fromArcEty.LinkID;
                 int fromArcID = fromArcEty.ArcID;
                 int fromArcDir = fromArcEty.FlowDir;
                 int fromArcLaneNum = fromArcEty.LaneNum;
-                int fromLanePostition = -1;
-                int fromLaneID;
-                IPolyline fromLine = null;
-                IFeature fromLaneFea = null;
 
-                IPolyline bezierLine = null;
-                LaneFeatureService lane = new LaneFeatureService(pFeaClsLane, 0);
+                int clockLinkId = 0;
+                double clockAngle = 0;
+                PhysicalConnection.GetClockLinkInfor(pFeaClsLink, pFeaClsArc, pFeaClsNode,
+                    fromArcEty, ref clockLinkId, ref clockAngle);
+
+                int antiClockLinkId = 0;
+                double antiClockAngle = 0;
+
+                PhysicalConnection.GetAntiClockLinkInfor(pFeaClsLink, pFeaClsArc, pFeaClsNode, 
+                    fromArcEty,ref antiClockLinkId, ref antiClockAngle);
+                //起始Arc  到 终止 Arc的最左侧的连接器是否必须生成
+                bool leftestConnectorCreateFlag = false;
+                if (clockLinkId == toArcEty.LinkID)
+                {
+                    leftestConnectorCreateFlag = true;
+                }
+
+                bool rightestConnectorCreateFlag = false;
+                if (antiClockLinkId == toArcEty.LinkID)
+                {
+                    rightestConnectorCreateFlag = true;
+                }
+
+                if (leftestConnectorCreateFlag)
+                {
+                    createLeftestConnection(pFeaClsLane, fromArcEty, toArcEty, nodePnt,TurningDir);
+                }
+
+                if (rightestConnectorCreateFlag)
+                {
+                    
+                    createRightestConnection(pFeaClsLane, fromArcEty, toArcEty, nodePnt,TurningDir);
+                }
+
                 switch (TurningDir)
                 {
-
-
-                    #region -----------------------------------Right-------------------------------------
-                    case "Right":
+                    case LaneConnector.TURNING_RIGHT:
                         {
-
-                            if (fromArcLaneNum >= 5)
-                            {
-                                if (toArcLaneNum < 2)
-                                {
-                                    fromLanePostition = fromArcLaneNum - 1;
-                                    toLanePosition = toArcLaneNum - 1;
-
-                                    fromLaneFea = lane.QueryFeatureBuRule(fromArcID, fromLanePostition);
-                                    fromLaneID = Convert.ToInt32(fromLaneFea.get_Value(pFeaClsLane.FindField(LaneFeatureService.LaneIDNm)));
-                                    fromLine = fromLaneFea.ShapeCopy as IPolyline;
-
-                                    toLaneFea = lane.QueryFeatureBuRule(toArcID, toLanePosition);
-                                    toLaneID = Convert.ToInt32(toLaneFea.get_Value(pFeaClsLane.FindField(LaneFeatureService.LaneIDNm)));
-                                    toLine = toLaneFea.ShapeCopy as IPolyline;
-                                    bezierLine = GetConnectorShape(fromLine, toLine, null, false);
-
-                                    if (bezierLine == null)
-                                    {
-                                        int test = 0;
-                                    }
-                                    LaneConnector connectorEntity1 = InitConnectorEty(0, fromLinkID, toLinkID, fromArcID, toArcID,
-                                        fromArcDir, toArcDir, fromLaneID, toLaneID, TurningDir);
-
-                                    InsertLConnector(connectorEntity1, bezierLine);
-
-                                }
-                                else
-                                {
-                                    fromLanePostition = fromArcLaneNum - 1;
-                                    toLanePosition = toArcLaneNum - 1;
-
-                                    fromLaneFea = lane.QueryFeatureBuRule(fromArcID, fromLanePostition);
-                                    fromLaneID = Convert.ToInt32(fromLaneFea.get_Value(pFeaClsLane.FindField(LaneFeatureService.LaneIDNm)));
-                                    fromLine = fromLaneFea.ShapeCopy as IPolyline;
-
-                                    toLaneFea = lane.QueryFeatureBuRule(toArcID, toLanePosition);
-                                    toLaneID = Convert.ToInt32(toLaneFea.get_Value(pFeaClsLane.FindField(LaneFeatureService.LaneIDNm)));
-                                    toLine = toLaneFea.ShapeCopy as IPolyline;
-                                    bezierLine = GetConnectorShape(fromLine, toLine, null, false);
-
-                                    if (bezierLine == null)
-                                    {
-                                        int test = 0;
-                                    }
-                                    LaneConnector connectorEntity1 = InitConnectorEty(0, fromLinkID, toLinkID, fromArcID, toArcID,
-                                        fromArcDir, toArcDir, fromLaneID, toLaneID, TurningDir);
-
-                                    InsertLConnector(connectorEntity1, bezierLine);
-
-
-                                    fromLanePostition = fromArcLaneNum - 2;
-                                    toLanePosition = toArcLaneNum - 2;
-
-                                    fromLaneFea = lane.QueryFeatureBuRule(fromArcID, fromLanePostition);
-                                    fromLaneID = Convert.ToInt32(fromLaneFea.get_Value(pFeaClsLane.FindField(LaneFeatureService.LaneIDNm)));
-                                    fromLine = fromLaneFea.ShapeCopy as IPolyline;
-
-                                    toLaneFea = lane.QueryFeatureBuRule(toArcID, toLanePosition);
-                                    toLaneID = Convert.ToInt32(toLaneFea.get_Value(pFeaClsLane.FindField(LaneFeatureService.LaneIDNm)));
-                                    toLine = toLaneFea.ShapeCopy as IPolyline;
-                                    bezierLine = GetConnectorShape(fromLine, toLine, null, false);
-
-                                    if (bezierLine == null)
-                                    {
-                                        int test = 0;
-                                    }
-
-                                    LaneConnector connectorEntity2 = InitConnectorEty(0, fromLinkID, toLinkID, fromArcID, toArcID,
-                                        fromArcDir, toArcDir, fromLaneID, toLaneID, TurningDir);
-
-                                    InsertLConnector(connectorEntity2, bezierLine);
-
-                                }
-                            }
-                            else
-                            {
-                                fromLanePostition = fromArcLaneNum - 1;
-                                toLanePosition = toArcLaneNum - 1;
-
-                                fromLaneFea = lane.QueryFeatureBuRule(fromArcID, fromLanePostition);
-                                fromLaneID = Convert.ToInt32(fromLaneFea.get_Value(pFeaClsLane.FindField(LaneFeatureService.LaneIDNm)));
-                                fromLine = fromLaneFea.ShapeCopy as IPolyline;
-
-                                toLaneFea = lane.QueryFeatureBuRule(toArcID, toLanePosition);
-                                toLaneID = Convert.ToInt32(toLaneFea.get_Value(pFeaClsLane.FindField(LaneFeatureService.LaneIDNm)));
-                                toLine = toLaneFea.ShapeCopy as IPolyline;
-                                bezierLine = GetConnectorShape(fromLine, toLine, null, false);
-
-                                if (bezierLine == null)
-                                {
-                                    int test = 0;
-                                }
-
-                                LaneConnector connectorEntity2 = InitConnectorEty(0, fromLinkID, toLinkID, fromArcID, toArcID,
-                                    fromArcDir, toArcDir, fromLaneID, toLaneID, TurningDir);
-
-                                InsertLConnector(connectorEntity2, bezierLine);
-
-                            }
-
+                            createRightConnectors(pFeaClsLane, fromArcEty, toArcEty);
                         } break;
-                    #endregion -----------------------------------Right-------------------------------------
-
-                    #region -----------------------------------Left-------------------------------------
-                    case "Left":
+                    case LaneConnector.TURNING_LEFT:
                         {
-
-                            if (fromArcLaneNum >= 5)
-                            {
-                                if (toArcLaneNum >= 2)
-                                {
-                                    fromLanePostition = 0;
-                                    toLanePosition = 0;
-
-                                    fromLaneFea = lane.QueryFeatureBuRule(fromArcID, fromLanePostition);
-                                    fromLaneID = Convert.ToInt32(fromLaneFea.get_Value(pFeaClsLane.FindField(LaneFeatureService.LaneIDNm)));
-                                    fromLine = fromLaneFea.ShapeCopy as IPolyline;
-
-                                    toLaneFea = lane.QueryFeatureBuRule(toArcID, toLanePosition);
-                                    toLaneID = Convert.ToInt32(toLaneFea.get_Value(pFeaClsLane.FindField(LaneFeatureService.LaneIDNm)));
-                                    toLine = toLaneFea.ShapeCopy as IPolyline;
-                                    bezierLine = GetConnectorShape(fromLine, toLine,nodePnt,false);
-
-                                    if (bezierLine == null)
-                                    {
-                                        int test = 0;
-                                    }
-
-                                    LaneConnector connectorEntity2 = InitConnectorEty(0, fromLinkID, toLinkID, fromArcID, toArcID,
-                                        fromArcDir, toArcDir, fromLaneID, toLaneID, TurningDir);
-
-                                    InsertLConnector(connectorEntity2, bezierLine);
-
-
-                                    fromLanePostition = 1;
-                                    toLanePosition = 1;
-
-                                    fromLaneFea = lane.QueryFeatureBuRule(fromArcID, fromLanePostition);
-                                    fromLaneID = Convert.ToInt32(fromLaneFea.get_Value(pFeaClsLane.FindField(LaneFeatureService.LaneIDNm)));
-                                    fromLine = fromLaneFea.ShapeCopy as IPolyline;
-
-                                    toLaneFea = lane.QueryFeatureBuRule(toArcID, toLanePosition);
-                                    toLaneID = Convert.ToInt32(toLaneFea.get_Value(pFeaClsLane.FindField(LaneFeatureService.LaneIDNm)));
-                                    toLine = toLaneFea.ShapeCopy as IPolyline;
-                                    bezierLine = GetConnectorShape(fromLine, toLine, nodePnt, false);
-
-                                    if (bezierLine == null)
-                                    {
-                                        int test = 0;
-                                    }
-
-                                    LaneConnector connectorEntity = InitConnectorEty(0, fromLinkID, toLinkID, fromArcID, toArcID,
-                                        fromArcDir, toArcDir, fromLaneID, toLaneID, TurningDir);
-
-                                    InsertLConnector(connectorEntity, bezierLine);
-
-                                }
-                                else
-                                {
-                                    fromLanePostition = 0;
-                                    toLanePosition = 0;
-
-                                    fromLaneFea = lane.QueryFeatureBuRule(fromArcID, fromLanePostition);
-                                    fromLaneID = Convert.ToInt32(fromLaneFea.get_Value(pFeaClsLane.FindField(LaneFeatureService.LaneIDNm)));
-                                    fromLine = fromLaneFea.ShapeCopy as IPolyline;
-
-                                    toLaneFea = lane.QueryFeatureBuRule(toArcID, toLanePosition);
-                                    toLaneID = Convert.ToInt32(toLaneFea.get_Value(pFeaClsLane.FindField(LaneFeatureService.LaneIDNm)));
-                                    toLine = toLaneFea.ShapeCopy as IPolyline;
-                                    bezierLine = GetConnectorShape(fromLine, toLine, nodePnt, false);
-
-                                    if (bezierLine == null)
-                                    {
-                                        int test = 0;
-                                    }
-
-                                    LaneConnector connectorEntity = InitConnectorEty(0, fromLinkID, toLinkID, fromArcID, toArcID,
-                                        fromArcDir, toArcDir, fromLaneID, toLaneID, TurningDir);
-
-                                    InsertLConnector(connectorEntity, bezierLine);
-                                }
-                            }
-                            else
-                            {
-                                fromLanePostition = 0;
-                                toLanePosition = 0;
-
-                                fromLaneFea = lane.QueryFeatureBuRule(fromArcID, fromLanePostition);
-                                fromLaneID = Convert.ToInt32(fromLaneFea.get_Value(pFeaClsLane.FindField(LaneFeatureService.LaneIDNm)));
-                                fromLine = fromLaneFea.ShapeCopy as IPolyline;
-
-                                toLaneFea = lane.QueryFeatureBuRule(toArcID, toLanePosition);
-                                toLaneID = Convert.ToInt32(toLaneFea.get_Value(pFeaClsLane.FindField(LaneFeatureService.LaneIDNm)));
-                                toLine = toLaneFea.ShapeCopy as IPolyline;
-                                bezierLine = GetConnectorShape(fromLine, toLine, nodePnt, false);
-
-                                if (bezierLine == null)
-                                {
-                                    int test = 0;
-                                }
-
-                                LaneConnector connectorEntity = InitConnectorEty(0, fromLinkID, toLinkID, fromArcID, toArcID,
-                                    fromArcDir, toArcDir, fromLaneID, toLaneID, TurningDir);
-
-                                InsertLConnector(connectorEntity, bezierLine);
-                            }
+                            createLeftConnector(pFeaClsLane, fromArcEty, toArcEty, nodePnt);
                         } break;
-                    #endregion -----------------------------------Left-------------------------------------
-
-                    #region -----------------------------------Straight-------------------------------------
-                    case "Straight":
+                    case LaneConnector.TURNING_STRAIGHT:
                         {
-
-                            #region ************************************ fromArcLaneNum > 2 **********************************
-                            if (fromArcLaneNum > 2)
-                            {
-                                if (toArcLaneNum > 2)
-                                {
-                                    #region %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% fromArcLaneNum == toArcLaneNum %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-                                    if (fromArcLaneNum == toArcLaneNum)
-                                    {
-
-                                        for (int i = 1; i < fromArcLaneNum - 1; i++)
-                                        {
-                                            fromLanePostition = i;
-                                            toLanePosition = i;
-
-                                            fromLaneFea = lane.QueryFeatureBuRule(fromArcID, fromLanePostition);
-                                            if (fromLaneFea == null)
-                                            {
-                                                return;
-                                            }
-                                            fromLaneID = Convert.ToInt32(fromLaneFea.get_Value(pFeaClsLane.FindField(LaneFeatureService.LaneIDNm)));
-                                            fromLine = fromLaneFea.ShapeCopy as IPolyline;
-
-                                            toLaneFea = lane.QueryFeatureBuRule(toArcID, toLanePosition);
-                                            if (toLaneFea == null)
-                                            {
-                                                return;
-                                            }
-                                            toLaneID = Convert.ToInt32(toLaneFea.get_Value(pFeaClsLane.FindField(LaneFeatureService.LaneIDNm)));
-                                            toLine = toLaneFea.ShapeCopy as IPolyline;
-                                            bezierLine = GetConnectorShape(fromLine, toLine, null, true);
-
-                                            if (bezierLine == null)
-                                            {
-                                                int test = 0;
-                                            }
-
-                                            LaneConnector connectorEntity = InitConnectorEty(0, fromLinkID, toLinkID, fromArcID, toArcID,
-                                                fromArcDir, toArcDir, fromLaneID, toLaneID, TurningDir);
-
-                                            InsertLConnector(connectorEntity, bezierLine);
-                                        }
-
-                                    }
-                                    #endregion %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% fromArcLaneNum == toArcLaneNum %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-                                    #region %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% fromArcLaneNum > toArcLaneNum %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-                                    else if (fromArcLaneNum > toArcLaneNum)
-                                    {
-
-                                        for (int i = 1; i < fromArcLaneNum - 1; i++)
-                                        {
-                                            if (i <= (int)toArcLaneNum / 2)
-                                            {
-                                                fromLanePostition = i;
-                                                toLanePosition = i;
-
-                                                fromLaneFea = lane.QueryFeatureBuRule(fromArcID, fromLanePostition);
-                                                if (fromLaneFea == null)
-                                                {
-                                                    return;
-                                                }
-                                                fromLaneID = Convert.ToInt32(fromLaneFea.get_Value(pFeaClsLane.FindField(LaneFeatureService.LaneIDNm)));
-                                                fromLine = fromLaneFea.ShapeCopy as IPolyline;
-
-                                                toLaneFea = lane.QueryFeatureBuRule(toArcID, toLanePosition);
-                                                if (toLaneFea == null)
-                                                {
-                                                    return;
-                                                }
-                                                toLaneID = Convert.ToInt32(toLaneFea.get_Value(pFeaClsLane.FindField(LaneFeatureService.LaneIDNm)));
-                                                toLine = toLaneFea.ShapeCopy as IPolyline;
-                                                bezierLine = GetConnectorShape(fromLine, toLine, null, true);
-
-                                                if (bezierLine == null)
-                                                {
-                                                    int test = 0;
-                                                }
-
-                                                LaneConnector connectorEntity = InitConnectorEty(0, fromLinkID, toLinkID, fromArcID, toArcID,
-                                                    fromArcDir, toArcDir, fromLaneID, toLaneID, TurningDir);
-
-                                                InsertLConnector(connectorEntity, bezierLine);
-
-
-                                                fromLanePostition = fromArcLaneNum - i - 1;
-                                                toLanePosition = toArcLaneNum - i - 1;
-
-                                                fromLaneFea = lane.QueryFeatureBuRule(fromArcID, fromLanePostition);
-                                                if (fromLaneFea == null)
-                                                {
-                                                    return;
-                                                }
-                                                fromLaneID = Convert.ToInt32(fromLaneFea.get_Value(pFeaClsLane.FindField(LaneFeatureService.LaneIDNm)));
-                                                fromLine = fromLaneFea.ShapeCopy as IPolyline;
-
-                                                if (toLaneFea == null)
-                                                {
-                                                    return;
-                                                }
-                                                toLaneFea = lane.QueryFeatureBuRule(toArcID, toLanePosition);
-                                                toLaneID = Convert.ToInt32(toLaneFea.get_Value(pFeaClsLane.FindField(LaneFeatureService.LaneIDNm)));
-                                                toLine = toLaneFea.ShapeCopy as IPolyline;
-                                                bezierLine = GetConnectorShape(fromLine, toLine, null, true);
-
-                                                if (bezierLine == null)
-                                                {
-                                                    int test = 0;
-                                                }
-
-                                                LaneConnector connectorEntity1 = InitConnectorEty(0, fromLinkID, toLinkID, fromArcID, toArcID,
-                                                    fromArcDir, toArcDir, fromLaneID, toLaneID, TurningDir);
-
-                                                InsertLConnector(connectorEntity1, bezierLine);
-                                            }
-
-                                            else if (i >= ((int)toArcLaneNum / 2) && i <= (fromArcLaneNum - (int)(toArcLaneNum / 2) - 1))
-                                            {
-                                                Random rdm = new Random();
-
-                                                fromLanePostition = i;
-                                                toLanePosition = (int)rdm.Next((int)toArcLaneNum / 2, (fromArcLaneNum - (int)(toArcLaneNum / 2) - 1));
-
-                                                fromLaneFea = lane.QueryFeatureBuRule(fromArcID, fromLanePostition);
-                                                if (fromLaneFea == null)
-                                                {
-                                                    return;
-                                                }
-                                                fromLaneID = Convert.ToInt32(fromLaneFea.get_Value(pFeaClsLane.FindField(LaneFeatureService.LaneIDNm)));
-                                                fromLine = fromLaneFea.ShapeCopy as IPolyline;
-
-                                                toLaneFea = lane.QueryFeatureBuRule(toArcID, toLanePosition);
-                                                if (toLaneFea == null)
-                                                {
-                                                    return;
-                                                }
-                                                toLaneID = Convert.ToInt32(toLaneFea.get_Value(pFeaClsLane.FindField(LaneFeatureService.LaneIDNm)));
-                                                toLine = toLaneFea.ShapeCopy as IPolyline;
-                                                bezierLine = GetConnectorShape(fromLine, toLine, null, true);
-
-                                                if (bezierLine == null)
-                                                {
-                                                    int test = 0;
-                                                }
-
-                                                LaneConnector connectorEntity1 = InitConnectorEty(0, fromLinkID, toLinkID, fromArcID, toArcID,
-                                                    fromArcDir, toArcDir, fromLaneID, toLaneID, TurningDir);
-
-                                                InsertLConnector(connectorEntity1, bezierLine);
-                                            }
-                                        }
-                                    }
-                                    #endregion %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% fromArcLaneNum > toArcLaneNum %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
-                                    #region %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% fromArcLaneNum < toArcLaneNum %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-                                    else
-                                    {
-                                        for (int i = 1; i < toArcLaneNum - 1; i++)
-                                        {
-                                            if (i <= ((int)(fromArcLaneNum / 2) - 1))
-                                            {
-                                                fromLanePostition = i;
-                                                toLanePosition = i;
-
-                                                fromLaneFea = lane.QueryFeatureBuRule(fromArcID, fromLanePostition);
-                                                if (fromLaneFea == null)
-                                                {
-                                                    return;
-                                                }
-                                                fromLaneID = Convert.ToInt32(fromLaneFea.get_Value(pFeaClsLane.FindField(LaneFeatureService.LaneIDNm)));
-                                                fromLine = fromLaneFea.ShapeCopy as IPolyline;
-
-                                                toLaneFea = lane.QueryFeatureBuRule(toArcID, toLanePosition);
-                                                if (toLaneFea == null)
-                                                {
-                                                    return;
-                                                }
-                                                toLaneID = Convert.ToInt32(toLaneFea.get_Value(pFeaClsLane.FindField(LaneFeatureService.LaneIDNm)));
-                                                toLine = toLaneFea.ShapeCopy as IPolyline;
-                                                bezierLine = GetConnectorShape( fromLine, toLine,null,true);
-
-                                                if (bezierLine == null)
-                                                {
-                                                    int test = 0;
-                                                }
-
-                                                LaneConnector connectorEntity = InitConnectorEty(0, fromLinkID, toLinkID, fromArcID, toArcID,
-                                                    fromArcDir, toArcDir, fromLaneID, toLaneID, TurningDir);
-
-                                                InsertLConnector(connectorEntity, bezierLine);
-
-
-                                                fromLanePostition = fromArcLaneNum - i - 1;
-                                                toLanePosition = toArcLaneNum - i - 1;
-
-                                                fromLaneFea = lane.QueryFeatureBuRule(fromArcID, fromLanePostition);
-                                                if (fromLaneFea == null)
-                                                {
-                                                    return;
-                                                }
-                                                fromLaneID = Convert.ToInt32(fromLaneFea.get_Value(pFeaClsLane.FindField(LaneFeatureService.LaneIDNm)));
-                                                fromLine = fromLaneFea.ShapeCopy as IPolyline;
-
-                                                toLaneFea = lane.QueryFeatureBuRule(toArcID, toLanePosition);
-                                                if (toLaneFea == null)
-                                                {
-                                                    return;
-                                                }
-                                                toLaneID = Convert.ToInt32(toLaneFea.get_Value(pFeaClsLane.FindField(LaneFeatureService.LaneIDNm)));
-                                                toLine = toLaneFea.ShapeCopy as IPolyline;
-                                                bezierLine = GetConnectorShape( fromLine, toLine,null,true);
-
-                                                if (bezierLine == null)
-                                                {
-                                                    int test = 0;
-                                                }
-
-                                                LaneConnector connectorEntity1 = InitConnectorEty(0, fromLinkID, toLinkID, fromArcID, toArcID,
-                                                    fromArcDir, toArcDir, fromLaneID, toLaneID, TurningDir);
-
-                                                InsertLConnector(connectorEntity1, bezierLine);
-
-
-                                            }
-                                            else if (i >= ((int)fromArcLaneNum / 2) && i <= (toArcLaneNum - (int)(fromArcLaneNum / 2) - 1))
-                                            {
-                                                Random rdm = new Random();
-
-                                                fromLanePostition = (int)rdm.Next((int)fromArcLaneNum / 2, toArcLaneNum - (int)(fromArcLaneNum / 2) - 1);
-                                                toLanePosition = i;
-
-                                                fromLaneFea = lane.QueryFeatureBuRule(fromArcID, fromLanePostition);
-                                                if (fromLaneFea == null)
-                                                {
-                                                    return;
-                                                }
-
-                                                fromLaneID = Convert.ToInt32(fromLaneFea.get_Value(pFeaClsLane.FindField(LaneFeatureService.LaneIDNm)));
-                                                fromLine = fromLaneFea.ShapeCopy as IPolyline;
-
-                                                toLaneFea = lane.QueryFeatureBuRule(toArcID, toLanePosition);
-                                                if (toLaneFea == null)
-                                                {
-                                                    return;
-                                                }
-
-                                                toLaneID = Convert.ToInt32(toLaneFea.get_Value(pFeaClsLane.FindField(LaneFeatureService.LaneIDNm)));
-                                                toLine = toLaneFea.ShapeCopy as IPolyline;
-                                                bezierLine = GetConnectorShape(fromLine, toLine, null, true);
-
-                                                if (bezierLine == null)
-                                                {
-                                                    int test = 0;
-                                                }
-
-                                                LaneConnector connectorEntity1 = InitConnectorEty(0, fromLinkID, toLinkID, fromArcID, toArcID,
-                                                    fromArcDir, toArcDir, fromLaneID, toLaneID, TurningDir);
-
-                                                InsertLConnector(connectorEntity1, bezierLine);
-                                            }
-                                        }
-                                    }
-                                    #endregion %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% fromArcLaneNum < toArcLaneNum %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-                                }
-                                else
-                                {
-                                    for (int i = 1; i < fromArcLaneNum - 1; i++)
-                                    {
-                                        fromLanePostition = fromArcLaneNum - 1;
-                                        toLanePosition = i;
-
-                                        fromLaneFea = lane.QueryFeatureBuRule(fromArcID, fromLanePostition);
-                                        if (fromLaneFea == null)
-                                        {
-                                            return;
-                                        }
-                                        fromLaneID = Convert.ToInt32(fromLaneFea.get_Value(pFeaClsLane.FindField(LaneFeatureService.LaneIDNm)));
-                                        fromLine = fromLaneFea.ShapeCopy as IPolyline;
-
-                                        toLaneFea = lane.QueryFeatureBuRule(toArcID, toLanePosition);
-                                        if (toLaneFea == null)
-                                        {
-                                            return;
-                                        }
-                                        toLaneID = Convert.ToInt32(toLaneFea.get_Value(pFeaClsLane.FindField(LaneFeatureService.LaneIDNm)));
-                                        toLine = toLaneFea.ShapeCopy as IPolyline;
-                                        bezierLine = GetConnectorShape(fromLine, toLine, null, true);
-
-                                        if (bezierLine == null)
-                                        {
-                                            int test = 0;
-                                        }
-
-                                        LaneConnector connectorEntity = InitConnectorEty(0, fromLinkID, toLinkID, fromArcID, toArcID,
-                                            fromArcDir, toArcDir, fromLaneID, toLaneID, TurningDir);
-
-                                        InsertLConnector(connectorEntity, bezierLine);
-                                    }
-                                }
-                            }
-                            #endregion ************************************ fromArcLaneNum > 2 **********************************
-
-                            #region ************************************ fromArcLaneNum<=2 **********************************
-                            else
-                            {
-                                if (toArcLaneNum > 2)
-                                {
-                                    for (int i = 1; i < toArcLaneNum - 1; i++)
-                                    {
-                                        fromLanePostition = fromArcLaneNum - 1;
-                                        toLanePosition = i;
-
-                                        fromLaneFea = lane.QueryFeatureBuRule(fromArcID, fromLanePostition);
-                                        if (fromLaneFea == null)
-                                        {
-                                            return;
-                                        }
-                                        fromLaneID = Convert.ToInt32(fromLaneFea.get_Value(pFeaClsLane.FindField(LaneFeatureService.LaneIDNm)));
-                                        fromLine = fromLaneFea.ShapeCopy as IPolyline;
-
-                                        toLaneFea = lane.QueryFeatureBuRule(toArcID, toLanePosition);
-                                        if(toLaneFea == null)
-                                        {
-                                            return;
-                                        }
-                                        toLaneID = Convert.ToInt32(toLaneFea.get_Value(pFeaClsLane.FindField(LaneFeatureService.LaneIDNm)));
-                                        toLine = toLaneFea.ShapeCopy as IPolyline;
-                                        bezierLine = GetConnectorShape(fromLine, toLine, null, true);
-
-                                        if (bezierLine == null)
-                                        {
-                                            int test = 0;
-                                        }
-
-                                        LaneConnector connectorEntity = InitConnectorEty(0, fromLinkID, toLinkID, fromArcID, toArcID,
-                                            fromArcDir, toArcDir, fromLaneID, toLaneID, TurningDir);
-
-                                        InsertLConnector(connectorEntity, bezierLine);
-                                    }
-                                }
-                                else
-                                {
-                                    for (int i = 0; i < toArcLaneNum - 1; i++)
-                                    {
-                                        fromLanePostition = i;
-                                        toLanePosition = i;
-
-                                        fromLaneFea = lane.QueryFeatureBuRule(fromArcID, fromLanePostition);
-                                        if (fromLaneFea == null)
-                                        {
-                                            return;
-                                        }
-                                        fromLaneID = Convert.ToInt32(fromLaneFea.get_Value(pFeaClsLane.FindField(LaneFeatureService.LaneIDNm)));
-                                        fromLine = fromLaneFea.ShapeCopy as IPolyline;
-
-                                        toLaneFea = lane.QueryFeatureBuRule(toArcID, toLanePosition);
-                                        if (toLaneFea == null)
-                                        {
-                                            return;
-                                        }
-
-                                        toLaneID = Convert.ToInt32(toLaneFea.get_Value(pFeaClsLane.FindField(LaneFeatureService.LaneIDNm)));
-                                        toLine = toLaneFea.ShapeCopy as IPolyline;
-                                        bezierLine = GetConnectorShape(fromLine, toLine, null, true);
-
-                                        if (bezierLine == null)
-                                        {
-                                            int test = 0;
-                                        }
-
-                                        LaneConnector connectorEntity = InitConnectorEty(0, fromLinkID, toLinkID, fromArcID, toArcID,
-                                            fromArcDir, toArcDir, fromLaneID, toLaneID, TurningDir);
-
-                                        InsertLConnector(connectorEntity, bezierLine);
-                                    }
-                                }
-                            }
-                            #endregion ************************************ fromArcLaneNum<=2 **********************************
+                            createStraightConnectors(pFeaClsLane, fromArcEty, toArcEty);
                         } break;
-                    #endregion -----------------------------------Straight-------------------------------------
 
-                    case "Uturn":
+                    case LaneConnector.CHANGE_UTURN:
                         {
-                            if (fromArcLaneNum > 2 && toArcLaneNum > 2)
+                            if (CREATE_UTURN_FLAG)
                             {
-
-                                fromLanePostition = 0;
-                                toLanePosition = 0;
-
-                                fromLaneFea = lane.QueryFeatureBuRule(fromArcID, fromLanePostition);
-                                fromLaneID = Convert.ToInt32(fromLaneFea.get_Value(pFeaClsLane.FindField(LaneFeatureService.LaneIDNm)));
-                                fromLine = fromLaneFea.ShapeCopy as IPolyline;
-
-                                toLaneFea = lane.QueryFeatureBuRule(toArcID, toLanePosition);
-                                toLaneID = Convert.ToInt32(toLaneFea.get_Value(pFeaClsLane.FindField(LaneFeatureService.LaneIDNm)));
-                                toLine = toLaneFea.ShapeCopy as IPolyline;
-                                bezierLine = GetConnectorShape(fromLine, toLine, null,true);
-
-                                if (bezierLine == null)
-                                {
-                                    int test = 0;
-                                }
-
-                                LaneConnector connectorEntity = InitConnectorEty(0, fromLinkID, toLinkID, fromArcID, toArcID,
-                                    fromArcDir, toArcDir, fromLaneID, toLaneID, TurningDir);
-
-                                InsertLConnector(connectorEntity, bezierLine);
+                                createUturnConnectors(pFeaClsLane, fromArcEty, toArcEty);
                             }
                         } break;
                     default:
@@ -897,7 +325,798 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LaneLayer
             }
         }
 
-        
+
+        private void createRightestConnection(IFeatureClass pFeaClsLane, Arc fromArc, Arc toArc, IPoint nodePnt, string turningDir)
+        {
+            LaneFeatureService lane = new LaneFeatureService(pFeaClsLane, 0);
+            int toLinkID = toArc.LinkID;
+            int toArcID = toArc.ArcID;
+            int toArcDir = toArc.FlowDir;
+            int toArcLaneNum = toArc.LaneNum;
+            int toLanePosition = -1;
+            int toLaneID;
+            IFeature toLaneFea = null;
+            IPolyline toLine = null;
+
+            int fromLinkID = fromArc.LinkID;
+            int fromArcID = fromArc.ArcID;
+            int fromArcDir = fromArc.FlowDir;
+            int fromArcLaneNum = fromArc.LaneNum;
+            int fromLanePostition = -1;
+            int fromLaneID;
+            IPolyline fromLine = null;
+            IFeature fromLaneFea = null;
+
+            IPolyline bezierLine = null;
+
+            fromLanePostition = fromArc.LaneNum -  Lane.rightPositionOffset;
+            toLanePosition = fromArc.LaneNum - Lane.rightPositionOffset;
+
+            fromLaneFea = lane.QueryFeatureBuRule(fromArcID, fromLanePostition);
+            fromLaneID = Convert.ToInt32(fromLaneFea.get_Value(pFeaClsLane.FindField(LaneFeatureService.LaneIDNm)));
+            fromLine = fromLaneFea.ShapeCopy as IPolyline;
+
+            toLaneFea = lane.QueryFeatureBuRule(toArcID, toLanePosition);
+            toLaneID = Convert.ToInt32(toLaneFea.get_Value(pFeaClsLane.FindField(LaneFeatureService.LaneIDNm)));
+            toLine = toLaneFea.ShapeCopy as IPolyline;
+
+
+            bezierLine = GetConnectorShape(fromLine, toLine,
+                turningDir.Equals(LaneConnector.TURNING_LEFT) ? nodePnt : null,
+                turningDir.Equals(LaneConnector.TURNING_STRAIGHT));
+
+
+            LaneConnector connectorEntity = InitConnectorEty(0, fromLinkID, toLinkID, fromArcID, toArcID,
+                fromArcDir, toArcDir, fromLaneID, toLaneID, turningDir);
+
+            InsertLConnector(connectorEntity, bezierLine);
+        }
+
+        private void createLeftestConnection(IFeatureClass pFeaClsLane, Arc fromArc, Arc toArc,IPoint nodePnt,string turningDir)
+        {
+            LaneFeatureService lane = new LaneFeatureService(pFeaClsLane, 0);
+            int toLinkID = toArc.LinkID;
+            int toArcID = toArc.ArcID;
+            int toArcDir = toArc.FlowDir;
+            int toArcLaneNum = toArc.LaneNum;
+            int toLanePosition = -1;
+            int toLaneID;
+            IFeature toLaneFea = null;
+            IPolyline toLine = null;
+
+            int fromLinkID = fromArc.LinkID;
+            int fromArcID = fromArc.ArcID;
+            int fromArcDir = fromArc.FlowDir;
+            int fromArcLaneNum = fromArc.LaneNum;
+            int fromLanePostition = -1;
+            int fromLaneID;
+            IPolyline fromLine = null;
+            IFeature fromLaneFea = null;
+
+            IPolyline bezierLine = null;
+
+            fromLanePostition = Lane.leftPosition;
+            toLanePosition = Lane.leftPosition;
+
+            fromLaneFea = lane.QueryFeatureBuRule(fromArcID, fromLanePostition);
+            fromLaneID = Convert.ToInt32(fromLaneFea.get_Value(pFeaClsLane.FindField(LaneFeatureService.LaneIDNm)));
+            fromLine = fromLaneFea.ShapeCopy as IPolyline;
+
+            toLaneFea = lane.QueryFeatureBuRule(toArcID, toLanePosition);
+            toLaneID = Convert.ToInt32(toLaneFea.get_Value(pFeaClsLane.FindField(LaneFeatureService.LaneIDNm)));
+            toLine = toLaneFea.ShapeCopy as IPolyline;
+
+            
+            bezierLine = GetConnectorShape(fromLine, toLine, 
+                turningDir.Equals(LaneConnector.TURNING_LEFT)?nodePnt:null,
+                turningDir.Equals(LaneConnector.TURNING_STRAIGHT));
+
+
+            LaneConnector connectorEntity = InitConnectorEty(0, fromLinkID, toLinkID, fromArcID, toArcID,
+                fromArcDir, toArcDir, fromLaneID, toLaneID, turningDir);
+
+            InsertLConnector(connectorEntity, bezierLine);
+        }
+
+        private void createUturnConnectors(IFeatureClass pFeaClsLane, Arc fromArc, Arc toArc)
+        {
+            LaneFeatureService lane = new LaneFeatureService(pFeaClsLane, 0);
+            int toLinkID = toArc.LinkID;
+            int toArcID = toArc.ArcID;
+            int toArcDir = toArc.FlowDir;
+            int toArcLaneNum = toArc.LaneNum;
+            int toLanePosition = -1;
+            int toLaneID;
+            IFeature toLaneFea = null;
+            IPolyline toLine = null;
+
+            int fromLinkID = fromArc.LinkID;
+            int fromArcID = fromArc.ArcID;
+            int fromArcDir = fromArc.FlowDir;
+            int fromArcLaneNum = fromArc.LaneNum;
+            int fromLanePostition = -1;
+            int fromLaneID;
+            IPolyline fromLine = null;
+            IFeature fromLaneFea = null;
+
+            IPolyline bezierLine = null;
+            if (fromArcLaneNum > 2 && toArcLaneNum > 2)
+            {
+
+                fromLanePostition = Lane.leftPosition;
+                toLanePosition = Lane.leftPosition;
+
+                fromLaneFea = lane.QueryFeatureBuRule(fromArcID, fromLanePostition);
+                fromLaneID = Convert.ToInt32(fromLaneFea.get_Value(pFeaClsLane.FindField(LaneFeatureService.LaneIDNm)));
+                fromLine = fromLaneFea.ShapeCopy as IPolyline;
+
+                toLaneFea = lane.QueryFeatureBuRule(toArcID, toLanePosition);
+                toLaneID = Convert.ToInt32(toLaneFea.get_Value(pFeaClsLane.FindField(LaneFeatureService.LaneIDNm)));
+                toLine = toLaneFea.ShapeCopy as IPolyline;
+                bezierLine = GetConnectorShape(fromLine, toLine, null, true);
+
+
+                LaneConnector connectorEntity = InitConnectorEty(0, fromLinkID, toLinkID, fromArcID, toArcID,
+                    fromArcDir, toArcDir, fromLaneID, toLaneID, LaneConnector.CHANGE_UTURN);
+
+                InsertLConnector(connectorEntity, bezierLine);
+            }
+        }
+
+
+        private void createStraightConnectors(IFeatureClass pFeaClsLane, Arc fromArc, Arc toArc)
+        {
+            LaneFeatureService lane = new LaneFeatureService(pFeaClsLane, 0);
+            int toLinkID = toArc.LinkID;
+            int toArcID = toArc.ArcID;
+            int toArcDir = toArc.FlowDir;
+            int toArcLaneNum = toArc.LaneNum;
+            int toLanePosition = -1;
+            int toLaneID;
+            IFeature toLaneFea = null;
+            IPolyline toLine = null;
+
+            int fromLinkID = fromArc.LinkID;
+            int fromArcID = fromArc.ArcID;
+            int fromArcDir = fromArc.FlowDir;
+            int fromArcLaneNum = fromArc.LaneNum;
+            int fromLanePostition = -1;
+            int fromLaneID;
+            IPolyline fromLine = null;
+            IFeature fromLaneFea = null;
+
+            IPolyline bezierLine = null;
+
+
+            #region 判断toArc是顺时针第一个Link的，生成第一个车道直行
+            fromLanePostition = Lane.leftPosition;
+            toLanePosition = Lane.leftPosition;
+
+            fromLaneFea = lane.QueryFeatureBuRule(fromArcID, fromLanePostition);
+            toLaneFea = lane.QueryFeatureBuRule(toArcID, toLanePosition);
+            if (fromLaneFea != null && toLaneFea != null)
+            {
+                fromLaneID = Convert.ToInt32(fromLaneFea.get_Value(pFeaClsLane.FindField(LaneFeatureService.LaneIDNm)));
+                fromLine = fromLaneFea.ShapeCopy as IPolyline;
+
+                toLaneID = Convert.ToInt32(toLaneFea.get_Value(pFeaClsLane.FindField(LaneFeatureService.LaneIDNm)));
+                toLine = toLaneFea.ShapeCopy as IPolyline;
+                bezierLine = GetConnectorShape(fromLine, toLine, null, true);
+
+                LaneConnector connectorEntity = InitConnectorEty(0, fromLinkID, toLinkID, fromArcID, toArcID,
+                                            fromArcDir, toArcDir, fromLaneID, toLaneID, LaneConnector.TURNING_STRAIGHT);
+
+                InsertLConnector(connectorEntity, bezierLine);
+            }
+
+
+            #endregion
+
+            #region ************************************ fromArcLaneNum > 2 **********************************
+            if (fromArcLaneNum > 2)
+            {
+                if (toArcLaneNum > 2)
+                {
+                    #region %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% fromArcLaneNum == toArcLaneNum %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                    if (fromArcLaneNum == toArcLaneNum)
+                    {
+
+                        for (int i = 1; i < fromArcLaneNum - 1; i++)
+                        {
+                            fromLanePostition = i + Lane.leftPosition;
+                            toLanePosition = i + Lane.leftPosition;
+
+                            fromLaneFea = lane.QueryFeatureBuRule(fromArcID, fromLanePostition);
+                            if (fromLaneFea == null)
+                            {
+                                return;
+                            }
+                            fromLaneID = Convert.ToInt32(fromLaneFea.get_Value(pFeaClsLane.FindField(LaneFeatureService.LaneIDNm)));
+                            fromLine = fromLaneFea.ShapeCopy as IPolyline;
+
+                            toLaneFea = lane.QueryFeatureBuRule(toArcID, toLanePosition);
+                            if (toLaneFea == null)
+                            {
+                                return;
+                            }
+                            toLaneID = Convert.ToInt32(toLaneFea.get_Value(pFeaClsLane.FindField(LaneFeatureService.LaneIDNm)));
+                            toLine = toLaneFea.ShapeCopy as IPolyline;
+                            bezierLine = GetConnectorShape(fromLine, toLine, null, true);
+
+                            if (bezierLine == null)
+                            {
+                                int test = 0;
+                            }
+
+                            LaneConnector connectorEntity = InitConnectorEty(0, fromLinkID, toLinkID, fromArcID, toArcID,
+                                fromArcDir, toArcDir, fromLaneID, toLaneID, LaneConnector.TURNING_STRAIGHT);
+
+                            InsertLConnector(connectorEntity, bezierLine);
+                        }
+
+                    }
+                    #endregion %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% fromArcLaneNum == toArcLaneNum %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+                    #region %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% fromArcLaneNum > toArcLaneNum %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                    else if (fromArcLaneNum > toArcLaneNum)
+                    {
+
+                        for (int i = Lane.leftPosition + 1; i < fromArcLaneNum - Lane.rightPositionOffset; i++)
+                        {
+                            if (i <= (int)toArcLaneNum / 2)
+                            {
+                                fromLanePostition = i;
+                                toLanePosition = i;
+
+                                fromLaneFea = lane.QueryFeatureBuRule(fromArcID, fromLanePostition);
+                                if (fromLaneFea == null)
+                                {
+                                    return;
+                                }
+                                fromLaneID = Convert.ToInt32(fromLaneFea.get_Value(pFeaClsLane.FindField(LaneFeatureService.LaneIDNm)));
+                                fromLine = fromLaneFea.ShapeCopy as IPolyline;
+
+                                toLaneFea = lane.QueryFeatureBuRule(toArcID, toLanePosition);
+                                if (toLaneFea == null)
+                                {
+                                    return;
+                                }
+                                toLaneID = Convert.ToInt32(toLaneFea.get_Value(pFeaClsLane.FindField(LaneFeatureService.LaneIDNm)));
+                                toLine = toLaneFea.ShapeCopy as IPolyline;
+                                bezierLine = GetConnectorShape(fromLine, toLine, null, true);
+
+                                if (bezierLine == null)
+                                {
+                                    int test = 0;
+                                }
+
+                                LaneConnector connectorEntity = InitConnectorEty(0, fromLinkID, toLinkID, fromArcID, toArcID,
+                                    fromArcDir, toArcDir, fromLaneID, toLaneID, LaneConnector.TURNING_STRAIGHT);
+
+                                InsertLConnector(connectorEntity, bezierLine);
+
+
+                                fromLanePostition = fromArcLaneNum - i;
+                                toLanePosition = toArcLaneNum - i;
+
+                                fromLaneFea = lane.QueryFeatureBuRule(fromArcID, fromLanePostition);
+                                if (fromLaneFea == null)
+                                {
+                                    return;
+                                }
+                                fromLaneID = Convert.ToInt32(fromLaneFea.get_Value(pFeaClsLane.FindField(LaneFeatureService.LaneIDNm)));
+                                fromLine = fromLaneFea.ShapeCopy as IPolyline;
+
+                                if (toLaneFea == null)
+                                {
+                                    return;
+                                }
+                                toLaneFea = lane.QueryFeatureBuRule(toArcID, toLanePosition);
+                                toLaneID = Convert.ToInt32(toLaneFea.get_Value(pFeaClsLane.FindField(LaneFeatureService.LaneIDNm)));
+                                toLine = toLaneFea.ShapeCopy as IPolyline;
+                                bezierLine = GetConnectorShape(fromLine, toLine, null, true);
+
+                                if (bezierLine == null)
+                                {
+                                    int test = 0;
+                                }
+
+                                LaneConnector connectorEntity1 = InitConnectorEty(0, fromLinkID, toLinkID, fromArcID, toArcID,
+                                    fromArcDir, toArcDir, fromLaneID, toLaneID, LaneConnector.TURNING_STRAIGHT);
+
+                                InsertLConnector(connectorEntity1, bezierLine);
+                            }
+
+                            else if (i >= ((int)toArcLaneNum / 2) && i <= (fromArcLaneNum - (int)(toArcLaneNum / 2) - 1))
+                            {
+                                Random rdm = new Random();
+
+                                fromLanePostition = i;
+                                toLanePosition = (int)rdm.Next((int)toArcLaneNum / 2, (fromArcLaneNum - (int)(toArcLaneNum / 2) - 1));
+
+                                fromLaneFea = lane.QueryFeatureBuRule(fromArcID, fromLanePostition);
+                                if (fromLaneFea == null)
+                                {
+                                    return;
+                                }
+                                fromLaneID = Convert.ToInt32(fromLaneFea.get_Value(pFeaClsLane.FindField(LaneFeatureService.LaneIDNm)));
+                                fromLine = fromLaneFea.ShapeCopy as IPolyline;
+
+                                toLaneFea = lane.QueryFeatureBuRule(toArcID, toLanePosition);
+                                if (toLaneFea == null)
+                                {
+                                    return;
+                                }
+                                toLaneID = Convert.ToInt32(toLaneFea.get_Value(pFeaClsLane.FindField(LaneFeatureService.LaneIDNm)));
+                                toLine = toLaneFea.ShapeCopy as IPolyline;
+                                bezierLine = GetConnectorShape(fromLine, toLine, null, true);
+
+                                if (bezierLine == null)
+                                {
+                                    int test = 0;
+                                }
+
+                                LaneConnector connectorEntity1 = InitConnectorEty(0, fromLinkID, toLinkID, fromArcID, toArcID,
+                                    fromArcDir, toArcDir, fromLaneID, toLaneID, LaneConnector.TURNING_STRAIGHT);
+
+                                InsertLConnector(connectorEntity1, bezierLine);
+                            }
+                        }
+                    }
+                    #endregion %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% fromArcLaneNum > toArcLaneNum %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+                    #region %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% fromArcLaneNum < toArcLaneNum %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                    else
+                    {
+                        for (int i = 1 + Lane.leftPosition; i < toArcLaneNum - Lane.rightPositionOffset; i++)
+                        {
+                            if (i <= ((int)(fromArcLaneNum / 2) - 1))
+                            {
+                                fromLanePostition = i;
+                                toLanePosition = i;
+
+                                fromLaneFea = lane.QueryFeatureBuRule(fromArcID, fromLanePostition);
+                                if (fromLaneFea == null)
+                                {
+                                    return;
+                                }
+                                fromLaneID = Convert.ToInt32(fromLaneFea.get_Value(pFeaClsLane.FindField(LaneFeatureService.LaneIDNm)));
+                                fromLine = fromLaneFea.ShapeCopy as IPolyline;
+
+                                toLaneFea = lane.QueryFeatureBuRule(toArcID, toLanePosition);
+                                if (toLaneFea == null)
+                                {
+                                    return;
+                                }
+                                toLaneID = Convert.ToInt32(toLaneFea.get_Value(pFeaClsLane.FindField(LaneFeatureService.LaneIDNm)));
+                                toLine = toLaneFea.ShapeCopy as IPolyline;
+                                bezierLine = GetConnectorShape(fromLine, toLine, null, true);
+
+                                if (bezierLine == null)
+                                {
+                                    int test = 0;
+                                }
+
+                                LaneConnector connectorEntity = InitConnectorEty(0, fromLinkID, toLinkID, fromArcID, toArcID,
+                                    fromArcDir, toArcDir, fromLaneID, toLaneID, LaneConnector.TURNING_STRAIGHT);
+
+                                InsertLConnector(connectorEntity, bezierLine);
+
+
+                                fromLanePostition = fromArcLaneNum - i - Lane.rightPositionOffset;
+                                toLanePosition = toArcLaneNum - i - Lane.rightPositionOffset;
+
+                                fromLaneFea = lane.QueryFeatureBuRule(fromArcID, fromLanePostition);
+                                if (fromLaneFea == null)
+                                {
+                                    return;
+                                }
+                                fromLaneID = Convert.ToInt32(fromLaneFea.get_Value(pFeaClsLane.FindField(LaneFeatureService.LaneIDNm)));
+                                fromLine = fromLaneFea.ShapeCopy as IPolyline;
+
+                                toLaneFea = lane.QueryFeatureBuRule(toArcID, toLanePosition);
+                                if (toLaneFea == null)
+                                {
+                                    return;
+                                }
+                                toLaneID = Convert.ToInt32(toLaneFea.get_Value(pFeaClsLane.FindField(LaneFeatureService.LaneIDNm)));
+                                toLine = toLaneFea.ShapeCopy as IPolyline;
+                                bezierLine = GetConnectorShape(fromLine, toLine, null, true);
+
+                                if (bezierLine == null)
+                                {
+                                    int test = 0;
+                                }
+
+                                LaneConnector connectorEntity1 = InitConnectorEty(0, fromLinkID, toLinkID, fromArcID, toArcID,
+                                    fromArcDir, toArcDir, fromLaneID, toLaneID, LaneConnector.TURNING_STRAIGHT);
+
+                                InsertLConnector(connectorEntity1, bezierLine);
+
+
+                            }
+                            else if (i >= ((int)fromArcLaneNum / 2) && i <= (toArcLaneNum - (int)(fromArcLaneNum / 2) - 1))
+                            {
+                                Random rdm = new Random();
+
+                                fromLanePostition = (int)rdm.Next((int)fromArcLaneNum / 2, toArcLaneNum - (int)(fromArcLaneNum / 2) - 1);
+                                toLanePosition = i;
+
+                                fromLaneFea = lane.QueryFeatureBuRule(fromArcID, fromLanePostition);
+                                if (fromLaneFea == null)
+                                {
+                                    return;
+                                }
+
+                                fromLaneID = Convert.ToInt32(fromLaneFea.get_Value(pFeaClsLane.FindField(LaneFeatureService.LaneIDNm)));
+                                fromLine = fromLaneFea.ShapeCopy as IPolyline;
+
+                                toLaneFea = lane.QueryFeatureBuRule(toArcID, toLanePosition);
+                                if (toLaneFea == null)
+                                {
+                                    return;
+                                }
+
+                                toLaneID = Convert.ToInt32(toLaneFea.get_Value(pFeaClsLane.FindField(LaneFeatureService.LaneIDNm)));
+                                toLine = toLaneFea.ShapeCopy as IPolyline;
+                                bezierLine = GetConnectorShape(fromLine, toLine, null, true);
+
+                                if (bezierLine == null)
+                                {
+                                    int test = 0;
+                                }
+
+                                LaneConnector connectorEntity1 = InitConnectorEty(0, fromLinkID, toLinkID, fromArcID, toArcID,
+                                    fromArcDir, toArcDir, fromLaneID, toLaneID, LaneConnector.TURNING_STRAIGHT);
+
+                                InsertLConnector(connectorEntity1, bezierLine);
+                            }
+                        }
+                    }
+                    #endregion %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% fromArcLaneNum < toArcLaneNum %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                }
+                else
+                {
+                    for (int i = 1 + Lane.leftPosition; i < fromArcLaneNum - Lane.rightPositionOffset; i++)
+                    {
+                        fromLanePostition = fromArcLaneNum - Lane.rightPositionOffset;
+                        toLanePosition = i;
+
+                        fromLaneFea = lane.QueryFeatureBuRule(fromArcID, fromLanePostition);
+                        if (fromLaneFea == null)
+                        {
+                            return;
+                        }
+                        fromLaneID = Convert.ToInt32(fromLaneFea.get_Value(pFeaClsLane.FindField(LaneFeatureService.LaneIDNm)));
+                        fromLine = fromLaneFea.ShapeCopy as IPolyline;
+
+                        toLaneFea = lane.QueryFeatureBuRule(toArcID, toLanePosition);
+                        if (toLaneFea == null)
+                        {
+                            return;
+                        }
+                        toLaneID = Convert.ToInt32(toLaneFea.get_Value(pFeaClsLane.FindField(LaneFeatureService.LaneIDNm)));
+                        toLine = toLaneFea.ShapeCopy as IPolyline;
+                        bezierLine = GetConnectorShape(fromLine, toLine, null, true);
+
+                        if (bezierLine == null)
+                        {
+                            int test = 0;
+                        }
+
+                        LaneConnector connectorEntity = InitConnectorEty(0, fromLinkID, toLinkID, fromArcID, toArcID,
+                            fromArcDir, toArcDir, fromLaneID, toLaneID, LaneConnector.TURNING_STRAIGHT);
+
+                        InsertLConnector(connectorEntity, bezierLine);
+                    }
+                }
+            }
+            #endregion ************************************ fromArcLaneNum > 2 **********************************
+
+            #region ************************************ fromArcLaneNum<=2 **********************************
+            else
+            {
+                if (toArcLaneNum > 2)
+                {
+                    for (int i = 1 + Lane.leftPosition; i < toArcLaneNum - Lane.rightPositionOffset; i++)
+                    {
+                        fromLanePostition = fromArcLaneNum - Lane.rightPositionOffset;
+                        toLanePosition = i;
+
+                        fromLaneFea = lane.QueryFeatureBuRule(fromArcID, fromLanePostition);
+                        if (fromLaneFea == null)
+                        {
+                            return;
+                        }
+                        fromLaneID = Convert.ToInt32(fromLaneFea.get_Value(pFeaClsLane.FindField(LaneFeatureService.LaneIDNm)));
+                        fromLine = fromLaneFea.ShapeCopy as IPolyline;
+
+                        toLaneFea = lane.QueryFeatureBuRule(toArcID, toLanePosition);
+                        if (toLaneFea == null)
+                        {
+                            return;
+                        }
+                        toLaneID = Convert.ToInt32(toLaneFea.get_Value(pFeaClsLane.FindField(LaneFeatureService.LaneIDNm)));
+                        toLine = toLaneFea.ShapeCopy as IPolyline;
+                        bezierLine = GetConnectorShape(fromLine, toLine, null, true);
+
+                        if (bezierLine == null)
+                        {
+                            int test = 0;
+                        }
+
+                        LaneConnector connectorEntity = InitConnectorEty(0, fromLinkID, toLinkID, fromArcID, toArcID,
+                            fromArcDir, toArcDir, fromLaneID, toLaneID, LaneConnector.TURNING_STRAIGHT);
+
+                        InsertLConnector(connectorEntity, bezierLine);
+                    }
+                }
+                else
+                {
+                    for (int i = Lane.leftPosition; i < toArcLaneNum - Lane.rightPositionOffset; i++)
+                    {
+                        fromLanePostition = i;
+                        toLanePosition = i;
+
+                        fromLaneFea = lane.QueryFeatureBuRule(fromArcID, fromLanePostition);
+                        if (fromLaneFea == null)
+                        {
+                            return;
+                        }
+                        fromLaneID = Convert.ToInt32(fromLaneFea.get_Value(pFeaClsLane.FindField(LaneFeatureService.LaneIDNm)));
+                        fromLine = fromLaneFea.ShapeCopy as IPolyline;
+
+                        toLaneFea = lane.QueryFeatureBuRule(toArcID, toLanePosition);
+                        if (toLaneFea == null)
+                        {
+                            return;
+                        }
+
+                        toLaneID = Convert.ToInt32(toLaneFea.get_Value(pFeaClsLane.FindField(LaneFeatureService.LaneIDNm)));
+                        toLine = toLaneFea.ShapeCopy as IPolyline;
+                        bezierLine = GetConnectorShape(fromLine, toLine, null, true);
+
+                        if (bezierLine == null)
+                        {
+                            int test = 0;
+                        }
+
+                        LaneConnector connectorEntity = InitConnectorEty(0, fromLinkID, toLinkID, fromArcID, toArcID,
+                            fromArcDir, toArcDir, fromLaneID, toLaneID, LaneConnector.TURNING_STRAIGHT);
+
+                        InsertLConnector(connectorEntity, bezierLine);
+                    }
+                }
+            }
+            #endregion ************************************ fromArcLaneNum<=2 **********************************
+        }
+
+        /// <summary>
+        /// 创建右转车道连接器
+        /// </summary>
+        /// <param name="pFeaClsLane"></param>
+        /// <param name="fromArc"></param>
+        /// <param name="toArc"></param>
+        private void createRightConnectors(IFeatureClass pFeaClsLane, Arc fromArc, Arc toArc)
+        {
+            LaneFeatureService laneService = new LaneFeatureService(pFeaClsLane, 0);
+            int toLinkID = toArc.LinkID;
+            int toArcID = toArc.ArcID;
+            int toArcDir = toArc.FlowDir;
+            int toArcLaneNum = toArc.LaneNum;
+            int toLanePosition = -1;
+            int toLaneID;
+            IFeature toLaneFea = null;
+            IPolyline toLine = null;
+
+            int fromLinkID = fromArc.LinkID;
+            int fromArcID = fromArc.ArcID;
+            int fromArcDir = fromArc.FlowDir;
+            int fromArcLaneNum = fromArc.LaneNum;
+            int fromLanePostition = -1;
+            int fromLaneID;
+            IPolyline fromLine = null;
+            IFeature fromLaneFea = null;
+
+            IPolyline bezierLine = null;
+
+
+            if (fromArcLaneNum >= 5)
+            {
+                if (toArcLaneNum < 2)
+                {
+                    fromLanePostition = fromArcLaneNum - Lane.rightPositionOffset;
+                    toLanePosition = toArcLaneNum - Lane.rightPositionOffset;
+
+                    fromLaneFea = laneService.QueryFeatureBuRule(fromArcID, fromLanePostition);
+                    fromLaneID = Convert.ToInt32(fromLaneFea.get_Value(pFeaClsLane.FindField(LaneFeatureService.LaneIDNm)));
+                    fromLine = fromLaneFea.ShapeCopy as IPolyline;
+
+                    toLaneFea = laneService.QueryFeatureBuRule(toArcID, toLanePosition);
+                    toLaneID = Convert.ToInt32(toLaneFea.get_Value(pFeaClsLane.FindField(LaneFeatureService.LaneIDNm)));
+                    toLine = toLaneFea.ShapeCopy as IPolyline;
+                    bezierLine = GetConnectorShape(fromLine, toLine, null, false);
+
+                    LaneConnector connectorEntity1 = InitConnectorEty(0, fromLinkID, toLinkID, fromArcID, toArcID,
+                        fromArcDir, toArcDir, fromLaneID, toLaneID, LaneConnector.TURNING_RIGHT);
+
+                    InsertLConnector(connectorEntity1, bezierLine);
+
+                }
+                else
+                {
+                    fromLanePostition = fromArcLaneNum - Lane.rightPositionOffset;
+                    toLanePosition = toArcLaneNum - Lane.rightPositionOffset;
+
+                    fromLaneFea = laneService.QueryFeatureBuRule(fromArcID, fromLanePostition);
+                    fromLaneID = Convert.ToInt32(fromLaneFea.get_Value(pFeaClsLane.FindField(LaneFeatureService.LaneIDNm)));
+                    fromLine = fromLaneFea.ShapeCopy as IPolyline;
+
+                    toLaneFea = laneService.QueryFeatureBuRule(toArcID, toLanePosition);
+                    toLaneID = Convert.ToInt32(toLaneFea.get_Value(pFeaClsLane.FindField(LaneFeatureService.LaneIDNm)));
+                    toLine = toLaneFea.ShapeCopy as IPolyline;
+                    bezierLine = GetConnectorShape(fromLine, toLine, null, false);
+
+                    LaneConnector connectorEntity1 = InitConnectorEty(0, fromLinkID, toLinkID, fromArcID, toArcID,
+                        fromArcDir, toArcDir, fromLaneID, toLaneID, LaneConnector.TURNING_RIGHT);
+
+                    InsertLConnector(connectorEntity1, bezierLine);
+
+
+                    fromLanePostition = fromArcLaneNum - Lane.rightPositionOffset - 1;
+                    toLanePosition = toArcLaneNum - Lane.rightPositionOffset - 1;
+
+                    fromLaneFea = laneService.QueryFeatureBuRule(fromArcID, fromLanePostition);
+                    fromLaneID = Convert.ToInt32(fromLaneFea.get_Value(pFeaClsLane.FindField(LaneFeatureService.LaneIDNm)));
+                    fromLine = fromLaneFea.ShapeCopy as IPolyline;
+
+                    toLaneFea = laneService.QueryFeatureBuRule(toArcID, toLanePosition);
+                    toLaneID = Convert.ToInt32(toLaneFea.get_Value(pFeaClsLane.FindField(LaneFeatureService.LaneIDNm)));
+                    toLine = toLaneFea.ShapeCopy as IPolyline;
+                    bezierLine = GetConnectorShape(fromLine, toLine, null, false);
+
+                    LaneConnector connectorEntity2 = InitConnectorEty(0, fromLinkID, toLinkID, fromArcID, toArcID,
+                        fromArcDir, toArcDir, fromLaneID, toLaneID, LaneConnector.TURNING_RIGHT);
+
+                    InsertLConnector(connectorEntity2, bezierLine);
+
+                }
+            }
+            else
+            {
+                fromLanePostition = fromArcLaneNum - Lane.rightPositionOffset;
+                toLanePosition = toArcLaneNum - Lane.rightPositionOffset;
+
+                fromLaneFea = laneService.QueryFeatureBuRule(fromArcID, fromLanePostition);
+                fromLaneID = Convert.ToInt32(fromLaneFea.get_Value(pFeaClsLane.FindField(LaneFeatureService.LaneIDNm)));
+                fromLine = fromLaneFea.ShapeCopy as IPolyline;
+
+                toLaneFea = laneService.QueryFeatureBuRule(toArcID, toLanePosition);
+                toLaneID = Convert.ToInt32(toLaneFea.get_Value(pFeaClsLane.FindField(LaneFeatureService.LaneIDNm)));
+                toLine = toLaneFea.ShapeCopy as IPolyline;
+                bezierLine = GetConnectorShape(fromLine, toLine, null, false);
+
+                LaneConnector connectorEntity2 = InitConnectorEty(0, fromLinkID, toLinkID, fromArcID, toArcID,
+                    fromArcDir, toArcDir, fromLaneID, toLaneID, LaneConnector.TURNING_RIGHT);
+
+                InsertLConnector(connectorEntity2, bezierLine);
+
+            }
+                    
+        }
+
+        /// <summary>
+        /// 创建左转的车道连接器
+        /// </summary>
+        /// <param name="pFeaClsLane"></param>
+        /// <param name="fromArc"></param>
+        /// <param name="toArc"></param>
+        /// <param name="nodePnt"></param>
+        private void createLeftConnector(IFeatureClass pFeaClsLane, Arc fromArc, Arc toArc, IPoint nodePnt)
+        {
+            LaneFeatureService laneService = new LaneFeatureService(pFeaClsLane, 0);
+            int toLinkID = toArc.LinkID;
+            int toArcID = toArc.ArcID;
+            int toArcDir = toArc.FlowDir;
+            int toArcLaneNum = toArc.LaneNum;
+            int toLanePosition = -1;
+            int toLaneID;
+            IFeature toLaneFea = null;
+            IPolyline toLine = null;
+
+            int fromLinkID = fromArc.LinkID;
+            int fromArcID = fromArc.ArcID;
+            int fromArcDir = fromArc.FlowDir;
+            int fromArcLaneNum = fromArc.LaneNum;
+            int fromLanePostition = -1;
+            int fromLaneID;
+            IPolyline fromLine = null;
+            IFeature fromLaneFea = null;
+
+            IPolyline bezierLine = null;
+
+            if (fromArcLaneNum >= 5)
+            {
+                if (toArcLaneNum >= 2)
+                {
+                    fromLanePostition = Lane.leftPosition;
+                    toLanePosition = Lane.leftPosition;
+
+                    fromLaneFea = laneService.QueryFeatureBuRule(fromArcID, fromLanePostition);
+                    fromLaneID = Convert.ToInt32(fromLaneFea.get_Value(pFeaClsLane.FindField(LaneFeatureService.LaneIDNm)));
+                    fromLine = fromLaneFea.ShapeCopy as IPolyline;
+
+                    toLaneFea = laneService.QueryFeatureBuRule(toArcID, toLanePosition);
+                    toLaneID = Convert.ToInt32(toLaneFea.get_Value(pFeaClsLane.FindField(LaneFeatureService.LaneIDNm)));
+                    toLine = toLaneFea.ShapeCopy as IPolyline;
+                    bezierLine = GetConnectorShape(fromLine, toLine, nodePnt, false);
+
+                    LaneConnector connectorEntity2 = InitConnectorEty(0, fromLinkID, toLinkID, fromArcID, toArcID,
+                        fromArcDir, toArcDir, fromLaneID, toLaneID, LaneConnector.TURNING_LEFT);
+
+                    InsertLConnector(connectorEntity2, bezierLine);
+
+
+                    fromLanePostition = Lane.leftPosition + 1;
+                    toLanePosition = Lane.leftPosition + 1;
+
+                    fromLaneFea = laneService.QueryFeatureBuRule(fromArcID, fromLanePostition);
+                    fromLaneID = Convert.ToInt32(fromLaneFea.get_Value(pFeaClsLane.FindField(LaneFeatureService.LaneIDNm)));
+                    fromLine = fromLaneFea.ShapeCopy as IPolyline;
+
+                    toLaneFea = laneService.QueryFeatureBuRule(toArcID, toLanePosition);
+                    toLaneID = Convert.ToInt32(toLaneFea.get_Value(pFeaClsLane.FindField(LaneFeatureService.LaneIDNm)));
+                    toLine = toLaneFea.ShapeCopy as IPolyline;
+                    bezierLine = GetConnectorShape(fromLine, toLine, nodePnt, false);
+
+                    LaneConnector connectorEntity = InitConnectorEty(0, fromLinkID, toLinkID, fromArcID, toArcID,
+                        fromArcDir, toArcDir, fromLaneID, toLaneID, LaneConnector.TURNING_LEFT);
+
+                    InsertLConnector(connectorEntity, bezierLine);
+
+                }
+                else
+                {
+                    fromLanePostition = Lane.leftPosition;
+                    toLanePosition = Lane.leftPosition;
+
+                    fromLaneFea = laneService.QueryFeatureBuRule(fromArcID, fromLanePostition);
+                    fromLaneID = Convert.ToInt32(fromLaneFea.get_Value(pFeaClsLane.FindField(LaneFeatureService.LaneIDNm)));
+                    fromLine = fromLaneFea.ShapeCopy as IPolyline;
+
+                    toLaneFea = laneService.QueryFeatureBuRule(toArcID, toLanePosition);
+                    toLaneID = Convert.ToInt32(toLaneFea.get_Value(pFeaClsLane.FindField(LaneFeatureService.LaneIDNm)));
+                    toLine = toLaneFea.ShapeCopy as IPolyline;
+                    bezierLine = GetConnectorShape(fromLine, toLine, nodePnt, false);
+
+                    LaneConnector connectorEntity = InitConnectorEty(0, fromLinkID, toLinkID, fromArcID, toArcID,
+                        fromArcDir, toArcDir, fromLaneID, toLaneID, LaneConnector.TURNING_LEFT);
+
+                    InsertLConnector(connectorEntity, bezierLine);
+                }
+            }
+            else
+            {
+                fromLanePostition = Lane.leftPosition;
+                toLanePosition = Lane.leftPosition;
+
+                fromLaneFea = laneService.QueryFeatureBuRule(fromArcID, fromLanePostition);
+                fromLaneID = Convert.ToInt32(fromLaneFea.get_Value(pFeaClsLane.FindField(LaneFeatureService.LaneIDNm)));
+                fromLine = fromLaneFea.ShapeCopy as IPolyline;
+
+                toLaneFea = laneService.QueryFeatureBuRule(toArcID, toLanePosition);
+                toLaneID = Convert.ToInt32(toLaneFea.get_Value(pFeaClsLane.FindField(LaneFeatureService.LaneIDNm)));
+                toLine = toLaneFea.ShapeCopy as IPolyline;
+                bezierLine = GetConnectorShape(fromLine, toLine, nodePnt, false);
+
+                LaneConnector connectorEntity = InitConnectorEty(0, fromLinkID, toLinkID, fromArcID, toArcID,
+                    fromArcDir, toArcDir, fromLaneID, toLaneID, LaneConnector.TURNING_LEFT);
+
+                InsertLConnector(connectorEntity, bezierLine);
+            }
+        }
+
         /// <summary>
         /// 
         /// </summary>

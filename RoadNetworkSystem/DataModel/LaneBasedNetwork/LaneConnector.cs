@@ -7,7 +7,10 @@ namespace RoadNetworkSystem.DataModel.LaneBasedNetwork
     class LaneConnector
     {
         public const string ConnectorName = "LaneConnector";
-
+        public const string TURNING_RIGHT = "Right";
+        public const string TURNING_LEFT = "Left";
+        public const string TURNING_STRAIGHT = "Straight";
+        public const string CHANGE_UTURN = "UTurn";
 
         public int ConnectorID { get; set; }
         public int fromLaneID { get; set; }

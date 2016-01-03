@@ -2,6 +2,7 @@
 using ESRI.ArcGIS.Geometry;
 using RoadNetworkSystem.DataModel.LaneBasedNetwork;
 using RoadNetworkSystem.DataModel.Road;
+using RoadNetworkSystem.GIS;
 using RoadNetworkSystem.NetworkElement.LaneBasedNetwork.Connection;
 using RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LinkLayer;
 using System;
@@ -78,6 +79,11 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LaneLayer
             }
         }
 
+
+        public static int GetLaneID(int arcId, int position)
+        {
+            return arcId * 10 + position;
+        }
 
         public IFeature QueryFeatureBuRule(int arcID,int serial)
         {
@@ -320,6 +326,7 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LaneLayer
 
 
 
+    
         public void DeleteLane()
         {
             IDataset dataset = FeaClsLane as IDataset;
@@ -335,5 +342,7 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LaneLayer
             workspceEdit.StopEditOperation();
             workspceEdit.StopEditing(true);
         }
+
+    
     }
 }

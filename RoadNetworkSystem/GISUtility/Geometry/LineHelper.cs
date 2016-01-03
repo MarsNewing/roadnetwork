@@ -361,7 +361,7 @@ namespace RoadNetworkSystem.GIS
         /// <returns></returns>返回贝塞尔曲线的拟合虚线
         public static IPolyline DrawBezier(IPoint pnt1, IPoint pntMiddle, IPoint pnt3)
         {
-            if (pnt1 == null || pntMiddle == null || pnt3 == null)
+            if (pnt1.IsEmpty || pntMiddle.IsEmpty || pnt3.IsEmpty)
             {
                 return null;
             }
