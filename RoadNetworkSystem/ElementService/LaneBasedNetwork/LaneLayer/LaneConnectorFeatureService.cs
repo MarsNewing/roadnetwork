@@ -27,7 +27,6 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LaneLayer
         public const string fromArcIDNm = "fromArcID";
         public const string toArcIDNm = "toArcID";
 
-
         public const string fromLinkIDNm = "fromLinkID";
         public const string fromDirNm = "fromDir";
         public const string toLinkIDNm = "toLinkID";
@@ -36,6 +35,18 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LaneLayer
         public const string OtherNm = "Other";
 
         private bool CREATE_UTURN_FLAG = false;
+
+        struct ArcLaneConnectorsPosition
+        {
+            public int fromLaneLeftPosition;
+            public int fromLaneRightPosition;
+        }
+
+        struct LeftRightPositionPair
+        {
+            int leftPosition;
+            int rightPosition;
+        }
 
         private int _connectorID = 0;
         private IFeatureClass _pFeaClsConnector;
@@ -227,9 +238,134 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LaneLayer
  
         }
 
-
         
+        /// <summary>
+        /// 获取车道连接器起始Arc的到终止Arc，在fromArc中车道连接器的设置leftPosition与rightPosition
+        /// </summary>
+        /// <param name="pFeaClsLink"></param>
+        /// <param name="pFeaClsArc"></param>
+        /// <param name="pFeaClsNode"></param>
+        /// <param name="fromArc"></param>
+        /// <param name="toArc"></param>
+        /// <returns></returns>
+        private ArcLaneConnectorsPosition getArcLanePosition(IFeatureClass pFeaClsLink,IFeatureClass pFeaClsArc,IFeatureClass pFeaClsNode,
+            Arc fromArc, Arc toArc)
+        {
+            ArcLaneConnectorsPosition arcLaneConnectorsPosition = new ArcLaneConnectorsPosition();
+            
+            List<Arc> clockArcs = PhysicalConnection.GetClockArcs(pFeaClsLink, pFeaClsArc, pFeaClsNode, fromArc, toArc);
+            List<Arc> antiClockArcs = PhysicalConnection.GetAntiClockArcs(pFeaClsLink, pFeaClsArc, pFeaClsNode, fromArc, toArc);
 
+            //最左侧的Arc
+            if (clockArcs == null || clockArcs.Count == 0)
+            {
+                arcLaneConnectorsPosition.fromLaneLeftPosition = Lane.leftPosition;
+                //判断下游的是否是单向
+                if (LogicalConnection.isOnewayArc(toArc, pFeaClsLink))
+                {
+                    if (fromArc.LaneNum >= toArc.LaneNum)
+                    {
+                        arcLaneConnectorsPosition.fromLaneRightPosition = toArc.LaneNum;
+                    }
+                    else
+                    {
+
+                        arcLaneConnectorsPosition.fromLaneRightPosition = fromArc.LaneNum;
+                    }
+                }
+                else
+                {
+                    if (fromArc.LaneNum <= 2)
+                    {
+                        arcLaneConnectorsPosition.fromLaneRightPosition = Lane.leftPosition;
+                    }
+                    else if (fromArc.LaneNum < 5)
+                    {
+                        //@1@  2 - 4个车道，从只有第一个车道是到最左侧的Arc
+                        arcLaneConnectorsPosition.fromLaneRightPosition = Lane.leftPosition;
+                    }
+                    else
+                    {
+                        //@2@ 多于5个车道，从第3个车道到倒数第2个车道均可到达 中间现有Arc
+                        arcLaneConnectorsPosition.fromLaneRightPosition = Lane.leftPosition + 1;
+                    }
+                }
+
+                if (arcLaneConnectorsPosition.fromLaneLeftPosition > 0 && arcLaneConnectorsPosition.fromLaneRightPosition > 0)
+                {
+                    return arcLaneConnectorsPosition;
+                }
+            }
+           
+            
+            //最右侧的Arc
+            if (antiClockArcs == null || antiClockArcs.Count == 0)
+            {
+                arcLaneConnectorsPosition.fromLaneRightPosition = fromArc.LaneNum;
+
+                //判断下游的是否是单向
+                if (LogicalConnection.isOnewayArc(toArc, pFeaClsLink))
+                {
+                    if (fromArc.LaneNum >= toArc.LaneNum)
+                    {
+                        //5 -> 3,2
+                        arcLaneConnectorsPosition.fromLaneLeftPosition = fromArc.LaneNum - toArc.LaneNum;
+                        if (arcLaneConnectorsPosition.fromLaneLeftPosition == 0)
+                        {
+                            arcLaneConnectorsPosition.fromLaneLeftPosition = 1;
+                        }
+                    }
+                    else
+                    {
+                        arcLaneConnectorsPosition.fromLaneRightPosition = Lane.leftPosition;
+                    }
+                }
+                else
+                {
+                    if (fromArc.LaneNum <= 2)
+                    {
+                        arcLaneConnectorsPosition.fromLaneRightPosition = fromArc.LaneNum - Lane.rightPositionOffset;
+                    }
+                    else if (fromArc.LaneNum < 5)
+                    {
+                        //@1@  2 - 4个车道，从只有最右侧的车道 连接到 最右侧的Arc
+                        arcLaneConnectorsPosition.fromLaneRightPosition = fromArc.LaneNum - Lane.rightPositionOffset;
+                    }
+                    else
+                    {
+                        //@2@ 多于5个车道，从只有最右侧的车道 连接到 最右侧的Arc
+                        arcLaneConnectorsPosition.fromLaneRightPosition = fromArc.LaneNum - Lane.rightPositionOffset;
+                    }
+                }
+                if (arcLaneConnectorsPosition.fromLaneLeftPosition > 0 && arcLaneConnectorsPosition.fromLaneRightPosition > 0)
+                {
+                    return arcLaneConnectorsPosition;
+                }
+            }
+
+            //中间Arc
+            if (clockArcs != null && antiClockArcs != null)
+            {
+                if(fromArc.LaneNum <= 2)
+                {
+                    arcLaneConnectorsPosition.fromLaneLeftPosition = Lane.leftPosition;
+                }
+                else if (fromArc.LaneNum < 5)
+                {
+                    //@1@ 2 - 4个车道，从第2个车道到倒数第2个车道均可到达 中间现有Arc
+                    arcLaneConnectorsPosition.fromLaneLeftPosition = Lane.leftPosition + 1;
+                    arcLaneConnectorsPosition.fromLaneRightPosition = fromArc.LaneNum - Lane.rightPositionOffset - 1;
+                }
+                else
+                {
+                    //@2@ 多于5个车道，从第3个车道到倒数第2个车道均可到达 中间现有Arc
+                    arcLaneConnectorsPosition.fromLaneLeftPosition = Lane.leftPosition + 2;
+                    arcLaneConnectorsPosition.fromLaneRightPosition = fromArc.LaneNum - Lane.rightPositionOffset - 1;
+                }
+
+            }
+            return arcLaneConnectorsPosition;
+        }
 
         /// <summary>
         /// 默认规则生成两个Arc间的车道连接器
@@ -238,9 +374,9 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LaneLayer
         /// <param name="fromArcEty"></param>
         /// <param name="toArcEty"></param>
         /// <param name="TurningDir"></param>
-        /// <param name="nodePnt"></param>
-        public void CreateConnectorInArcs(IFeatureClass pFeaClsLane,Arc fromArcEty, 
-            Arc toArcEty, string TurningDir,IPoint nodePnt)
+        /// <param name="nodePntForLeft"></param>
+        public void CreateConnectorInArcs(IFeatureClass pFeaClsLane, Arc fromArcEty,
+            Arc toArcEty, string TurningDir, IPoint nodePnt)
         {
             if (fromArcEty == null || toArcEty == null)
             {
@@ -253,63 +389,25 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LaneLayer
                 IFeatureClass pFeaClsLink = (pFeaClsLane.FeatureDataset.Workspace as IFeatureWorkspace).OpenFeatureClass(Link.LinkName);
                 IFeatureClass pFeaClsArc = (pFeaClsLane.FeatureDataset.Workspace as IFeatureWorkspace).OpenFeatureClass(Arc.ArcFeatureName);
 
-                int toLinkID = toArcEty.LinkID;
-                int toArcID = toArcEty.ArcID;
-                int toArcDir = toArcEty.FlowDir;
-                int toArcLaneNum = toArcEty.LaneNum;
 
-                int fromLinkID = fromArcEty.LinkID;
-                int fromArcID = fromArcEty.ArcID;
-                int fromArcDir = fromArcEty.FlowDir;
-                int fromArcLaneNum = fromArcEty.LaneNum;
 
-                int clockLinkId = 0;
-                double clockAngle = 0;
-                PhysicalConnection.GetClockLinkInfor(pFeaClsLink, pFeaClsArc, pFeaClsNode,
-                    fromArcEty, ref clockLinkId, ref clockAngle);
+                ArcLaneConnectorsPosition arcLaneConnectorsPosition = getArcLanePosition(pFeaClsLink, pFeaClsArc, pFeaClsNode,
+                    fromArcEty, toArcEty);
 
-                int antiClockLinkId = 0;
-                double antiClockAngle = 0;
-
-                PhysicalConnection.GetAntiClockLinkInfor(pFeaClsLink, pFeaClsArc, pFeaClsNode, 
-                    fromArcEty,ref antiClockLinkId, ref antiClockAngle);
-                //起始Arc  到 终止 Arc的最左侧的连接器是否必须生成
-                bool leftestConnectorCreateFlag = false;
-                if (clockLinkId == toArcEty.LinkID)
-                {
-                    leftestConnectorCreateFlag = true;
-                }
-
-                bool rightestConnectorCreateFlag = false;
-                if (antiClockLinkId == toArcEty.LinkID)
-                {
-                    rightestConnectorCreateFlag = true;
-                }
-
-                if (leftestConnectorCreateFlag)
-                {
-                    createLeftestConnection(pFeaClsLane, fromArcEty, toArcEty, nodePnt,TurningDir);
-                }
-
-                if (rightestConnectorCreateFlag)
-                {
-                    
-                    createRightestConnection(pFeaClsLane, fromArcEty, toArcEty, nodePnt,TurningDir);
-                }
 
                 switch (TurningDir)
                 {
                     case LaneConnector.TURNING_RIGHT:
                         {
-                            createRightConnectors(pFeaClsLane, fromArcEty, toArcEty);
+                            createRightConnectors(pFeaClsLane, fromArcEty, toArcEty,arcLaneConnectorsPosition);
                         } break;
                     case LaneConnector.TURNING_LEFT:
                         {
-                            createLeftConnector(pFeaClsLane, fromArcEty, toArcEty, nodePnt);
+                            createLeftConnector(pFeaClsLane, fromArcEty, toArcEty, nodePnt,arcLaneConnectorsPosition);
                         } break;
                     case LaneConnector.TURNING_STRAIGHT:
                         {
-                            createStraightConnectors(pFeaClsLane, fromArcEty, toArcEty);
+                            createStraightConnectors(pFeaClsLane, fromArcEty, toArcEty,arcLaneConnectorsPosition);
                         } break;
 
                     case LaneConnector.CHANGE_UTURN:
@@ -324,6 +422,208 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LaneLayer
                 }
             }
         }
+
+
+        private void createLeftConnector(IFeatureClass pFeaClsLane, Arc fromArc, Arc toArc, IPoint nodePnt,
+            ArcLaneConnectorsPosition arcLaneConnectorsPosition)
+        {
+            if (arcLaneConnectorsPosition.fromLaneLeftPosition <= 0 || 
+                arcLaneConnectorsPosition.fromLaneRightPosition <= 0)
+            {
+                return;
+            }
+            int fromLanePostition = 0;
+            int toLanePosition = 0;
+            for(int i = arcLaneConnectorsPosition.fromLaneLeftPosition ; 
+                i<= arcLaneConnectorsPosition.fromLaneRightPosition;i++)
+            {
+                fromLanePostition = i;
+                for(int j = Lane.leftPosition; j <= toArc.LaneNum;j++)
+                {
+                    toLanePosition = j;
+                    createConnectorByFromTOPosition(fromArc,toArc,fromLanePostition,toLanePosition,
+                        pFeaClsLane,nodePnt,false,LaneConnector.TURNING_LEFT);
+                }
+            }
+        }
+
+
+        private void createStraightConnectors(IFeatureClass pFeaClsLane, Arc fromArc, Arc toArc, 
+            ArcLaneConnectorsPosition arcLaneConnectorsPosition)
+        {
+            if (arcLaneConnectorsPosition.fromLaneLeftPosition <= 0 || 
+                arcLaneConnectorsPosition.fromLaneRightPosition <= 0)
+            {
+                return;
+            }
+            int fromLanePostition = 0;
+            int toLanePosition = 0;
+            for(int i = arcLaneConnectorsPosition.fromLaneLeftPosition ; 
+                i<= arcLaneConnectorsPosition.fromLaneRightPosition;i++)
+            {
+                fromLanePostition = i;
+                for(int j = Lane.leftPosition; j <= toArc.LaneNum;j++)
+                {
+                    toLanePosition = j;
+                    createConnectorByFromTOPosition(fromArc,toArc,fromLanePostition,toLanePosition,
+                        pFeaClsLane,null,true,LaneConnector.TURNING_STRAIGHT);
+                }
+            }
+        }
+
+
+        private void createRightConnectors(IFeatureClass pFeaClsLane, Arc fromArc, Arc toArc,
+            ArcLaneConnectorsPosition arcLaneConnectorsPosition)
+        {
+            if (arcLaneConnectorsPosition.fromLaneLeftPosition <= 0 || 
+                arcLaneConnectorsPosition.fromLaneRightPosition <= 0)
+            {
+                return;
+            }
+            int fromLanePostition = 0;
+            int toLanePosition = 0;
+            for(int i = arcLaneConnectorsPosition.fromLaneLeftPosition ; 
+                i<= arcLaneConnectorsPosition.fromLaneRightPosition;i++)
+            {
+                fromLanePostition = i;
+                for(int j = Lane.leftPosition; j <= toArc.LaneNum;j++)
+                {
+                    toLanePosition = j;
+                    createConnectorByFromTOPosition(fromArc,toArc,fromLanePostition,toLanePosition,
+                        pFeaClsLane,null,false,LaneConnector.TURNING_RIGHT);
+                }
+            }
+        }
+
+
+        private void createConnectorByFromTOPosition(Arc fromArc,Arc toArc,
+            int fromLanePostition,int toLanePosition,IFeatureClass pFeaClsLane,
+            IPoint nodePntForLeft,bool isStraignt,string turningDir)
+        {
+
+            LaneFeatureService laneService = new LaneFeatureService(pFeaClsLane, 0);
+            int fromArcID = fromArc.ArcID;
+
+            IFeature fromLaneFea = laneService.QueryFeatureBuRule(fromArcID, fromLanePostition);
+            if (fromLaneFea == null)
+            {
+                return;
+            }
+            int fromLaneID = Convert.ToInt32(fromLaneFea.get_Value(pFeaClsLane.FindField(LaneFeatureService.LaneIDNm)));
+            IPolyline fromLine = fromLaneFea.ShapeCopy as IPolyline;
+
+            int toArcID = toArc.ArcID;
+            IFeature toLaneFea = laneService.QueryFeatureBuRule(toArcID, toLanePosition);
+            if (toLaneFea == null)
+            {
+                return;
+            }
+            int toLaneID = Convert.ToInt32(toLaneFea.get_Value(pFeaClsLane.FindField(LaneFeatureService.LaneIDNm)));
+            IPolyline toLine = toLaneFea.ShapeCopy as IPolyline;
+            IPolyline bezierLine = GetConnectorShape(fromLine, toLine, nodePntForLeft, isStraignt);
+
+            LaneConnector connectorEntity = InitConnectorEty(0, fromArc.LinkID, toArc.LinkID, fromArcID, toArcID,
+                fromArc.FlowDir, toArc.FlowDir, fromLaneID, toLaneID, turningDir);
+
+            InsertLConnector(connectorEntity, bezierLine);
+        }
+
+
+
+
+        /// <summary>
+        /// 默认规则生成两个Arc间的车道连接器
+        /// </summary>
+        /// <param name="pFeaClsLane"></param>
+        /// <param name="fromArcEty"></param>
+        /// <param name="toArcEty"></param>
+        /// <param name="TurningDir"></param>
+        /// <param name="nodePntForLeft"></param>
+        //public void CreateConnectorInArcs(IFeatureClass pFeaClsLane,Arc fromArcEty, 
+        //    Arc toArcEty, string TurningDir,IPoint nodePntForLeft)
+        //{
+        //    if (fromArcEty == null || toArcEty == null)
+        //    {
+        //        return;
+        //    }
+        //    else
+        //    {
+
+        //        IFeatureClass pFeaClsNode = (pFeaClsLane.FeatureDataset.Workspace as IFeatureWorkspace).OpenFeatureClass(Node.NodeName);
+        //        IFeatureClass pFeaClsLink = (pFeaClsLane.FeatureDataset.Workspace as IFeatureWorkspace).OpenFeatureClass(Link.LinkName);
+        //        IFeatureClass pFeaClsArc = (pFeaClsLane.FeatureDataset.Workspace as IFeatureWorkspace).OpenFeatureClass(Arc.ArcFeatureName);
+
+        //        int toLinkID = toArcEty.LinkID;
+        //        int toArcID = toArcEty.ArcID;
+        //        int toArcDir = toArcEty.FlowDir;
+        //        int toArcLaneNum = toArcEty.LaneNum;
+
+        //        int fromLinkID = fromArcEty.LinkID;
+        //        int fromArcID = fromArcEty.ArcID;
+        //        int fromArcDir = fromArcEty.FlowDir;
+        //        int fromArcLaneNum = fromArcEty.LaneNum;
+
+        //        int clockLinkId = 0;
+        //        double clockAngle = 0;
+        //        PhysicalConnection.GetClockLinkInfor(pFeaClsLink, pFeaClsArc, pFeaClsNode,
+        //            fromArcEty, ref clockLinkId, ref clockAngle);
+
+        //        int antiClockLinkId = 0;
+        //        double antiClockAngle = 0;
+
+        //        PhysicalConnection.GetAntiClockLinkInfor(pFeaClsLink, pFeaClsArc, pFeaClsNode, 
+        //            fromArcEty,ref antiClockLinkId, ref antiClockAngle);
+        //        //起始Arc  到 终止 Arc的最左侧的连接器是否必须生成
+        //        bool leftestConnectorCreateFlag = false;
+        //        if (clockLinkId == toArcEty.LinkID)
+        //        {
+        //            leftestConnectorCreateFlag = true;
+        //        }
+
+        //        bool rightestConnectorCreateFlag = false;
+        //        if (antiClockLinkId == toArcEty.LinkID)
+        //        {
+        //            rightestConnectorCreateFlag = true;
+        //        }
+
+        //        if (leftestConnectorCreateFlag)
+        //        {
+        //            createLeftestConnection(pFeaClsLane, fromArcEty, toArcEty, nodePntForLeft,TurningDir);
+        //        }
+
+        //        if (rightestConnectorCreateFlag)
+        //        {
+                    
+        //            createRightestConnection(pFeaClsLane, fromArcEty, toArcEty, nodePntForLeft,TurningDir);
+        //        }
+
+        //        switch (TurningDir)
+        //        {
+        //            case LaneConnector.TURNING_RIGHT:
+        //                {
+        //                    createRightConnectors(pFeaClsLane, fromArcEty, toArcEty);
+        //                } break;
+        //            case LaneConnector.TURNING_LEFT:
+        //                {
+        //                    createLeftConnector(pFeaClsLane, fromArcEty, toArcEty, nodePntForLeft);
+        //                } break;
+        //            case LaneConnector.TURNING_STRAIGHT:
+        //                {
+        //                    createStraightConnectors(pFeaClsLane, fromArcEty, toArcEty);
+        //                } break;
+
+        //            case LaneConnector.CHANGE_UTURN:
+        //                {
+        //                    if (CREATE_UTURN_FLAG)
+        //                    {
+        //                        createUturnConnectors(pFeaClsLane, fromArcEty, toArcEty);
+        //                    }
+        //                } break;
+        //            default:
+        //                break;
+        //        }
+        //    }
+        //}
 
 
         private void createRightestConnection(IFeatureClass pFeaClsLane, Arc fromArc, Arc toArc, IPoint nodePnt, string turningDir)
@@ -1012,7 +1312,7 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LaneLayer
         /// <param name="pFeaClsLane"></param>
         /// <param name="fromArc"></param>
         /// <param name="toArc"></param>
-        /// <param name="nodePnt"></param>
+        /// <param name="nodePntForLeft"></param>
         private void createLeftConnector(IFeatureClass pFeaClsLane, Arc fromArc, Arc toArc, IPoint nodePnt)
         {
             LaneFeatureService laneService = new LaneFeatureService(pFeaClsLane, 0);
@@ -1122,7 +1422,7 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LaneLayer
         /// </summary>
         /// <param name="fromLine"></param>起始车道的几何
         /// <param name="toLine"></param>终止车道的几何
-        /// <param name="nodePnt"></param> Node 的几何，当该值为空值，获取两车道交点为中间控制点
+        /// <param name="nodePntForLeft"></param> Node 的几何，当该值为空值，获取两车道交点为中间控制点
         /// <param name="straightFlag"></param>
         /// <returns></returns>
         public IPolyline GetConnectorShape(IPolyline fromLine, IPolyline toLine,IPoint nodePnt,bool straightFlag)
@@ -1131,7 +1431,6 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LaneLayer
             if (straightFlag == true)
             {
                 IPointCollection col = new PolylineClass();
-
                 col.AddPoint(fromLine.ToPoint);
                 col.AddPoint(toLine.FromPoint);
                 bezier = col as IPolyline;
@@ -1168,9 +1467,15 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LaneLayer
 
                 bezier = LineHelper.DrawBezier(pnt1, pntMiddle, pnt2);
             }
-            
-            
-            
+
+
+            if (bezier == null)
+            {
+                IPointCollection col = new PolylineClass();
+                col.AddPoint(fromLine.ToPoint);
+                col.AddPoint(toLine.FromPoint);
+                bezier = col as IPolyline;
+            }
             return bezier;
 
         }
