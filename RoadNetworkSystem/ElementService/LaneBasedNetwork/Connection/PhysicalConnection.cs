@@ -10,6 +10,8 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.Connection
 {
     class PhysicalConnection
     {
+        private const int MAX_INTERSECTION_LEGS_NUM = 5;
+
         /// <summary>
         /// 获取某个Link逆时针反向的第一个Link的信息（LinkID、夹角）
         /// </summary>
@@ -23,7 +25,7 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.Connection
 
             string[] adjLinkIDs = nextNodeEty.AdjIDs.Split('\\');
             string[] northAngles = nextNodeEty.NorthAngles.Split('\\');
-            int curLinkIndex = getLinkIndex(curLinkID,nextNodeEty);
+            int curLinkIndex = GetLinkIndex(curLinkID,nextNodeEty);
             
 
             if (curLinkIndex == 0)
@@ -79,7 +81,7 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.Connection
 
             string[] adjLinkIDs = preNodeEty.AdjIDs.Split('\\');
             string[] northAngles = preNodeEty.NorthAngles.Split('\\');
-            int curLinkIndex = getLinkIndex(curLinkID, preNodeEty);
+            int curLinkIndex = GetLinkIndex(curLinkID, preNodeEty);
 
 
             if (curLinkIndex == adjLinkIDs.Length - 1)
@@ -128,7 +130,7 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.Connection
         /// <param name="nodeEty"></param>
         /// <returns></returns>pub
         /// 
-        private static int getLinkIndex(int linkID, Node nodeEty)
+        public static int GetLinkIndex(int linkID, Node nodeEty)
         {
             string[] adjLinkIDs = nodeEty.AdjIDs.Split('\\');
             int linkIndex = -1;
@@ -184,5 +186,124 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.Connection
                 TurningDir = "Uturn";
             return TurningDir;
         }
+
+        /// <summary>
+        /// 获取起始Arc与终止Arc中间的顺时针方向的所有的Arc
+        /// </summary>
+        /// <param name="pFeaClsLink"></param>
+        /// <param name="pFeaClsArc"></param>
+        /// <param name="pFeaClsNode"></param>
+        /// <param name="fromArc"></param>
+        /// <param name="toArc"></param>
+        /// <returns></returns>
+        public static List<Arc> GetClockArcs(IFeatureClass pFeaClsLink, IFeatureClass pFeaClsArc, IFeatureClass pFeaClsNode,
+            Arc fromArc, Arc toArc)
+        {
+            Node nextNode = getNextNode(pFeaClsLink, pFeaClsArc, pFeaClsNode, fromArc);
+
+            Arc[] exitArcs = LogicalConnection.GetNodeExitArcs(pFeaClsLink, pFeaClsArc, nextNode);
+
+            int clockLinkId = 0;
+            double clockAngle = 0;
+            PhysicalConnection.GetClockLinkInfor(fromArc.LinkID, nextNode, ref clockLinkId, ref clockAngle);
+
+            int leg = 0;
+            //toArc左侧还有哪些Arc？
+            List<Arc> clockArcs = new List<Arc>();
+
+            while (clockLinkId != toArc.LinkID && leg < MAX_INTERSECTION_LEGS_NUM)
+            {
+                Arc leftLateralArc = isLinkInArcs(exitArcs, clockLinkId);
+                if (leftLateralArc != null)
+                {
+                    clockArcs.Add(leftLateralArc);
+                }
+                PhysicalConnection.GetClockLinkInfor(fromArc.LinkID, nextNode, ref clockLinkId, ref clockAngle);
+                leg++;
+            }
+
+            if (clockArcs.Count > 0)
+            {
+                return clockArcs;
+            }
+            else
+            {
+                return null;
+            }
+
+        }
+
+        public static List<Arc> GetAntiClockArcs(IFeatureClass pFeaClsLink, IFeatureClass pFeaClsArc, IFeatureClass pFeaClsNode,
+            Arc fromArc, Arc toArc)
+        {
+            Node nextNode = getNextNode(pFeaClsLink, pFeaClsArc, pFeaClsNode, fromArc);
+
+            Arc[] exitArcs = LogicalConnection.GetNodeExitArcs(pFeaClsLink, pFeaClsArc, nextNode);
+
+            int antiClockLinkId = 0;
+            double antiClockAngle = 0;
+            PhysicalConnection.GetAntiClockLinkInfor(fromArc.LinkID, nextNode, ref antiClockLinkId, ref antiClockAngle);
+
+            int leg = 0;
+            //toArc左侧还有哪些Arc？
+            List<Arc> antiClockArcs = new List<Arc>();
+
+            while (antiClockLinkId != toArc.LinkID && leg < MAX_INTERSECTION_LEGS_NUM)
+            {
+                Arc leftLateralArc = isLinkInArcs(exitArcs, antiClockLinkId);
+                if (leftLateralArc != null)
+                {
+                    antiClockArcs.Add(leftLateralArc);
+                }
+                PhysicalConnection.GetAntiClockLinkInfor(fromArc.LinkID, nextNode, ref antiClockLinkId, ref antiClockAngle);
+                leg++;
+            }
+
+            if (antiClockArcs.Count > 0)
+            {
+                return antiClockArcs;
+            }
+            else
+            {
+                return null;
+            }
+
+        }
+
+
+        private static Arc isLinkInArcs(Arc[] arcs, int linkId)
+        {
+            foreach (Arc arc in arcs)
+            {
+                if (arc == null)
+                {
+                    continue;
+                }
+
+                if (arc.LinkID == linkId)
+                {
+                    return arc;
+                }
+            }
+            return null;
+        }
+
+        public static Node getNextNode(IFeatureClass pFeaClsLink, IFeatureClass pFeaClsArc, IFeatureClass pFeaClsNode,
+            Arc fromArc)
+        {
+            Node node = new Node();
+            int preNodeId = 0;
+            int nextNodeId = 0;
+            ArcService arcService = new ArcService(pFeaClsArc, fromArc.ArcID);
+            LinkService linkService = new LinkService(pFeaClsLink, fromArc.LinkID);
+            LogicalConnection.GetArcCorresponseNodes(arcService, linkService, ref nextNodeId, ref preNodeId);
+
+            NodeService nodeService = new NodeService(pFeaClsNode, nextNodeId, null);
+            NodeMaster nodeMaster = nodeService.GetNodeMasterEty(nodeService.GetFeature());
+            node = node.Copy(nodeMaster);
+            return node;
+
+        }
+
     }
 }

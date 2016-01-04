@@ -175,7 +175,7 @@ namespace RoadNetworkSystem.NetworkExtraction.LaneBasedNetwork.LaneLayer
         /// 生成和更新Connector和TurnArrow
         /// </summary>
         /// <param name="junctionNodeEty"></param>交叉口Node实体
-        /// /// <param name="nodePnt"></param>交叉口Node几何
+        /// /// <param name="nodePntForLeft"></param>交叉口Node几何
         /// <param name="arcEty"></param>需要更新的Arc
         /// <param name="entranceFlag"></param> ==true,表示Arc是入口Arc；==false，表示Arc是出口Arc
         private void updateConnetorAndArrow(Node junctionNodeEty, IPoint nodePnt, Arc arcEty, bool entranceFlag)
@@ -205,6 +205,10 @@ namespace RoadNetworkSystem.NetworkExtraction.LaneBasedNetwork.LaneLayer
                     LaneConnectorFeatureService connector = new LaneConnectorFeatureService(_pFeaClsConnector, 0);
                     double angle = PhysicalConnection.GetLinksAngle(arcEty.LinkID, exitArcEty.LinkID, junctionNodeEty);
 
+                    if (junctionNodeEty.ID == 26)
+                    {
+                        int test = 0;
+                    }
                     connector.CreateConnectorInArcs(_pFeaClsLane, arcEty, exitArcEty, PhysicalConnection.GetTurningDir(angle), nodePnt);
 
                     //出口车道的导向箭头生成一排直行即可
@@ -244,6 +248,11 @@ namespace RoadNetworkSystem.NetworkExtraction.LaneBasedNetwork.LaneLayer
 
                     LaneConnectorFeatureService connector = new LaneConnectorFeatureService(_pFeaClsConnector, 0);
                     double angle = PhysicalConnection.GetLinksAngle(entranceArcEty.LinkID, arcEty.LinkID, junctionNodeEty);
+
+                    if (junctionNodeEty.ID == 26)
+                    {
+                        int test = 0;
+                    }
 
                     connector.CreateConnectorInArcs(_pFeaClsLane, entranceArcEty, arcEty, PhysicalConnection.GetTurningDir(angle), nodePnt);
 
@@ -504,13 +513,15 @@ namespace RoadNetworkSystem.NetworkExtraction.LaneBasedNetwork.LaneLayer
                 IPolyline boundryLine = null;
                 if (arcEty.FlowDir == 1)
                 {
-                    laneLine = LineHelper.CreateLineByLRS(refLinkLine, arcEty.FlowDir * laneOffset, preCut, nextCut);
+                    laneLine = LineHelper.CreateLineByLRS(refLinkLine, arcEty.FlowDir * laneOffset,
+                        refLinkLine.Length * ArcService.ARC_CUT_PERCENTAGE, refLinkLine.Length * ArcService.ARC_CUT_PERCENTAGE);
                     boundryLine = LineHelper.CreateLineByLRS(refLinkLine, arcEty.FlowDir * curWidth, preCut, nextCut);
                 }
 
                 else
                 {
-                    laneLine = LineHelper.CreateLineByLRS(refLinkLine, arcEty.FlowDir * laneOffset, nextCut, preCut);
+                    laneLine = LineHelper.CreateLineByLRS(refLinkLine, arcEty.FlowDir * laneOffset,
+                        refLinkLine.Length * ArcService.ARC_CUT_PERCENTAGE, refLinkLine.Length * ArcService.ARC_CUT_PERCENTAGE);
                     laneLine.ReverseOrientation();
 
                     boundryLine = LineHelper.CreateLineByLRS(refLinkLine, arcEty.FlowDir * curWidth, nextCut, preCut);
