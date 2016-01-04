@@ -182,8 +182,15 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.Connection
              
         }
 
-
-
+        /// <summary>
+        /// 获取y字交叉口（分支出口）右侧出口的偏离车道数
+        /// </summary>
+        /// <param name="pFeaClsLink"></param>
+        /// <param name="pFeaClsArc"></param>
+        /// <param name="pFeaClsNode"></param>
+        /// <param name="preNode"></param>
+        /// <param name="currentArcId"></param>
+        /// <returns></returns>
         public static int getPreNodeLateralOffsideLanes(IFeatureClass pFeaClsLink,IFeatureClass pFeaClsArc,IFeatureClass pFeaClsNode, 
             Node preNode, int currentArcId)
         {
@@ -239,7 +246,11 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.Connection
             }
         }
 
-
+        /// <summary>
+        /// 过滤掉非法的Arc
+        /// </summary>
+        /// <param name="arcs"></param>
+        /// <returns></returns>
         public static List<Arc> filterInvalidArcs(Arc[] arcs)
         {
             List<Arc> arcList = new List<Arc>();
@@ -254,6 +265,16 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.Connection
             return arcList;
         }
 
+
+        /// <summary>
+        /// 获取y字交叉口（分支入口）右侧入口的偏离车道数
+        /// </summary>
+        /// <param name="pFeaClsLink"></param>
+        /// <param name="pFeaClsArc"></param>
+        /// <param name="pFeaClsNode"></param>
+        /// <param name="nextNode"></param>
+        /// <param name="currentArcId"></param>
+        /// <returns></returns>
         public static int getNextNodeLateralOffsideLanes(IFeatureClass pFeaClsLink, IFeatureClass pFeaClsArc, IFeatureClass pFeaClsNode, 
             Node nextNode, int currentArcId)
         {

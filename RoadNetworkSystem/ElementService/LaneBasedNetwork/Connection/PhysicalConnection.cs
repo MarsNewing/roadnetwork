@@ -1,4 +1,7 @@
-﻿using RoadNetworkSystem.DataModel.LaneBasedNetwork;
+﻿using ESRI.ArcGIS.Geodatabase;
+using RoadNetworkSystem.DataModel.LaneBasedNetwork;
+using RoadNetworkSystem.DataModel.Road;
+using RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LinkLayer;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -40,6 +43,28 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.Connection
 
         }
 
+        public static void GetAntiClockLinkInfor(IFeatureClass pFeaClsLink, IFeatureClass pFeaClsArc, IFeatureClass pFeaClsNode,
+            Arc fromArcEty, ref int antiClockLinkID, ref double antiClockAngle)
+        {
+            ArcService arcService = new ArcService(pFeaClsArc, fromArcEty.ArcID);
+            LinkService linkService = new LinkService(pFeaClsLink, fromArcEty.LinkID);
+            LinkMaster linkMaster = linkService.GetEntity(linkService.GetFeature());
+            Link fromLink = new Link();
+            fromLink = fromLink.Copy(fromLink);
+
+
+            int preNodeId = 0;
+            int nextNodeId = 0;
+            LogicalConnection.GetArcCorresponseNodes(arcService, linkService, ref preNodeId, ref nextNodeId);
+            NodeService nodeService = new NodeService(pFeaClsNode, nextNodeId, null);
+            NodeMaster nodeMaster = nodeService.GetNodeMasterEty(nodeService.GetFeature());
+            Node nextNode = new Node();
+            nextNode = nextNode.Copy(nodeMaster);
+
+            GetAntiClockLinkInfor(fromArcEty.LinkID, nextNode, ref antiClockLinkID, ref antiClockAngle);
+
+        }
+
 
         /// <summary>
         /// 获取某个Link的顺时针方向的第一个LinkID和顺时针夹角
@@ -47,7 +72,7 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.Connection
         /// <param name="curLinkID"></param>
         /// <param name="preNodeEty"></param>
         /// <param name="clockLink"></param>
-        /// <param name="clockAngle"></param>
+        /// <param name="antiClockAngle"></param>
         public static void GetClockLinkInfor(int curLinkID, Node preNodeEty, ref int clockLink, ref double clockAngle)
         {
             int clockLinkIndex = -1;
@@ -74,13 +99,35 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.Connection
 
         }
 
+        public static void GetClockLinkInfor(IFeatureClass pFeaClsLink, IFeatureClass pFeaClsArc, IFeatureClass pFeaClsNode,
+            Arc fromArcEty, ref int clockLinkID, ref double clockAngle)
+        {
+            ArcService arcService = new ArcService(pFeaClsArc, fromArcEty.ArcID);
+            LinkService linkService = new LinkService(pFeaClsLink, fromArcEty.LinkID);
+            LinkMaster linkMaster = linkService.GetEntity(linkService.GetFeature());
+            Link fromLink = new Link();
+            fromLink = fromLink.Copy(fromLink);
+
+
+            int preNodeId = 0;
+            int nextNodeId = 0;
+            LogicalConnection.GetArcCorresponseNodes(arcService, linkService, ref preNodeId, ref nextNodeId);
+            NodeService nodeService = new NodeService(pFeaClsNode, nextNodeId, null);
+            NodeMaster nodeMaster = nodeService.GetNodeMasterEty(nodeService.GetFeature());
+            Node nextNode = new Node();
+            nextNode = nextNode.Copy(nodeMaster);
+
+            GetClockLinkInfor(fromArcEty.LinkID, nextNode, ref clockLinkID, ref clockAngle);
+
+        }
 
         /// <summary>
         /// 获取某个Link的在AdjLink中的编号
         /// </summary>
         /// <param name="linkID"></param>
         /// <param name="nodeEty"></param>
-        /// <returns></returns>
+        /// <returns></returns>pub
+        /// 
         private static int getLinkIndex(int linkID, Node nodeEty)
         {
             string[] adjLinkIDs = nodeEty.AdjIDs.Split('\\');

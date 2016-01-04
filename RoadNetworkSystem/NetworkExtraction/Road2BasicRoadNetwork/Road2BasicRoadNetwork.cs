@@ -136,6 +136,10 @@ namespace RoadNetworkSystem.NetworkExtraction.Road2BasicRoadNetwork
             feaClsDic.Add(TurnArrow.TurnArrowName, _feaClsTurnArrow);
 
             LaneLayerFactory laneLayerFactory = new LaneLayerFactory(feaClsDic);
+            
+            //为每个Arc初始化所有的Lane
+            laneLayerFactory.InitLaneBatch();
+
             laneLayerFactory.CreateLinkTopologyBatch();
         }
 
