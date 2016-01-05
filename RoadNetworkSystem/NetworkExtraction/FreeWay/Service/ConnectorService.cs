@@ -25,11 +25,14 @@ namespace RoadNetworkSystem.NetworkExtraction.FreeWay.Service
         private IFeatureClass pFeaClsArc;
 
         private ITable pTableConntion;
-        OleDbConnection connection;
+        private static OleDbConnection connection;
 
         public ConnectorService(string mdbPath)
         {
-             connection = AccessHelper.OpenConnection(mdbPath);
+            if (connection != null)
+            {
+                connection = AccessHelper.OpenConnection(mdbPath);
+            }
             initFeatureClass(mdbPath);
         }
 

@@ -1,5 +1,6 @@
 ﻿using ESRI.ArcGIS.Geodatabase;
 using ESRI.ArcGIS.Geometry;
+using RoadNetworkSystem.ADO.Access;
 using RoadNetworkSystem.DataModel.LaneBasedNetwork;
 using RoadNetworkSystem.DataModel.Road;
 using RoadNetworkSystem.GIS;
@@ -36,6 +37,8 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LaneLayer
 
         public IFeatureClass FeaClsLane;
         public int LaneID;
+        private static OleDbConnection _conn;
+
 
         public enum LaneChange
         {
@@ -61,6 +64,11 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LaneLayer
         {
             FeaClsLane = pFeaClsLane;
             LaneID = laneID;
+
+            if (_conn == null)
+            {
+                _conn = AccessHelper.OpenConnection(pFeaClsLane.FeatureDataset.Workspace.PathName);
+            }
         }
 
         public IFeature GetFeature()
@@ -87,19 +95,13 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LaneLayer
 
         public IFeature QueryFeatureBuRule(int arcID,int serial)
         {
-            IWorkspace pWs = (FeaClsLane as IDataset).Workspace;
-            string mdbPath = pWs.PathName;
 
-            OleDbConnection Conn = new OleDbConnection();
-            string conn_str = "Provider=Microsoft.Jet.OLEDB.4.0;Data Source=" + mdbPath + "; Persist Security Info=False";
-            Conn = new OleDbConnection(conn_str);
-            Conn.Open();
             string readStr = String.Format("select * from Lane where ArcID = {0} and [Position] = {1}", arcID, serial);
 
             
             OleDbCommand readCmd = new OleDbCommand();
             readCmd.CommandText = readStr;
-            readCmd.Connection = Conn;
+            readCmd.Connection = _conn;
             OleDbDataReader read;
             read = readCmd.ExecuteReader();
             IFeature featureLane = null;
@@ -109,8 +111,7 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LaneLayer
                 break;
             }
             read.Close();
-            Conn.Close();
-            Conn.Dispose();
+
             featureLane = GetFeature();
             return featureLane;
         }

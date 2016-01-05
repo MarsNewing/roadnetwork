@@ -31,7 +31,7 @@ namespace RoadNetworkSystem.WinForm.RuleSetting
         public RuleSettingDesigner(Form1 form1) 
         {
             _frm1 = form1;
-            connection = AccessHelper.OpenConnection(form1.MdbPath);
+            connection = _frm1.Conn;
         }
 
         public enum RuleRoadItem

@@ -90,8 +90,12 @@ namespace RoadNetworkSystem.WinForm.EditTool
                     if (dr == DialogResult.Yes)
                     {
                         //选择Road图层
-                        _frm1.Wsp = MapComponent.OpenGeoDatabase(_frm1.axMapControl1);
-                        _frm1.getAllFeaClses(_frm1.Wsp);
+                        IWorkspace temWorkSpace = MapComponent.OpenGeoDatabase(_frm1.axMapControl1);
+                        if (temWorkSpace != null)
+                        {
+                            _frm1.UpdateGeoDatabase(temWorkSpace.PathName);
+                            _frm1.UpdateOleDbConnection(temWorkSpace.PathName);
+                        }
                     }
                 }
             }
@@ -403,8 +407,18 @@ namespace RoadNetworkSystem.WinForm.EditTool
                     if (dr == DialogResult.Yes)
                     {
                         //选择Road图层
-                        _frm1.Wsp = MapComponent.OpenGeoDatabase(_frm1.axMapControl1);
-                        _frm1.getAllFeaClses(_frm1.Wsp);
+                        IWorkspace temWorkSpace = MapComponent.OpenGeoDatabase(_frm1.axMapControl1);
+                        if (temWorkSpace != null)
+                        {
+                            _frm1.UpdateGeoDatabase(temWorkSpace.PathName);
+                            _frm1.UpdateOleDbConnection(temWorkSpace.PathName);
+                        }
+                        else
+                        {
+                            MessageBox.Show("打开数据库有误");
+                            return;
+                        }
+
                         if (_frm1.FeaClsSegment == null)
                         { MessageBox.Show("还是没有Segment..."); }
                         else if (_frm1.FeaClsSegNode == null)
@@ -422,8 +436,12 @@ namespace RoadNetworkSystem.WinForm.EditTool
                     if (dr == DialogResult.Yes)
                     {
                         //选择Road图层
-                        _frm1.Wsp = MapComponent.OpenGeoDatabase(_frm1.axMapControl1);
-                        _frm1.getAllFeaClses(_frm1.Wsp);
+                        IWorkspace temWorkSpace = MapComponent.OpenGeoDatabase(_frm1.axMapControl1);
+                        if (temWorkSpace != null)
+                        {
+                            _frm1.UpdateGeoDatabase(temWorkSpace.PathName);
+                            _frm1.UpdateOleDbConnection(temWorkSpace.PathName);
+                        }
                     }
                 }
             }

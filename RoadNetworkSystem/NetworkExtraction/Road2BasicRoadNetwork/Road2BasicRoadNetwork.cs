@@ -25,6 +25,7 @@ using System.Windows.Forms;
 using RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LinkLayer;
 using RoadNetworkSystem.NetworkExtraction.LaneBasedNetwork.LaneLayer;
 using RoadNetworkSystem.DataModel.RoadSign;
+using RoadNetworkSystem.ElementService.LaneBasedNetwork.NetworkBuilder.LaneLayer;
 
 namespace RoadNetworkSystem.NetworkExtraction.Road2BasicRoadNetwork
 {
@@ -32,6 +33,7 @@ namespace RoadNetworkSystem.NetworkExtraction.Road2BasicRoadNetwork
     {
         private Form1 _frm1;
 
+        OleDbConnection _conn;
         IFeatureClass _feaClsRoad;
         IFeatureClass _feaClsSegment;
         IFeatureClass _feaClsBreakPoint;
@@ -57,6 +59,7 @@ namespace RoadNetworkSystem.NetworkExtraction.Road2BasicRoadNetwork
             this._frm1 = frm1;
             this._feaClsRoad = frm1.FeaClsRoad;
             this._feaClsSegment = frm1.FeaClsSegment;
+            _conn = _frm1.Conn;
         }
 
 
@@ -100,7 +103,7 @@ namespace RoadNetworkSystem.NetworkExtraction.Road2BasicRoadNetwork
             breakSegmentInKinkPoint();
 
             //2.4   创建Node
-            LinkLayerFactory linkLayerFactory = new LaneBasedNetwork.LinkLayer.LinkLayerFactory(_feaClsLink, _feaClsNode, _feaClsArc);
+            LinkLayerBuilder linkLayerFactory = new LaneBasedNetwork.LinkLayer.LinkLayerBuilder(_feaClsLink, _feaClsNode, _feaClsArc);
             linkLayerFactory.createNodesForLinkAndArc();
 
 
@@ -135,12 +138,14 @@ namespace RoadNetworkSystem.NetworkExtraction.Road2BasicRoadNetwork
 
             feaClsDic.Add(TurnArrow.TurnArrowName, _feaClsTurnArrow);
 
-            LaneLayerFactory laneLayerFactory = new LaneLayerFactory(feaClsDic);
+            LaneLayerBatchBuilder laneLayerBatchBilder = new LaneLayerBatchBuilder(feaClsDic);
+            laneLayerBatchBilder.CreateLaneOpologyBatch();
+            //LaneLayerBuilder laneLayerFactory = new LaneLayerBuilder(feaClsDic);
             
-            //为每个Arc初始化所有的Lane
-            laneLayerFactory.InitLaneBatch();
+            ////为每个Arc初始化所有的Lane
+            //laneLayerFactory.InitLaneBatch();
 
-            laneLayerFactory.CreateLinkTopologyBatch();
+            //laneLayerFactory.CreateLinkTopologyBatch();
         }
 
 
@@ -166,11 +171,10 @@ namespace RoadNetworkSystem.NetworkExtraction.Road2BasicRoadNetwork
                 int flowDir = Convert.ToInt32(pFeatureRoad.get_Value(pFeatureRoad.Fields.FindField(RoadNetworkSystem.DataModel.Road.Road.FlowDirName)));
                
                 //遍历属于同一个Road的各个LaneNumChange
-                OleDbConnection conn = AccessHelper.OpenConnection(_frm1.Wsp.PathName);
                 string sql = "Select * from " + LaneNumChange.LaneNumChangeName +
                     " where " + LaneNumChange.RoadID_Name + " = " + Convert.ToInt32(pFeatureRoad.get_Value(pFeatureRoad.Fields.FindField(LaneNumChange.RoadID_Name))) +
                     " and  " + LaneNumChange.DoneFlag_Name + " = " + LaneNumChange.DONEFLAG_UNDO;
-                OleDbCommand cmd = new OleDbCommand(sql, conn);
+                OleDbCommand cmd = new OleDbCommand(sql, _conn);
                 OleDbDataReader reader = cmd.ExecuteReader();
                 while (reader.Read())
                 {
@@ -185,8 +189,6 @@ namespace RoadNetworkSystem.NetworkExtraction.Road2BasicRoadNetwork
                     {
                         toBreakPointId = Convert.ToInt32(reader[LaneNumChange.ToBreakPointID_Name]);
                     }
-
-
                     int laneNum = Convert.ToInt32(reader[LaneNumChange.LaneNum_Name]);
                     int breakPointFlowDir = Convert.ToInt32(reader[LaneNumChange.FlowDir_Name]);
                     int laneNumChangeId = Convert.ToInt32(reader[LaneNumChange.LaneNumChangeID_Name]);
@@ -202,7 +204,7 @@ namespace RoadNetworkSystem.NetworkExtraction.Road2BasicRoadNetwork
                     currentLaneNumChange.FlowDir = breakPointFlowDir;
                     currentLaneNumChange.RoadID = road.RoadID;
 
-                    LaneNumChangeService laneNumChange = new LaneNumChangeService(conn);
+                    LaneNumChangeService laneNumChange = new LaneNumChangeService(_conn);
                     LaneNumChange oppositionLaneNumChange = laneNumChange.GetOppositeDirectionLaneNumChange(fromBreakPointId, toBreakPointId);
 
                     int oppositionLaneNum = -1;
@@ -217,7 +219,7 @@ namespace RoadNetworkSystem.NetworkExtraction.Road2BasicRoadNetwork
                     {
                         MessageBox.Show("Road objectid = " + pFeatureRoad.OID + " LaneNumChange 不匹配"); 
                     }
-                    LaneNumChangeService laneNumChangeService = new LaneNumChangeService(conn);
+                    LaneNumChangeService laneNumChangeService = new LaneNumChangeService(_conn);
                     bool isSameDirectionFlag = laneNumChangeService.isCurrentLaneNumChangeSameDirection(pFeatureRoad.Shape as IPolyline,
                         currentLaneNumChange,_feaClsBreakPoint);
                     Link link = new Link();
@@ -232,7 +234,7 @@ namespace RoadNetworkSystem.NetworkExtraction.Road2BasicRoadNetwork
                         continue;
                     }
 
-                    LinkLayerFactory linkLayerFactory = new LinkLayerFactory(_feaClsLink,_feaClsNode,_feaClsArc);
+                    LinkLayerBuilder linkLayerFactory = new LinkLayerBuilder(_feaClsLink,_feaClsNode,_feaClsArc);
                     if (isSameDirectionFlag)
                     {
                         linkLayerFactory.createLinkAndArcs(link, linkLine, laneNum, oppositionLaneNum);

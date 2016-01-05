@@ -29,10 +29,14 @@ namespace RoadNetworkSystem.TransmodelerDataTransform
         //private const string TMCoorsystem = "GCS_WGS_1984"; //TM路网坐标系
         //private const string ParamicsCoorsystem = "Xian_1980_3_Degree_GK_Zone_38"; //Paramics路网坐标系
         private const double LANEWIDTH = 3.5; //每车道宽度，用于确定Arc的偏移距离，可根据需要调整
-        private static OleDbConnection Conn;
-        
+        private static OleDbConnection _conn;
 
-        public static Boolean CreateTransmodelerdata(string apppath, string databasePath)
+        public Basic2TransModeler(OleDbConnection conn)
+        {
+            _conn = conn;
+        }
+
+        public Boolean CreateTransmodelerdata(string apppath, string databasePath)
         {
             //本函数根据基础路网数据生成Transmodeler仿真数据文件
 
@@ -63,80 +67,77 @@ namespace RoadNetworkSystem.TransmodelerDataTransform
             IWorkspaceFactory pWSF = new AccessWorkspaceFactoryClass();          //定义IWorkspaceFactory型变量pWSF并初始化
             IWorkspace ws = pWSF.OpenFromFile(databasePath, 0);                      //定义IWorkspace型变量pWS并初始化，从pWSF打开文件赋给pWS
 
-            
-            Conn = AccessHelper.OpenConnection(databasePath);
-            
 
             try
             {
                 string strInsert = "DELETE  *   FROM   Transmodeler_Nodes ";
-                OleDbCommand inst = new OleDbCommand(strInsert, Conn);
+                OleDbCommand inst = new OleDbCommand(strInsert, _conn);
                 inst.ExecuteNonQuery();
             }
             catch
             {
                 string strCreatTable = "CREATE TABLE Transmodeler_Nodes(ID LONG, [Longitude] LONG, [Latitude] LONG, [Approach Links] LONG, [Departure Links] LONG, [External] TEXT(50), [Fidelity] TEXT(50), [Control Type] TEXT(50), [Signalized Delay] TEXT(50), [Unsignalized Delay] TEXT(50))";
-                OleDbCommand inst = new OleDbCommand(strCreatTable, Conn);
+                OleDbCommand inst = new OleDbCommand(strCreatTable, _conn);
                 inst.ExecuteNonQuery();
             }
             try
             {
                 string strInsert = "DELETE  *   FROM   Transmodeler_Lines ";
-                OleDbCommand inst = new OleDbCommand(strInsert, Conn);
+                OleDbCommand inst = new OleDbCommand(strInsert, _conn);
                 inst.ExecuteNonQuery();
             }
             catch
             {
                 string strCreatTable = "CREATE TABLE Transmodeler_Lines(ID LONG, Type TEXT(50), ANode LONG, BNode LONG, Points MEMO)";
-                OleDbCommand inst = new OleDbCommand(strCreatTable, Conn);
+                OleDbCommand inst = new OleDbCommand(strCreatTable, _conn);
                 inst.ExecuteNonQuery();
             }
             try
             {
                 string strInsert = "DELETE  *   FROM   Transmodeler_Links ";
-                OleDbCommand inst = new OleDbCommand(strInsert, Conn);
+                OleDbCommand inst = new OleDbCommand(strInsert, _conn);
                 inst.ExecuteNonQuery();
             }
             catch
             {
                 string strCreatTable = "CREATE TABLE Transmodeler_Links(ID LONG, Dir LONG, AB TEXT(50), BA TEXT(50), ANode LONG, BNode LONG, Superlink LONG, Length LONG, Segments LONG, Type TEXT(50), Priority LONG, Access_AB TEXT(50), Access_BA TEXT(50), Control_AB TEXT(50), Control_BA TEXT(50), Name TEXT(50), Class TEXT(50), Disabled_AB TEXT(50), Disabled_BA TEXT(50), Queue_AB LONG, Queue_BA LONG)";
-                OleDbCommand inst = new OleDbCommand(strCreatTable, Conn);
+                OleDbCommand inst = new OleDbCommand(strCreatTable, _conn);
                 inst.ExecuteNonQuery();
             }
             try
             {
                 string strInsert = "DELETE  *   FROM   Transmodeler_Lanes ";
-                OleDbCommand inst = new OleDbCommand(strInsert, Conn);
+                OleDbCommand inst = new OleDbCommand(strInsert, _conn);
                 inst.ExecuteNonQuery();
             }
             catch
             {
                 string strCreatTable = "CREATE TABLE Transmodeler_Lanes(ID LONG, Segment LONG, Dir LONG, [Position] LONG, Side TEXT(50), Turns TEXT(50), Auxiliary TEXT(50), Merged TEXT(50), Merging TEXT(50), Exit TEXT(50), Dropped TEXT(50), Parking TEXT(50), Width DOUBLE, Shoulder TEXT(50), [Change] TEXT(50), Barrier TEXT(50), ETC TEXT(50), HOV TEXT(50), Transit TEXT(50), Truck TEXT(50), [User A] TEXT(50), [User B] TEXT(50), HOT TEXT(50), Density LONG, Speed LONG, ReLaneID LONG)";
-                OleDbCommand inst = new OleDbCommand(strCreatTable, Conn);
+                OleDbCommand inst = new OleDbCommand(strCreatTable, _conn);
                 inst.ExecuteNonQuery();
             }
             try
             {
                 string strInsert = "DELETE  *   FROM   Transmodeler_LC ";
-                OleDbCommand inst = new OleDbCommand(strInsert, Conn);
+                OleDbCommand inst = new OleDbCommand(strInsert, _conn);
                 inst.ExecuteNonQuery();
             }
             catch
             {
                 string strCreatTable = "CREATE TABLE Transmodeler_LC(ID COUNTER, UL LONG, DL LONG, Dir TEXT(50), Length LONG, Connectivity LONG)";
-                OleDbCommand inst = new OleDbCommand(strCreatTable, Conn);
+                OleDbCommand inst = new OleDbCommand(strCreatTable, _conn);
                 inst.ExecuteNonQuery();
             }
             try
             {
                 string strInsert = "DELETE  *   FROM   Transmodeler_Segments ";
-                OleDbCommand inst = new OleDbCommand(strInsert, Conn);
+                OleDbCommand inst = new OleDbCommand(strInsert, _conn);
                 inst.ExecuteNonQuery();
             }
             catch
             {
                 string strCreatTable = "CREATE TABLE Transmodeler_Segments(ID LONG, Dir TEXT(50), AB TEXT(50), BA TEXT(50), Link LONG, [Position] LONG, Length LONG, Lanes_AB LONG, Lanes_BA LONG, [Fidelity] TEXT(50), [Tunnel] TEXT(50), [Grade] DOUBLE, Parking_AB TEXT(50), Parking_BA TEXT(50), Density_AB LONG, Density_BA LONG, Speed_AB LONG, Speed_BA LONG, [K/Kjam_AB] LONG, [K/Kjam_BA] LONG)";
-                OleDbCommand inst = new OleDbCommand(strCreatTable, Conn);
+                OleDbCommand inst = new OleDbCommand(strCreatTable, _conn);
                 inst.ExecuteNonQuery();
             }
 
@@ -348,7 +349,7 @@ namespace RoadNetworkSystem.TransmodelerDataTransform
                 Applinks = listLinkDataT.Count;
                 Deplinks = listLinkDataF.Count;
                 OleDbCommand insertCom = new OleDbCommand();
-                insertCom.Connection = Conn;
+                insertCom.Connection = _conn;
                 string str = "insert into Transmodeler_Nodes(ID,[Longitude],[Latitude],[Approach Links],[Departure Links],[External],[Fidelity]) Values(" + NodeID + "," + Longitude + "," + Latitude + "," + Applinks + "," + Deplinks + ",'" + External + "','" + Fidelity + "')";
                 insertCom.CommandText = str;
                 insertCom.ExecuteNonQuery();
@@ -399,11 +400,11 @@ namespace RoadNetworkSystem.TransmodelerDataTransform
                     dir = 0;
 
                 string Str_1 = "select LaneNum from " + Arc.ArcFeatureName + " where " + Arc.LinkIDNm + "=" + linkid + " and " + Arc.FlowDirNm + " =1";
-                OleDbCommand Com_1 = new OleDbCommand(Str_1, Conn);
+                OleDbCommand Com_1 = new OleDbCommand(Str_1, _conn);
                 lanesAB = Convert.ToInt32(Com_1.ExecuteScalar());
 
                 Str_1 = "select LaneNum from " + Arc.ArcFeatureName + " where " + Arc.LinkIDNm + "=" + linkid + " and " + Arc.FlowDirNm + " =-1";
-                Com_1 = new OleDbCommand(Str_1, Conn);
+                Com_1 = new OleDbCommand(Str_1, _conn);
                 lanesBA = Convert.ToInt32(Com_1.ExecuteScalar());
 
                 ////生成Lines数据时，考虑到仿真路网的美观性，首先对Link进行首尾截取，截取距离取30m
@@ -433,7 +434,7 @@ namespace RoadNetworkSystem.TransmodelerDataTransform
                     OverNode += ((long)(pPoint2.X * 1000000) - (long)(pPoint1.X * 1000000)) + "," + ((long)(pPoint2.Y * 1000000) - (long)(pPoint1.Y * 1000000)) + "," + 0 + ";";
                 }
                 OleDbCommand insertCom = new OleDbCommand();
-                insertCom.Connection = Conn;
+                insertCom.Connection = _conn;
                 string str = "insert into Transmodeler_Lines(ID,Type,ANode,BNode,Points) Values(" + linkid + ",'polyline'," + ANode + "," + BNode + ",'" + OverNode + "')";
                 insertCom.CommandText = str;
                 insertCom.ExecuteNonQuery();
@@ -457,7 +458,7 @@ namespace RoadNetworkSystem.TransmodelerDataTransform
             OleDbDataReader reader;
             string strSql = "select * from Lane order by LaneID";
             cmd.CommandText = strSql;
-            cmd.Connection = Conn;
+            cmd.Connection = _conn;
             reader = cmd.ExecuteReader();
             int n = 0, laneid, lanearcid, lanepos, laneseg, lanedir, lanenum;
             string laneside, lanechange;
@@ -473,16 +474,16 @@ namespace RoadNetworkSystem.TransmodelerDataTransform
                 //lanepos = lanepos - 1;钮中铭修改于20150109,定义Position从0开始结束
                 lanechange = Convert.ToString(reader[LaneFeatureService.ChangeNm]);
                 string Str_1 = "select " + Arc.LinkIDNm + " from " + Arc.ArcFeatureName + " where " + Arc.ArcIDNm + "=" + lanearcid;
-                OleDbCommand Com_1 = new OleDbCommand(Str_1, Conn);
+                OleDbCommand Com_1 = new OleDbCommand(Str_1, _conn);
                 laneseg = Convert.ToInt32(Com_1.ExecuteScalar());
                 Str_1 = "select ID from Transmodeler_Segments where Link=" + laneseg;
-                Com_1 = new OleDbCommand(Str_1, Conn);
+                Com_1 = new OleDbCommand(Str_1, _conn);
                 laneseg = Convert.ToInt32(Com_1.ExecuteScalar());
                 Str_1 = "select " + Arc.FlowDirNm + " from " + Arc.ArcFeatureName + " where " + Arc.ArcIDNm + "=" + lanearcid;
-                Com_1 = new OleDbCommand(Str_1, Conn);
+                Com_1 = new OleDbCommand(Str_1, _conn);
                 lanedir = Convert.ToInt32(Com_1.ExecuteScalar());
                 Str_1 = "select " + Arc.LaneNumNm + " from " + Arc.ArcFeatureName + " where " + Arc.ArcIDNm + "=" + lanearcid;
-                Com_1 = new OleDbCommand(Str_1, Conn);
+                Com_1 = new OleDbCommand(Str_1, _conn);
                 lanenum = Convert.ToInt32(Com_1.ExecuteScalar());
                 if (lanepos == 0)
                     laneside = "Left";
@@ -494,7 +495,7 @@ namespace RoadNetworkSystem.TransmodelerDataTransform
                 OleDbCommand cmdDB = new OleDbCommand();
                 OleDbDataReader readDB;
                 cmdDB.CommandText = strSql1;
-                cmdDB.Connection = Conn;
+                cmdDB.Connection = _conn;
                 readDB = cmdDB.ExecuteReader();
                 string turndir = "";
                 ArrayList listlaneturns = new ArrayList();
@@ -525,7 +526,7 @@ namespace RoadNetworkSystem.TransmodelerDataTransform
                 readDB.Close();
                 cmdDB.Dispose();
                 OleDbCommand insertCom = new OleDbCommand();
-                insertCom.Connection = Conn;
+                insertCom.Connection = _conn;
                 string str = "insert into Transmodeler_Lanes(ID,Segment,Dir,[Position],Side,Turns,Merged,Exit,Dropped,Parking,Width,Shoulder,[Change],ReLaneID) Values(" + n + "," + laneseg + "," + lanedir + "," + lanepos + ",'" + laneside + "','" + turndir + "','No','No','No','No'," + LANEWIDTH + ",'No','" + lanechange + "'," + laneid + ")";
                 insertCom.CommandText = str;
                 insertCom.ExecuteNonQuery();
@@ -541,7 +542,7 @@ namespace RoadNetworkSystem.TransmodelerDataTransform
             OleDbDataReader readerLC;
             strSql = "select * from " + LaneConnector.ConnectorName + " order by " + LaneConnectorFeatureService.ConnectorIDNm;
             cmdLC.CommandText = strSql;
-            cmdLC.Connection = Conn;
+            cmdLC.Connection = _conn;
             readerLC = cmdLC.ExecuteReader();
             int lcid, ul, dl;
             string dirlc;
@@ -553,14 +554,14 @@ namespace RoadNetworkSystem.TransmodelerDataTransform
                 dirlc = Convert.ToString(readerLC[LaneConnectorFeatureService.TurningDirNm]);
 
                 string Str_2 = "select ID from Transmodeler_Lanes where ReLaneID=" + ul;
-                OleDbCommand Com_2 = new OleDbCommand(Str_2, Conn);
+                OleDbCommand Com_2 = new OleDbCommand(Str_2, _conn);
                 ul = Convert.ToInt32(Com_2.ExecuteScalar());
                 Str_2 = "select ID from Transmodeler_Lanes where ReLaneID=" + dl;
-                Com_2 = new OleDbCommand(Str_2, Conn);
+                Com_2 = new OleDbCommand(Str_2, _conn);
                 dl = Convert.ToInt32(Com_2.ExecuteScalar());
 
                 OleDbCommand insertCom = new OleDbCommand();
-                insertCom.Connection = Conn;
+                insertCom.Connection = _conn;
                 string str = "insert into Transmodeler_LC(ID,UL,DL,Dir) Values(" + lcid + "," + ul + "," + dl + ",'" + dirlc + "')";
                 insertCom.CommandText = str;
                 insertCom.ExecuteNonQuery();
@@ -611,7 +612,7 @@ namespace RoadNetworkSystem.TransmodelerDataTransform
                 ////////////////
                 strSQL = "SELECT * FROM Transmodeler_Nodes";
                 cmd.CommandText = strSQL;
-                cmd.Connection = Conn;
+                cmd.Connection = _conn;
                 reader_nodes = cmd.ExecuteReader();
 
                 while (reader_nodes.Read())
@@ -632,7 +633,7 @@ namespace RoadNetworkSystem.TransmodelerDataTransform
                 ////////////////
                 strSQL = "SELECT * FROM Transmodeler_Lines";
                 cmd.CommandText = strSQL;
-                cmd.Connection = Conn;
+                cmd.Connection = _conn;
                 reader_lines = cmd.ExecuteReader();
 
                 while (reader_lines.Read())
@@ -650,7 +651,7 @@ namespace RoadNetworkSystem.TransmodelerDataTransform
                 ////////////////
                 strSQL = "SELECT * FROM Transmodeler_Links";
                 cmd.CommandText = strSQL;
-                cmd.Connection = Conn;
+                cmd.Connection = _conn;
                 reader_links = cmd.ExecuteReader();
 
                 while (reader_links.Read())
@@ -665,10 +666,10 @@ namespace RoadNetworkSystem.TransmodelerDataTransform
                     XmlNode link_node = builder.AddLink(link_id, ups, dns, sl);
 
                     string Str = "select ID from Transmodeler_Segments where Link=" + link_id;
-                    OleDbCommand Com = new OleDbCommand(Str, Conn);
+                    OleDbCommand Com = new OleDbCommand(Str, _conn);
                     string segment_id = Convert.ToString(Com.ExecuteScalar());
                     Str = "select Link from Transmodeler_Segments where Link=" + link_id;
-                    Com = new OleDbCommand(Str, Conn);
+                    Com = new OleDbCommand(Str, _conn);
                     string line_belong_to = Convert.ToString(Com.ExecuteScalar());
 
 
@@ -680,7 +681,7 @@ namespace RoadNetworkSystem.TransmodelerDataTransform
                     OleDbCommand cmdDB = new OleDbCommand();
                     OleDbDataReader readDB;
                     cmdDB.CommandText = strSQL;
-                    cmdDB.Connection = Conn;
+                    cmdDB.Connection = _conn;
                     readDB = cmdDB.ExecuteReader();
                     int index;
                     string lane_id, laneid;
@@ -724,7 +725,7 @@ namespace RoadNetworkSystem.TransmodelerDataTransform
                         //
                         strSQL = "SELECT * FROM Transmodeler_Lanes WHERE Segment=" + segment_id + " AND Dir=-1";
                         cmdDB.CommandText = strSQL;
-                        cmdDB.Connection = Conn;
+                        cmdDB.Connection = _conn;
                         readDB = cmdDB.ExecuteReader();
                         int index2;
                         string lane_id2, laneid2;
@@ -766,7 +767,7 @@ namespace RoadNetworkSystem.TransmodelerDataTransform
                 reader_links.Close();
 
                 //
-                Conn.Close();
+                _conn.Close();
                 builder.SaveNetworkXML();
 
                 MessageBox.Show("已创建路网文件！" + path1 + "\\test.XML");
@@ -787,7 +788,7 @@ namespace RoadNetworkSystem.TransmodelerDataTransform
             OleDbCommand cmdDB = new OleDbCommand();
             OleDbDataReader readDB;
             cmdDB.CommandText = strSQL;
-            cmdDB.Connection = Conn;
+            cmdDB.Connection = _conn;
             readDB = cmdDB.ExecuteReader();
             int key = 1;
             if (readDB.HasRows)

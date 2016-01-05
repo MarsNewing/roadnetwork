@@ -24,8 +24,12 @@ namespace RoadNetworkSystem.ParamicsDataTransform
         //private const string TMCoorsystem = "GCS_WGS_1984"; //TM路网坐标系
         //private const string ParamicsCoorsystem = "Xian_1980_3_Degree_GK_CM_114E"; //Paramics路网坐标系
         private const double LANEWIDTH = 3.5; //每车道宽度，用于确定Arc的偏移距离，可根据需要调整
-        private static OleDbConnection Conn;
-        
+        private static OleDbConnection _conn;
+
+        public ParamicsDataTrans(OleDbConnection conn)
+        {
+            _conn = conn;
+        }
 
         class Node
         {
@@ -84,18 +88,13 @@ namespace RoadNetworkSystem.ParamicsDataTransform
         private static List<NextLane> NextLaneSet = new List<NextLane>();
         private static List<LaneNumTrans> LaneTransSet = new List<LaneNumTrans>();
 
-        public static Boolean CreateParamicsdata(string apppath, string databasePath)
+        public Boolean CreateParamicsdata(string apppath, string databasePath)
         {
             //本函数根据基础路网数据生成Paramics仿真路网文件
 
             //初始化工作
             IWorkspaceFactory pWSF = new AccessWorkspaceFactoryClass();          //定义IWorkspaceFactory型变量pWSF并初始化
             IWorkspace ws = pWSF.OpenFromFile(databasePath, 0);                      //定义IWorkspace型变量pWS并初始化，从pWSF打开文件赋给pWS
-
-            
-            Conn = new OleDbConnection();
-            AccessHelper.OpenConnection(databasePath);
-
 
             //1.获取当前坐标系，转换为Paramics坐标系
             //NewpFeatClsArc = Setcoorsystem(pFeatClsArc,pFLayer);
@@ -119,12 +118,12 @@ namespace RoadNetworkSystem.ParamicsDataTransform
             int[] b = new int[5];
 
             string str_sql = "select * from Node ";
-            OleDbDataAdapter myDat = new OleDbDataAdapter(str_sql, Conn);
+            OleDbDataAdapter myDat = new OleDbDataAdapter(str_sql, _conn);
             DataSet ds = new DataSet();
             myDat.Fill(ds, "Node");
 
             str_sql = "select * from Arc ";
-            myDat = new OleDbDataAdapter(str_sql, Conn);
+            myDat = new OleDbDataAdapter(str_sql, _conn);
             myDat.Fill(ds, "Arc");
 
             NodeSet.Clear();
@@ -143,7 +142,7 @@ namespace RoadNetworkSystem.ParamicsDataTransform
                 L_link.ArcID = (int)arcrow["ArcID"];
 
                 string s_Str = "select * from Link where LinkID=" + arcrow["LinkID"].ToString();
-                OleDbCommand s_String = new OleDbCommand(s_Str, Conn);
+                OleDbCommand s_String = new OleDbCommand(s_Str, _conn);
                 OleDbDataReader QuesReader = s_String.ExecuteReader();  //新建一个OleDbDataReader
                 QuesReader.Read();
                 if (Convert.ToInt16(arcrow["Dir"]) == 1)
@@ -202,14 +201,14 @@ namespace RoadNetworkSystem.ParamicsDataTransform
 
                 //取Node的点坐标
                 string s_Str = "select * from Link where FNodeID=" + noderow["NodeID"].ToString();
-                OleDbCommand s_String = new OleDbCommand(s_Str, Conn);
+                OleDbCommand s_String = new OleDbCommand(s_Str, _conn);
                 OleDbDataReader QuesReader = s_String.ExecuteReader();
                 QuesReader.Read();
 
                 if (!QuesReader.HasRows)
                 {
                     s_Str = "select * from Link where TNodeID=" + noderow["NodeID"].ToString();
-                    s_String = new OleDbCommand(s_Str, Conn);
+                    s_String = new OleDbCommand(s_Str, _conn);
 
                     QuesReader = s_String.ExecuteReader();
                     QuesReader.Read();
@@ -263,7 +262,7 @@ namespace RoadNetworkSystem.ParamicsDataTransform
 
 
                     string s_Str = "select * from Link where LinkID=" + M.adj[a].ToString();
-                    OleDbCommand s_String = new OleDbCommand(s_Str, Conn);
+                    OleDbCommand s_String = new OleDbCommand(s_Str, _conn);
                     OleDbDataReader QuesReader = s_String.ExecuteReader();  //新建一个OleDbDataReader
                     QuesReader.Read();
 
@@ -297,7 +296,7 @@ namespace RoadNetworkSystem.ParamicsDataTransform
                         {
 
                             s_Str = "select * from Link where LinkID=" + b[t].ToString();
-                            s_String = new OleDbCommand(s_Str, Conn);
+                            s_String = new OleDbCommand(s_Str, _conn);
                             QuesReader = s_String.ExecuteReader();
                             QuesReader.Read();
 
@@ -314,7 +313,7 @@ namespace RoadNetworkSystem.ParamicsDataTransform
                                 //查找fromlink和tolink为进出口的两条link
                                 str_sql = "select * from LaneConnectors where fromLinkID=" + M.adj[a].ToString() + " and toLinkID=" + b[t].ToString();
                                 DataTable dat = new DataTable();
-                                myDat = new OleDbDataAdapter(str_sql, Conn);
+                                myDat = new OleDbDataAdapter(str_sql, _conn);
                                 myDat.Fill(dat);
 
                                 junc.FNode = fnode;
@@ -332,20 +331,20 @@ namespace RoadNetworkSystem.ParamicsDataTransform
 
                                         //查找fromarc的车道数
                                         s_Str = "select LaneNum from Arc where ArcID=" + dat.Rows[i]["fromArcID"].ToString();
-                                        s_String = new OleDbCommand(s_Str, Conn);
+                                        s_String = new OleDbCommand(s_Str, _conn);
                                         Lanenumber1 = Convert.ToInt16(s_String.ExecuteScalar());
 
                                         lanenext.LaneNum = Lanenumber1;
 
                                         //查找toarc的车道数
                                         s_Str = "select LaneNum from Arc where ArcID=" + dat.Rows[i]["toArcID"].ToString();
-                                        s_String = new OleDbCommand(s_Str, Conn);
+                                        s_String = new OleDbCommand(s_Str, _conn);
                                         Lanenumber2 = Convert.ToInt16(s_String.ExecuteScalar());
 
 
                                         //查找当前fromlane的车道位置
                                         s_Str = "select [Position] from Lane where LaneID=" + dat.Rows[i]["fromLaneID"].ToString();
-                                        s_String = new OleDbCommand(s_Str, Conn);
+                                        s_String = new OleDbCommand(s_Str, _conn);
                                         LanePosition1 = Convert.ToInt16(s_String.ExecuteScalar());
 
                                         //求该位置在paramics的编号                           
@@ -363,7 +362,7 @@ namespace RoadNetworkSystem.ParamicsDataTransform
                                         //--------------------------------------
                                         //查找当前tolane的车道位置
                                         s_Str = "select [Position] from Lane where LaneID=" + dat.Rows[i]["toLaneID"].ToString();
-                                        s_String = new OleDbCommand(s_Str, Conn);
+                                        s_String = new OleDbCommand(s_Str, _conn);
                                         LanePosition2 = Convert.ToInt16(s_String.ExecuteScalar());
 
                                         //求该位置在paramics的编号                           
@@ -414,18 +413,18 @@ namespace RoadNetworkSystem.ParamicsDataTransform
                         }
 
                         DataTable dat = new DataTable();
-                        myDat = new OleDbDataAdapter(str_sql, Conn);
+                        myDat = new OleDbDataAdapter(str_sql, _conn);
                         myDat.Fill(dat);
 
                         //查找fromarc的车道数
                         string s_Str = "select LaneNum from Arc where ArcID=" + dat.Rows[0]["fromArcID"].ToString();
-                        OleDbCommand s_String = new OleDbCommand(s_Str, Conn);
+                        OleDbCommand s_String = new OleDbCommand(s_Str, _conn);
                         Lanenumber1 = Convert.ToInt16(s_String.ExecuteScalar());
 
 
                         //查找toarc的车道数
                         s_Str = "select LaneNum from Arc where ArcID=" + dat.Rows[0]["toArcID"].ToString();
-                        s_String = new OleDbCommand(s_Str, Conn);
+                        s_String = new OleDbCommand(s_Str, _conn);
                         Lanenumber2 = Convert.ToInt16(s_String.ExecuteScalar());
 
                         if (Lanenumber1 != Lanenumber2)
@@ -445,14 +444,14 @@ namespace RoadNetworkSystem.ParamicsDataTransform
                             {
                                 //查找fromarc的车道数
                                 s_Str = "select LaneNum from Arc where ArcID=" + dat.Rows[i]["fromArcID"].ToString();
-                                s_String = new OleDbCommand(s_Str, Conn);
+                                s_String = new OleDbCommand(s_Str, _conn);
                                 Lanenumber1 = Convert.ToInt16(s_String.ExecuteScalar());
 
                                 lanenext.LaneNum = Lanenumber1;
 
                                 //查找toarc的车道数
                                 s_Str = "select LaneNum from Arc where ArcID=" + dat.Rows[i]["toArcID"].ToString();
-                                s_String = new OleDbCommand(s_Str, Conn);
+                                s_String = new OleDbCommand(s_Str, _conn);
                                 Lanenumber2 = Convert.ToInt16(s_String.ExecuteScalar());
 
                                 lanenext.FNode = N.FNode;
@@ -461,7 +460,7 @@ namespace RoadNetworkSystem.ParamicsDataTransform
 
                                 //查找当前fromlane的车道位置
                                 s_Str = "select [Position] from Lane where LaneID=" + dat.Rows[i]["fromLaneID"].ToString();
-                                s_String = new OleDbCommand(s_Str, Conn);
+                                s_String = new OleDbCommand(s_Str, _conn);
                                 LanePosition1 = Convert.ToInt16(s_String.ExecuteScalar());
 
                                 //求该位置在paramics的编号                           
@@ -470,7 +469,7 @@ namespace RoadNetworkSystem.ParamicsDataTransform
                                 //--------------------------------------
                                 //查找当前tolane的车道位置
                                 s_Str = "select [Position] from Lane where LaneID=" + dat.Rows[i]["toLaneID"].ToString();
-                                s_String = new OleDbCommand(s_Str, Conn);
+                                s_String = new OleDbCommand(s_Str, _conn);
                                 LanePosition2 = Convert.ToInt16(s_String.ExecuteScalar());
 
                                 //求该位置在paramics的编号                           
@@ -532,7 +531,7 @@ namespace RoadNetworkSystem.ParamicsDataTransform
                     }
             }
             // //-------------------------------------
-            Conn.Close();
+
         }
 
         private static void DataOutput(string app)

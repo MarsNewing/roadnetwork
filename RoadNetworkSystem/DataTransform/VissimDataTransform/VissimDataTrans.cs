@@ -29,44 +29,46 @@ namespace RoadNetworkSystem.VissimDataTransform
         //private const string TMCoorsystem = "GCS_WGS_1984"; //TM路网坐标系
         //private const string ParamicsCoorsystem = "Xian_1980_3_Degree_GK_CM_114E"; //Paramics路网坐标系
         private const double LANEWIDTH = 3.5; //每车道宽度，用于确定Arc的偏移距离，可根据需要调整
-        private static OleDbConnection Conn;
-        
+        private static OleDbConnection _conn;
+
+        public VissimDataTrans(OleDbConnection conn)
+        {
+            _conn = conn;
+        }
+
         //private IMap m_pMap;
 
-        public static Boolean CreateVissimdata(string apppath, string databasePath, IFeatureLayer pFLayer)
+        public Boolean CreateVissimdata(string apppath, string databasePath, IFeatureLayer pFLayer)
         {
             //本函数根据基础路网数据生成Vissim仿真数据文件
 
             //初始化工作
             IWorkspaceFactory pWSF = new AccessWorkspaceFactoryClass();          //定义IWorkspaceFactory型变量pWSF并初始化
             IWorkspace ws = pWSF.OpenFromFile(databasePath, 0);                      //定义IWorkspace型变量pWS并初始化，从pWSF打开文件赋给pWS
-
-            
-            Conn =AccessHelper.OpenConnection(databasePath);
             
 
             try
             {
                 string strInsert = "DELETE  *   FROM   Vissim_LINKS ";
-                OleDbCommand inst = new OleDbCommand(strInsert, Conn);
+                OleDbCommand inst = new OleDbCommand(strInsert, _conn);
                 inst.ExecuteNonQuery();
             }
             catch
             {
                 string strCreatTable = "CREATE TABLE Vissim_LINKS(id LONG, Name TEXT(255), Cost DOUBLE, Gradient DOUBLE, Lanewidth DOUBLE, Length DOUBLE, Numlanes LONG, Surcharge1 DOUBLE, Surcharge2 DOUBLE, Type LONG, FNode TEXT(200), TNode TEXT(200), OverNode MEMO, ArcID LONG)";
-                OleDbCommand inst = new OleDbCommand(strCreatTable, Conn);
+                OleDbCommand inst = new OleDbCommand(strCreatTable, _conn);
                 inst.ExecuteNonQuery();
             }
             try
             {
                 string strInsert = "DELETE  *   FROM   Vissim_Connector ";
-                OleDbCommand inst = new OleDbCommand(strInsert, Conn);
+                OleDbCommand inst = new OleDbCommand(strInsert, _conn);
                 inst.ExecuteNonQuery();
             }
             catch
             {
                 string strCreatTable = "CREATE TABLE Vissim_Connector(id LONG, Name TEXT(255), FLink LONG, TLink LONG, FLane TEXT(50), TLane TEXT(50), FPos DOUBLE, TPos DOUBLE, Overnode MEMO)";
-                OleDbCommand inst = new OleDbCommand(strCreatTable, Conn);
+                OleDbCommand inst = new OleDbCommand(strCreatTable, _conn);
                 inst.ExecuteNonQuery();
             }
 
@@ -193,7 +195,7 @@ namespace RoadNetworkSystem.VissimDataTransform
                 b = pFeatClsArc.FindField("LinkID");//当前弧段的LinkID
                 linkid = Convert.ToInt32(pFeatQuery.get_Value(b));
                 string Str = "select RoadName from Link where LinkID=" + linkid;
-                OleDbCommand Com_1 = new OleDbCommand(Str, Conn);
+                OleDbCommand Com_1 = new OleDbCommand(Str, _conn);
                 rodename = Convert.ToString(Com_1.ExecuteScalar());
                 c = pFeatClsArc.FindField(Arc.LaneNumNm);//当前弧段的LaneNum
                 lanenum = Convert.ToInt32(pFeatQuery.get_Value(c));
@@ -214,7 +216,7 @@ namespace RoadNetworkSystem.VissimDataTransform
                     OverNode += pPoint3.X + " " + pPoint3.Y + " " + "0.000" + ";";
                 }
                 OleDbCommand insertCom = new OleDbCommand();
-                insertCom.Connection = Conn;
+                insertCom.Connection = _conn;
                 string str = "insert into Vissim_LINKS(id,Name,Cost,Gradient,Lanewidth,Length,Numlanes,Surcharge1,Surcharge2,Type,FNode,TNode,OverNode,ArcID) Values(" + m + ",'" + rodename + "',0,0," + LANEWIDTH +", "+ len + "," + lanenum + ",0,0,1,'" + FNode.ToString() + "','" + TNode + "','" + OverNode + "'," + arcid + ")";
                 insertCom.CommandText = str;
                 insertCom.ExecuteNonQuery();
@@ -223,7 +225,7 @@ namespace RoadNetworkSystem.VissimDataTransform
             }
             //输出表格数据到文本,LINKS
             string Str0 = "select max(id) from Vissim_LINKS";
-            OleDbCommand Com = new OleDbCommand(Str0, Conn);
+            OleDbCommand Com = new OleDbCommand(Str0, _conn);
             num = (int)Com.ExecuteScalar();
             string links;
             
@@ -235,55 +237,55 @@ namespace RoadNetworkSystem.VissimDataTransform
                 double n3, n5, n6, n7, n8, n9;
                 string n1, n10, n11, n12;
                 string Str_1 = "select ArcID from Vissim_LINKS where id=" + a;
-                OleDbCommand Com_1 = new OleDbCommand(Str_1, Conn);
+                OleDbCommand Com_1 = new OleDbCommand(Str_1, _conn);
                 n0 = Convert.ToInt32(Com_1.ExecuteScalar());
 
                 Str_1 = "select Name from Vissim_LINKS where id=" + a;
-                Com_1 = new OleDbCommand(Str_1, Conn);
+                Com_1 = new OleDbCommand(Str_1, _conn);
                 n1 = Convert.ToString(Com_1.ExecuteScalar());
 
                 Str_1 = "select Type from Vissim_LINKS where id=" + a.ToString();
-                Com_1 = new OleDbCommand(Str_1, Conn);
+                Com_1 = new OleDbCommand(Str_1, _conn);
                 n2 = Convert.ToInt32(Com_1.ExecuteScalar());
 
                 Str_1 = "select Length from Vissim_LINKS where id=" + a.ToString();
-                Com_1 = new OleDbCommand(Str_1, Conn);
+                Com_1 = new OleDbCommand(Str_1, _conn);
                 n3 = Convert.ToDouble(Com_1.ExecuteScalar());
 
                 Str_1 = "select Numlanes from Vissim_LINKS where id=" + a.ToString();
-                Com_1 = new OleDbCommand(Str_1, Conn);
+                Com_1 = new OleDbCommand(Str_1, _conn);
                 n4 = Convert.ToInt32(Com_1.ExecuteScalar());
 
                 Str_1 = "select Lanewidth from Vissim_LINKS where id=" + a.ToString();
-                Com_1 = new OleDbCommand(Str_1, Conn);
+                Com_1 = new OleDbCommand(Str_1, _conn);
                 n5 = Convert.ToDouble(Com_1.ExecuteScalar());
 
                 Str_1 = "select Gradient from Vissim_LINKS where id=" + a.ToString();
-                Com_1 = new OleDbCommand(Str_1, Conn);
+                Com_1 = new OleDbCommand(Str_1, _conn);
                 n6 = Convert.ToDouble(Com_1.ExecuteScalar());
 
                 Str_1 = "select Cost from Vissim_LINKS where id=" + a.ToString();
-                Com_1 = new OleDbCommand(Str_1, Conn);
+                Com_1 = new OleDbCommand(Str_1, _conn);
                 n7 = Convert.ToDouble(Com_1.ExecuteScalar());
 
                 Str_1 = "select Surcharge1 from Vissim_LINKS where id=" + a.ToString();
-                Com_1 = new OleDbCommand(Str_1, Conn);
+                Com_1 = new OleDbCommand(Str_1, _conn);
                 n8 = Convert.ToDouble(Com_1.ExecuteScalar());
 
                 Str_1 = "select Surcharge2 from Vissim_LINKS where id=" + a.ToString();
-                Com_1 = new OleDbCommand(Str_1, Conn);
+                Com_1 = new OleDbCommand(Str_1, _conn);
                 n9 = Convert.ToDouble(Com_1.ExecuteScalar());
 
                 Str_1 = "select FNode from Vissim_LINKS where id=" + a.ToString();
-                Com_1 = new OleDbCommand(Str_1, Conn);
+                Com_1 = new OleDbCommand(Str_1, _conn);
                 n10 = Convert.ToString(Com_1.ExecuteScalar());
 
                 Str_1 = "select TNode from Vissim_LINKS where id=" + a.ToString();
-                Com_1 = new OleDbCommand(Str_1, Conn);
+                Com_1 = new OleDbCommand(Str_1, _conn);
                 n11 = Convert.ToString(Com_1.ExecuteScalar());
 
                 Str_1 = "select OverNode from Vissim_LINKS where id=" + a.ToString();
-                Com_1 = new OleDbCommand(Str_1, Conn);
+                Com_1 = new OleDbCommand(Str_1, _conn);
                 object o = Com_1.ExecuteScalar();
                 if (o == null)
                     n12 = "";
@@ -332,7 +334,7 @@ namespace RoadNetworkSystem.VissimDataTransform
             string strSql, str;
             strSql = "select * from LaneConnectors order by ConnectorID";
             cmd.CommandText = strSql;
-            cmd.Connection = Conn;
+            cmd.Connection = _conn;
             reader = cmd.ExecuteReader();
 
             int ConnectorID, fromArcID, toArcID, fromLaneID, toLaneID, flanepos, tlanepos, fnumlane, tnumlane, flane = 0, tlane = 0, flink, tlink;
@@ -346,33 +348,33 @@ namespace RoadNetworkSystem.VissimDataTransform
                 fromLaneID = (int)reader["fromLaneID"];
                 toLaneID = (int)reader["toLaneID"];
                 string Str0 = "select Length from Vissim_LINKS where ArcID=" + fromArcID;
-                OleDbCommand Com_1 = new OleDbCommand(Str0, Conn);
+                OleDbCommand Com_1 = new OleDbCommand(Str0, _conn);
                 len = Convert.ToDouble(Com_1.ExecuteScalar());
                 Com_1.Dispose();
 
                 Str0 = "select id from Vissim_LINKS where ArcID=" + fromArcID;
-                Com_1 = new OleDbCommand(Str0, Conn);
+                Com_1 = new OleDbCommand(Str0, _conn);
                 flink = Convert.ToInt32(Com_1.ExecuteScalar());
                 Com_1.Dispose();
                 Str0 = "select id from Vissim_LINKS where ArcID=" + toArcID;
-                Com_1 = new OleDbCommand(Str0, Conn);
+                Com_1 = new OleDbCommand(Str0, _conn);
                 tlink = Convert.ToInt32(Com_1.ExecuteScalar());
                 Com_1.Dispose();
 
                 Str0 = "select Numlanes from Vissim_LINKS where ArcID=" + fromArcID;
-                Com_1 = new OleDbCommand(Str0, Conn);
+                Com_1 = new OleDbCommand(Str0, _conn);
                 fnumlane = Convert.ToInt32(Com_1.ExecuteScalar());
                 Com_1.Dispose();
                 Str0 = "select Numlanes from Vissim_LINKS where ArcID=" + toArcID;
-                Com_1 = new OleDbCommand(Str0, Conn);
+                Com_1 = new OleDbCommand(Str0, _conn);
                 tnumlane = Convert.ToInt32(Com_1.ExecuteScalar());
                 Com_1.Dispose();
                 Str0 = "select [Position] from Lane where LaneID=" + fromLaneID;
-                Com_1 = new OleDbCommand(Str0, Conn);
+                Com_1 = new OleDbCommand(Str0, _conn);
                 flanepos = Convert.ToInt32(Com_1.ExecuteScalar());
                 Com_1.Dispose();
                 Str0 = "select [Position] from Lane where LaneID=" + toLaneID;
-                Com_1 = new OleDbCommand(Str0, Conn);
+                Com_1 = new OleDbCommand(Str0, _conn);
                 tlanepos = Convert.ToInt32(Com_1.ExecuteScalar());
                 FPos = len - 0.100;
                 TPos = 0.100;
@@ -392,14 +394,14 @@ namespace RoadNetworkSystem.VissimDataTransform
                 }
                 OverNode = SearchOverNode(pFeatClsArc, fromArcID, toArcID, fnumlane, tnumlane, flanepos, tlanepos);
                 OleDbCommand insertCom = new OleDbCommand();
-                insertCom.Connection = Conn;
+                insertCom.Connection = _conn;
                 str = "insert into Vissim_Connector(id,Name,FLink,TLink,FLane,TLane,FPos,TPos,Overnode) Values(" + m + ",'" + rodename + "'," + flink + "," + tlink + ",'" + flane + "','" + tlane + "'," + FPos + "," + TPos + ",'" + OverNode + "')";
                 insertCom.CommandText = str;
                 insertCom.ExecuteNonQuery();
             }
             //输出表格数据到文本,Connectors
             string Str = "select max(id) from Vissim_Connector";
-            OleDbCommand Com = new OleDbCommand(Str, Conn);
+            OleDbCommand Com = new OleDbCommand(Str, _conn);
             int num = Convert.ToInt32(Com.ExecuteScalar());
 
             string connectors;
@@ -419,23 +421,23 @@ namespace RoadNetworkSystem.VissimDataTransform
                 double n4, n8;
                 string n1, n5;
                 string Str_1 = "select Name from Vissim_Connector where id=" + a;
-                OleDbCommand Com_1 = new OleDbCommand(Str_1, Conn);
+                OleDbCommand Com_1 = new OleDbCommand(Str_1, _conn);
                 n1 = Convert.ToString(Com_1.ExecuteScalar());
 
                 Str_1 = "select FLink from Vissim_Connector where id=" + a;
-                Com_1 = new OleDbCommand(Str_1, Conn);
+                Com_1 = new OleDbCommand(Str_1, _conn);
                 n2 = Convert.ToInt32(Com_1.ExecuteScalar());
 
                 Str_1 = "select FLane from Vissim_Connector where id=" + a;
-                Com_1 = new OleDbCommand(Str_1, Conn);
+                Com_1 = new OleDbCommand(Str_1, _conn);
                 n3 = Convert.ToInt32(Com_1.ExecuteScalar());
 
                 Str_1 = "select FPos from Vissim_Connector where id=" + a;
-                Com_1 = new OleDbCommand(Str_1, Conn);
+                Com_1 = new OleDbCommand(Str_1, _conn);
                 n4 = Convert.ToDouble(Com_1.ExecuteScalar());
 
                 Str_1 = "select Overnode from Vissim_Connector where id=" + a;
-                Com_1 = new OleDbCommand(Str_1, Conn);
+                Com_1 = new OleDbCommand(Str_1, _conn);
                 object o = Com_1.ExecuteScalar();
                 if (o == null)
                     n5 = "";
@@ -443,15 +445,15 @@ namespace RoadNetworkSystem.VissimDataTransform
                     n5 = o.ToString();
 
                 Str_1 = "select TLink from Vissim_Connector where id=" + a;
-                Com_1 = new OleDbCommand(Str_1, Conn);
+                Com_1 = new OleDbCommand(Str_1, _conn);
                 n6 = Convert.ToInt32(Com_1.ExecuteScalar());
 
                 Str_1 = "select TLane from Vissim_Connector where id=" + a;
-                Com_1 = new OleDbCommand(Str_1, Conn);
+                Com_1 = new OleDbCommand(Str_1, _conn);
                 n7 = Convert.ToInt32(Com_1.ExecuteScalar());
 
                 Str_1 = "select TPos from Vissim_Connector where id=" + a;
-                Com_1 = new OleDbCommand(Str_1, Conn);
+                Com_1 = new OleDbCommand(Str_1, _conn);
                 n8 = Convert.ToDouble(Com_1.ExecuteScalar());
 
                 //sw.WriteLine("CONNECTOR " + a + " NAME " + "\"" + n1 + "\"" + " LABEL  0.00 0.00");
@@ -489,7 +491,6 @@ namespace RoadNetworkSystem.VissimDataTransform
             }
             //sw.Flush();
             //sw.Close();
-            Conn.Close();
             return connectors;
             //MessageBox.Show("F:\\项目\\863\\temp数据\\new\\Vissim\\Links.txt,Connectors.txt");
         }
@@ -582,16 +583,16 @@ namespace RoadNetworkSystem.VissimDataTransform
             List<IPoint> tPoint = new List<IPoint>();
 
             string Str = "select OBJECTID from Arc where ArcID=" + fromArcID;
-            OleDbCommand Com_1 = new OleDbCommand(Str, Conn);
+            OleDbCommand Com_1 = new OleDbCommand(Str, _conn);
             int FOBID = Convert.ToInt32(Com_1.ExecuteScalar());
             Str = "select OBJECTID from Arc where ArcID=" + toArcID;
-            Com_1 = new OleDbCommand(Str, Conn);
+            Com_1 = new OleDbCommand(Str, _conn);
             int TOBID = Convert.ToInt32(Com_1.ExecuteScalar());
             Str = "select Shape_Length from Arc where ArcID=" + fromArcID;
-            Com_1 = new OleDbCommand(Str, Conn);
+            Com_1 = new OleDbCommand(Str, _conn);
             double len = Convert.ToDouble(Com_1.ExecuteScalar());
             Str = "select Lanewidth from Vissim_LINKS where ArcID=" + fromArcID;
-            Com_1 = new OleDbCommand(Str, Conn);
+            Com_1 = new OleDbCommand(Str, _conn);
             double lanwidth = Convert.ToDouble(Com_1.ExecuteScalar());
 
             pFeatQuery = pFeatClsArc.GetFeature(FOBID);

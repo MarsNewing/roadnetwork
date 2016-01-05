@@ -14,7 +14,7 @@ using System.Windows.Forms;
 
 namespace RoadNetworkSystem.NetworkExtraction.LaneBasedNetwork.SegmentLayer
 {
-    class SegmentLayerFactory : LinkMasterLayerFactory
+    class SegmentLayerBuilder : LinkMasterLayerFactory
     {
          /// <summary>
         /// 要素类
@@ -27,7 +27,7 @@ namespace RoadNetworkSystem.NetworkExtraction.LaneBasedNetwork.SegmentLayer
         /// 初始化
         /// </summary>
         /// <param name="pFeaClsRoad"></param>
-        public SegmentLayerFactory(Form1 frm1):base(frm1)
+        public SegmentLayerBuilder(Form1 frm1):base(frm1)
         {
               _pFeaClsRoad = frm1.FeaClsRoad;
               //-----------------------Step0: 创建要素类---------------------------------------

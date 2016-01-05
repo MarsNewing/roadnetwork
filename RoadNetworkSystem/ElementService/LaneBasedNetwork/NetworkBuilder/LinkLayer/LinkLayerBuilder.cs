@@ -12,13 +12,13 @@ using System.Text;
 
 namespace RoadNetworkSystem.NetworkExtraction.LaneBasedNetwork.LinkLayer
 {
-    class LinkLayerFactory
+    class LinkLayerBuilder
     {
         IFeatureClass _pFeaClsLink;
         IFeatureClass _pFeaClsArc;
         IFeatureClass _pFeaClsNode;
 
-        public LinkLayerFactory(IFeatureClass pFeaClsLink,IFeatureClass pFeaClsNode,IFeatureClass pFeaClsArc)
+        public LinkLayerBuilder(IFeatureClass pFeaClsLink,IFeatureClass pFeaClsNode,IFeatureClass pFeaClsArc)
         {
             _pFeaClsLink = pFeaClsLink;
             _pFeaClsNode = pFeaClsNode;

@@ -18,7 +18,7 @@ using System.Windows.Forms;
 
 namespace RoadNetworkSystem.NetworkExtraction.LaneBasedNetwork.LaneLayer
 {
-    class LaneLayerFactory
+    class LaneLayerBuilder
     {
         IFeatureClass _pFeaClsLink;
         IFeatureClass _pFeaClsArc;
@@ -35,7 +35,7 @@ namespace RoadNetworkSystem.NetworkExtraction.LaneBasedNetwork.LaneLayer
         IFeatureClass _pFeaClsStopLine;
         Dictionary<int, int> roadLateralLaneNumPair;
 
-        public LaneLayerFactory(Dictionary<string, IFeatureClass> feaClsDic)
+        public LaneLayerBuilder(Dictionary<string, IFeatureClass> feaClsDic)
         {
             _pFeaClsArc = feaClsDic[Arc.ArcFeatureName];
             _pFeaClsBoundary = feaClsDic[Boundary.BoundaryName];
@@ -130,7 +130,7 @@ namespace RoadNetworkSystem.NetworkExtraction.LaneBasedNetwork.LaneLayer
 
 
             //创建同向的拓扑
-            createLaneTopo(linkFea, link.FlowDir, arc, samePreNodeCutInfor, sameNextNodeCutInfor);
+            CreateLaneTopo(linkFea, link.FlowDir, arc, samePreNodeCutInfor, sameNextNodeCutInfor);
 
 
 
@@ -205,10 +205,6 @@ namespace RoadNetworkSystem.NetworkExtraction.LaneBasedNetwork.LaneLayer
                     LaneConnectorFeatureService connector = new LaneConnectorFeatureService(_pFeaClsConnector, 0);
                     double angle = PhysicalConnection.GetLinksAngle(arcEty.LinkID, exitArcEty.LinkID, junctionNodeEty);
 
-                    if (junctionNodeEty.ID == 26)
-                    {
-                        int test = 0;
-                    }
                     connector.CreateConnectorInArcs(_pFeaClsLane, arcEty, exitArcEty, PhysicalConnection.GetTurningDir(angle), nodePnt);
 
                     //出口车道的导向箭头生成一排直行即可
@@ -279,14 +275,14 @@ namespace RoadNetworkSystem.NetworkExtraction.LaneBasedNetwork.LaneLayer
 
 
         /// <summary>
-        /// 创建属于一个Arc的拓扑数据
+        /// 创建属于一个Arc的拓扑数据Lane、Boundary、StopLine、Kerb
         /// </summary>
         /// <param name="linkFea"></param>Link要素
         /// <param name="linkFlowDir"></param>Link的交通流方向
         /// <param name="arcEty"></param>Arc实体
         /// <param name="preNodeCutInfor"></param>Arc上游的截取信息
         /// <param name="nextNodeCutInfor"></param>Arc下游的截取信息
-        private void createLaneTopo(IFeature linkFea, int linkFlowDir, Arc arcEty, PreNodeCutInfor preNodeCutInfor,
+        public void CreateLaneTopo(IFeature linkFea, int linkFlowDir, Arc arcEty, PreNodeCutInfor preNodeCutInfor,
             NextNodeCutInfor nextNodeCutInfor)
         {
             LinkService linkService = new LinkService(_pFeaClsLink, 0);
@@ -727,7 +723,6 @@ namespace RoadNetworkSystem.NetworkExtraction.LaneBasedNetwork.LaneLayer
 
                 }
                 #endregion ---------------------- 2.5 Link的交通流是双向 或 与当前Arc的交通流方向相同时---------------------------------------
-
             }
 
             #endregion ----------------------------2 生成Arc的Lane、Boundary、StopLine、Kerb--------------------------------------------------
@@ -786,7 +781,7 @@ namespace RoadNetworkSystem.NetworkExtraction.LaneBasedNetwork.LaneLayer
                 }
 
 
-                createLaneTopo(linkFea, linkEty.FlowDir, arcEty, preNodeCutInfor, nextNodeCutInfor);
+                CreateLaneTopo(linkFea, linkEty.FlowDir, arcEty, preNodeCutInfor, nextNodeCutInfor);
 
                 SurfaceService surface = new SurfaceService(_pFeaClsSurface, 0);
 

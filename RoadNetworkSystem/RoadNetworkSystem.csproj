@@ -94,10 +94,11 @@
     <Compile Include="EditorTool\MergeTool.cs" />
     <Compile Include="ElementService\LaneBasedNetwork\LinkLayer\BreakPointService.cs" />
     <Compile Include="ElementService\LaneBasedNetwork\LinkLayer\LaneNumChangeService.cs" />
-    <Compile Include="ElementService\LaneBasedNetwork\NetworkBuilder\NextNodeCutInfor.cs" />
-    <Compile Include="ElementService\LaneBasedNetwork\NetworkBuilder\NextNodeCutInforService.cs" />
-    <Compile Include="ElementService\LaneBasedNetwork\NetworkBuilder\PreNodeCutInfor.cs" />
-    <Compile Include="ElementService\LaneBasedNetwork\NetworkBuilder\PreNodeCutInforService.cs" />
+    <Compile Include="ElementService\LaneBasedNetwork\NetworkBuilder\LaneLayer\LaneLayerBatchBuilder.cs" />
+    <Compile Include="ElementService\LaneBasedNetwork\NetworkBuilder\NodeCutInfor\NextNodeCutInfor.cs" />
+    <Compile Include="ElementService\LaneBasedNetwork\NetworkBuilder\NodeCutInfor\NextNodeCutInforService.cs" />
+    <Compile Include="ElementService\LaneBasedNetwork\NetworkBuilder\NodeCutInfor\PreNodeCutInfor.cs" />
+    <Compile Include="ElementService\LaneBasedNetwork\NetworkBuilder\NodeCutInfor\PreNodeCutInforService.cs" />
     <Compile Include="FileDirectory\FileHelper.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
@@ -163,9 +164,9 @@
     <Compile Include="NetworkExtraction\FreeWay\Service\Segmentation.cs" />
     <Compile Include="NetworkExtraction\GuideSignNetwork\Arc1LayerFactory.cs" />
     <Compile Include="NetworkExtraction\GuideSignNetwork\Node1WorkSpace.cs" />
-    <Compile Include="NetworkExtraction\LaneBasedNetwork\LaneLayer\LaneLayerFactory.cs" />
-    <Compile Include="NetworkExtraction\LaneBasedNetwork\LinkLayer\LinkLayerFactory.cs" />
-    <Compile Include="NetworkExtraction\LaneBasedNetwork\SegmentLayer\RoadSegmentLayerFactory.cs" />
+    <Compile Include="ElementService\LaneBasedNetwork\NetworkBuilder\LaneLayer\LaneLayerBuilder.cs" />
+    <Compile Include="ElementService\LaneBasedNetwork\NetworkBuilder\LinkLayer\LinkLayerBuilder.cs" />
+    <Compile Include="ElementService\LaneBasedNetwork\NetworkBuilder\SegmentLayer\RoadSegmentLayerBuilder.cs" />
     <Compile Include="NetworkExtraction\LinkMasterExtraction\LinkMasterLayerFactory.cs" />
     <Compile Include="NetworkExtraction\LinkMasterExtraction\NodeInfor.cs" />
     <Compile Include="NetworkExtraction\Road2BasicRoadNetwork\Road2BasicRoadNetwork.cs" />
@@ -330,6 +331,9 @@
   <ItemGroup>
     <Folder Include="ADO\Oracle\" />
     <Folder Include="ADO\SqlServer\" />
+    <Folder Include="NetworkExtraction\LaneBasedNetwork\LaneLayer\" />
+    <Folder Include="NetworkExtraction\LaneBasedNetwork\LinkLayer\" />
+    <Folder Include="NetworkExtraction\LaneBasedNetwork\SegmentLayer\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AddTool.png" />

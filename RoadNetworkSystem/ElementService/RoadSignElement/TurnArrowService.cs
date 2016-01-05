@@ -389,7 +389,7 @@ namespace RoadNetworkSystem.NetworkElement.RoadSignElement
                 int laneID = laneEty.LaneID;
 
                 //递归获取所有的前方转向
-                List<string> turnDirs = LogicalConnection.GetLaneLeadNodeTurnDir(pFeaClsNode, pFeaClsLink,
+                List<string> turnDirs = LogicalConnection.GetLaneLeadTurnDir(pFeaClsNode, pFeaClsLink,
                     pFeaClsArc, pFeaClsConnector, laneEty);
 
 

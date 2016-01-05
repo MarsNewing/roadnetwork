@@ -46,6 +46,7 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LinkLayer
 
         public int ArcID;
 
+        private static OleDbConnection _conn;
         
 
         public IFeature ArcFeature;
@@ -54,6 +55,10 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LinkLayer
             FeaClsArc = pFeaClsArc;
             ArcID = arcID;
             ArcFeature = GetArcFeature();
+            if (_conn == null)
+            {
+                _conn = AccessHelper.OpenConnection(FeaClsArc.FeatureDataset.Workspace.PathName);
+            }
         }
 
 
@@ -227,14 +232,10 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LinkLayer
             IWorkspace pWs = (FeaClsArc as IDataset).Workspace;
             string mdbPath = pWs.PathName;
 
-            OleDbConnection Conn = new OleDbConnection();
-            string conn_str = "Provider=Microsoft.Jet.OLEDB.4.0;Data Source=" + mdbPath + "; Persist Security Info=False";
-            Conn = new OleDbConnection(conn_str);
-            Conn.Open();
             string readStr = String.Format("select * from {0} where LinkID = {1} and FlowDir = {2}", "Arc", linkID, ArcDir);
             OleDbCommand readCmd = new OleDbCommand();
             readCmd.CommandText = readStr;
-            readCmd.Connection = Conn;
+            readCmd.Connection = _conn;
             OleDbDataReader read;
             read = readCmd.ExecuteReader();
             IFeature featureArc = null;
@@ -244,17 +245,17 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LinkLayer
                 break;
             }
             read.Close();
-            Conn.Close();
-            Conn.Dispose();
             featureArc = GetArcFeature();
             return featureArc;
         }
 
         public IFeature QueryArcFeatureByRule(string QueryStr)
         {
-            OleDbConnection conn = AccessHelper.OpenConnection(FeaClsArc.FeatureDataset.Workspace.PathName);
+            
+
+
             string sql = "Select * from " + Arc.ArcFeatureName + " where " + QueryStr;
-            OleDbCommand cmd = new OleDbCommand(sql,conn);
+            OleDbCommand cmd = new OleDbCommand(sql,_conn);
             OleDbDataReader readrer = cmd.ExecuteReader();
             if (readrer.Read())
             {

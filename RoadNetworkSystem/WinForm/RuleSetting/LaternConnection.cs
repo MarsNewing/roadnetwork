@@ -22,12 +22,15 @@ namespace RoadNetworkSystem.WinForm.RuleSetting
     class LaternConnection
     {
         private Form1 _frm1;
-        OleDbConnection connection;
+        private static OleDbConnection _conn;
         public LaternConnection(Form1 frm1)
         {
 
             _frm1 = frm1;
-            connection = AccessHelper.OpenConnection(frm1.MdbPath);
+            if (_conn == null)
+            {
+                _conn = _frm1.Conn;
+            }
         }
 
         private void clearModifyGroup()
@@ -121,7 +124,7 @@ namespace RoadNetworkSystem.WinForm.RuleSetting
             bool rightConnectionFlag = _frm1.checkBox_Lane_Rule_Right_Connnection.Checked;
 
 
-            RuleService ruleService = new RuleService(connection);
+            RuleService ruleService = new RuleService(_conn);
             Rule leftRule = new Rule();
             if (leftConnectionFlag == true)
             {
@@ -171,7 +174,7 @@ namespace RoadNetworkSystem.WinForm.RuleSetting
                 }
             }
 
-            BoundaryRuleService boundaryRuleService = new BoundaryRuleService(connection);
+            BoundaryRuleService boundaryRuleService = new BoundaryRuleService(_conn);
 
             BoundaryService boundary_Left = new BoundaryService(_frm1.FeaClsBoundary, laneEty.LeftBoundaryID);
             BoundaryService boundary_Right = new BoundaryService(_frm1.FeaClsBoundary, laneEty.RightBoundaryID);

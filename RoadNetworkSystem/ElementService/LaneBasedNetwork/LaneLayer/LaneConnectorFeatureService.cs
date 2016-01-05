@@ -16,7 +16,7 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LaneLayer
 {
     class LaneConnectorFeatureService
     {
-          /// <summary>
+        /// <summary>
         /// 规定了数据模型，请不要在其他类中直接读取数据
         /// </summary>
         public const string ConnectorIDNm = "ConnectorID";
@@ -232,13 +232,28 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LaneLayer
 
         }
 
-
-        public void CreateConnectorInNode(Node nodeEty, IFeatureClass pFeaClsLink, IFeatureClass pFeaClsArc)
+        /// <summary>
+        /// 创建一个结点处的Arc间的车道连接器
+        /// </summary>
+        /// <param name="nodeEty"></param>
+        /// <param name="pFeaClsLink"></param>
+        /// <param name="pFeaClsArc"></param>
+        public void CreateConnectorInNode(IFeature nodeFea, IFeatureClass pFeaClsNode,IFeatureClass pFeaClsLink, IFeatureClass pFeaClsArc)
         {
- 
+            NodeService nodeService = new NodeService(pFeaClsNode, 0, null);
+            NodeMaster nodeMaster = nodeService.GetNodeMasterEty(nodeFea);
+            Node node = new Node();
+            node = node.Copy(nodeMaster);
+
+
         }
 
-
+        /// <summary>
+        /// 判断两个车道间是否存在车道连接器
+        /// </summary>
+        /// <param name="fromLaneID"></param>
+        /// <param name="toLaneID"></param>
+        /// <returns></returns>
         public bool IsExistedConnByLane(int fromLaneID, int toLaneID)
         {
             bool existedFlag = false;
@@ -254,6 +269,12 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LaneLayer
             return existedFlag;
         }
 
+        /// <summary>
+        /// 通过起始车道和终止车道的查找车道连接器
+        /// </summary>
+        /// <param name="fromLaneID"></param>
+        /// <param name="toLaneID"></param>
+        /// <returns></returns>
         public int GetConnectorIdByLane(int fromLaneID, int toLaneID)
         {
             int connectorID = -1;
@@ -272,8 +293,38 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LaneLayer
             return connectorID;
         }
 
+        /// <summary>
+        /// 通过起始车道和终止车道的查找车道连接器
+        /// </summary>
+        /// <param name="fromLaneID"></param>
+        /// <param name="toLaneID"></param>
+        /// <returns></returns>
+        public List<LaneConnector> GetConnectorByFromLane(int fromLaneID)
+        {
+            List<LaneConnector> toLaneIDs = new List<LaneConnector>();
+
+            IQueryFilter LCFilter1 = new QueryFilterClass();
+            LCFilter1.WhereClause = String.Format("{0}={1}",fromLaneIDNm, fromLaneID);
+
+            IFeatureCursor LaneConnectorCursor1 = _pFeaClsConnector.Search(LCFilter1, false);
+            IFeature LaneConnectorRow1 = LaneConnectorCursor1.NextFeature();
+
+            LaneConnectorFeatureService laneConnectorFeatureService = new LaneConnectorFeatureService(_pFeaClsConnector, 0);
+            while (LaneConnectorRow1 != null)
+            {
+                LaneConnector laneConnector = laneConnectorFeatureService.GetLaneConnEty(LaneConnectorRow1);
+                if (laneConnector != null)
+                {
+                    toLaneIDs.Add(laneConnector);
+                }
+                LaneConnectorRow1 = LaneConnectorCursor1.NextFeature();
+            }
+
+            return toLaneIDs;
+        }
         
-        
+
+
         /// <summary>
         /// 默认规则生成两个Arc间的车道连接器
         /// </summary>
@@ -710,8 +761,22 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LaneLayer
         }
 
 
-
-        private LaneConnector initConnectorEty(int connectorID, int fromLinkID, int toLinkID, int fromArcID, int toArcID, int fromArcDir, int toArcDir, int fromLaneID, int toLaneID, string TurningDir)
+        /// <summary>
+        /// 创建一个车道连接器对象
+        /// </summary>
+        /// <param name="connectorID"></param>
+        /// <param name="fromLinkID"></param>
+        /// <param name="toLinkID"></param>
+        /// <param name="fromArcID"></param>
+        /// <param name="toArcID"></param>
+        /// <param name="fromArcDir"></param>
+        /// <param name="toArcDir"></param>
+        /// <param name="fromLaneID"></param>
+        /// <param name="toLaneID"></param>
+        /// <param name="TurningDir"></param>
+        /// <returns></returns>
+        private LaneConnector initConnectorEty(int connectorID, int fromLinkID, int toLinkID, int fromArcID,
+            int toArcID, int fromArcDir, int toArcDir, int fromLaneID, int toLaneID, string TurningDir)
         {
             LaneConnector connectorEntity = new LaneConnector();
             connectorEntity.ConnectorID = connectorID;
