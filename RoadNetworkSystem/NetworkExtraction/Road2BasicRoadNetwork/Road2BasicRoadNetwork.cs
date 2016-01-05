@@ -167,6 +167,10 @@ namespace RoadNetworkSystem.NetworkExtraction.Road2BasicRoadNetwork
 
                 Road road = roadService.GetEntity(pFeatureRoad);
 
+                if (road.RoadID == 1055)
+                {
+                    int test = 0;
+                }
 
                 int flowDir = Convert.ToInt32(pFeatureRoad.get_Value(pFeatureRoad.Fields.FindField(RoadNetworkSystem.DataModel.Road.Road.FlowDirName)));
                
@@ -205,7 +209,9 @@ namespace RoadNetworkSystem.NetworkExtraction.Road2BasicRoadNetwork
                     currentLaneNumChange.RoadID = road.RoadID;
 
                     LaneNumChangeService laneNumChange = new LaneNumChangeService(_conn);
-                    LaneNumChange oppositionLaneNumChange = laneNumChange.GetOppositeDirectionLaneNumChange(fromBreakPointId, toBreakPointId);
+                    int oppositionDir = (currentLaneNumChange.FlowDir == Link.FLOWDIR_SAME?Link.FLOWDIR_OPPOSITION:Link.FLOWDIR_SAME);
+                    LaneNumChange oppositionLaneNumChange = laneNumChange.GetOppositeDirectionLaneNumChange(road.RoadID,oppositionDir,
+                        fromBreakPointId, toBreakPointId);
 
                     int oppositionLaneNum = -1;
                     if (oppositionLaneNumChange != null)
@@ -217,7 +223,7 @@ namespace RoadNetworkSystem.NetworkExtraction.Road2BasicRoadNetwork
 
                     if (!isRoadFlowDirValid(flowDir,currentLaneNumChange, oppositionLaneNumChange))
                     {
-                        MessageBox.Show("Road objectid = " + pFeatureRoad.OID + " LaneNumChange 不匹配"); 
+                        //MessageBox.Show("Road objectid = " + pFeatureRoad.OID + " LaneNumChange 不匹配"); 
                     }
                     LaneNumChangeService laneNumChangeService = new LaneNumChangeService(_conn);
                     bool isSameDirectionFlag = laneNumChangeService.isCurrentLaneNumChangeSameDirection(pFeatureRoad.Shape as IPolyline,

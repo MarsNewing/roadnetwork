@@ -80,7 +80,7 @@ namespace RoadNetworkSystem.NetworkExtraction.LaneBasedNetwork.SegmentLayer
             CreateNode(junctionNodeHst);
 
 
-            MessageBox.Show("成果生成Segment层路网");
+            //MessageBox.Show("成果生成Segment层路网");
         }
 
 
