@@ -8,6 +8,7 @@ using ESRI.ArcGIS.Geodatabase;
 using ESRI.ArcGIS.Geometry;
 using ESRI.ArcGIS.SystemUI;
 using IntersectionModel.GIS;
+using RoadNetworkSystem.ADO.Access;
 using RoadNetworkSystem.DataModel.LaneBasedNetwork;
 using RoadNetworkSystem.DataModel.Road;
 using RoadNetworkSystem.DataModel.RoadSign;
@@ -31,6 +32,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Data.OleDb;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -123,6 +125,7 @@ namespace RoadNetworkSystem
         /// </summary>
         public string MdbName = "BasicNetwork.mdb";   //BasicNetwork
 
+
         /// <summary>
         /// 数据库的绝对路径
         /// </summary>
@@ -137,26 +140,12 @@ namespace RoadNetworkSystem
         private string _rootPath;
 
         /// <summary>
-        /// 数据库对应的工作空间,
-        /// </summary>
-        private IWorkspace _pWsp;
-
-        /// <summary>
         /// 设置工作空间的时候， 更新文件路径，并跟更新所有的要素类
         /// </summary>
-        public IWorkspace Wsp
-        {
-            set 
-            {
-                _pWsp = value;
-                //更新文件路径
-                _mdbPath = _pWsp.PathName;
-                //更新要素类
-                getAllFeaClses(_pWsp);
-            }
-            get { return _pWsp; }
-        }
+        public IWorkspace Wsp;
+        public OleDbConnection Conn;
 
+        private IWorkspaceFactory pWsf;
         /// <summary>
         /// 数据库中的要素数据集
         /// </summary>
@@ -287,6 +276,7 @@ namespace RoadNetworkSystem
             _rootPath = Application.StartupPath;//一开始运行就寻找这个程序的路径
             string[] arrPath = _rootPath.Split('\\');//把路径按照“\\”分成几部分
 
+            pWsf = new AccessWorkspaceFactoryClass();
             _mdbPath = _rootPath +"\\"+ MdbName;
         }
 
@@ -313,8 +303,9 @@ namespace RoadNetworkSystem
             m_AoInitialize.Initialize(esriLicenseProductCode.esriLicenseProductCodeArcInfo);
 
             IWorkspaceFactory pWsf = new AccessWorkspaceFactoryClass();
-            _pWsp = pWsf.OpenFromFile(_mdbPath, 0);
-            getAllFeaClses(_pWsp);
+            UpdateGeoDatabase(_mdbPath);
+            UpdateOleDbConnection(_mdbPath);
+            
             #endregion ———————————————初始化要素类———————————————————————
 
 
@@ -334,18 +325,18 @@ namespace RoadNetworkSystem
 
             private void 打开mdbToolStripMenuItem_Click(object sender, EventArgs e)
             {
-                IWorkspace temWorkSpace = this.Wsp = MapComponent.OpenGeoDatabase(this.axMapControl1);
+                IWorkspace temWorkSpace = MapComponent.OpenGeoDatabase(this.axMapControl1);
+
                 if (temWorkSpace == null)
                 {
                     MessageBox.Show("选的mdb文件不存在要素类，请确认");
                 }
                 else
                 {
-                    this.Wsp = temWorkSpace;
-                    getAllFeaClses(Wsp);
+                    UpdateGeoDatabase(temWorkSpace.PathName);
+                    UpdateOleDbConnection(temWorkSpace.PathName);
                 }
             }
-
 
             private void 打开地图ToolStripMenuItem_Click(object sender, EventArgs e)
             {
@@ -357,10 +348,9 @@ namespace RoadNetworkSystem
                 }
                 else
                 {
-                    this.Wsp = temWorkSpace;
-                    getAllFeaClses(Wsp);
+                    UpdateGeoDatabase(temWorkSpace.PathName);
+                    UpdateOleDbConnection(temWorkSpace.PathName);
                 }
-                
             }
 
             /// <summary>
@@ -370,7 +360,9 @@ namespace RoadNetworkSystem
             /// <param name="e"></param>
             private void 空数据库ToolStripMenuItem_Click(object sender, EventArgs e)
             {
-                _pWsp = DatabaseDesigner.CreateGDGDialoge(ref solutionPath, ref MdbName, ref _mdbPath);
+                DatabaseDesigner.CreateGDGDialoge(ref solutionPath, ref MdbName, ref _mdbPath);
+                UpdateGeoDatabase(_mdbPath);
+                UpdateOleDbConnection(_mdbPath);
             }
 
             /// <summary>
@@ -390,9 +382,11 @@ namespace RoadNetworkSystem
             /// <param name="e"></param>
             private void 仿真路网数据库ToolStripMenuItem_Click(object sender, EventArgs e)
             {
-                _pWsp = DatabaseDesigner.CreateGDGDialoge(ref solutionPath, ref MdbName, ref _mdbPath);
-                DatabaseDesigner.CreateSimNetworkDb(_pWsp);
-                addMayLayers(_pWsp);
+                IWorkspace temWorkSpace = DatabaseDesigner.CreateGDGDialoge(ref solutionPath, ref MdbName, ref _mdbPath);
+                DatabaseDesigner.CreateSimNetworkDb(temWorkSpace);
+                addMayLayers(temWorkSpace);
+                UpdateGeoDatabase(temWorkSpace.PathName);
+                UpdateOleDbConnection(temWorkSpace.PathName);
             }
 
 
@@ -403,7 +397,9 @@ namespace RoadNetworkSystem
             /// <param name="e"></param>
             private void 指路标志路网数据库ToolStripMenuItem_Click(object sender, EventArgs e)
             {
-                _pWsp = DatabaseDesigner.CreateGDGDialoge(ref solutionPath, ref MdbName, ref _mdbPath);
+                DatabaseDesigner.CreateGDGDialoge(ref solutionPath, ref MdbName, ref _mdbPath);
+                UpdateGeoDatabase(_mdbPath);
+                UpdateOleDbConnection(_mdbPath);
             }
 
 
@@ -439,17 +435,20 @@ namespace RoadNetworkSystem
             #region ------------路网转换(vissim,Paramics,TransModeler与车道级路网间转换)------------
             private void vissimToolStripMenuItem1_Click(object sender, EventArgs e)
             {
-                Basic2Vissim.CreateVissimdata(solutionPath, _mdbPath);
+                Basic2Vissim basic2Vissim = new Basic2Vissim(Conn);
+                basic2Vissim.CreateVissimdata(solutionPath, _mdbPath);
             }
 
             private void paramicsToolStripMenuItem1_Click(object sender, EventArgs e)
             {
-                Basic2Paramics.CreateParamicsdata(solutionPath, _mdbPath);
+                Basic2Paramics basic2Paramics = new Basic2Paramics(Conn);
+                basic2Paramics.CreateParamicsdata(solutionPath, _mdbPath);
             }
 
             private void transModelerToolStripMenuItem_Click(object sender, EventArgs e)
             {
-                Basic2Vissim.CreateVissimdata(solutionPath, _mdbPath);
+                Basic2Vissim basic2Vissim = new Basic2Vissim(Conn);
+                basic2Vissim.CreateVissimdata(solutionPath, _mdbPath);
             }
             #endregion ------------路网转换------------
 
@@ -492,6 +491,20 @@ namespace RoadNetworkSystem
 
         #region **********************数据管理**************************
 
+            public void UpdateGeoDatabase(string dbPath)
+            {
+                _mdbPath = dbPath;
+                
+                Wsp = pWsf.OpenFromFile(dbPath, 0);
+                getAllFeaClses(Wsp);
+                
+            }
+
+            public void UpdateOleDbConnection(string dbPath)
+            {
+                Conn = AccessHelper.OpenConnection(dbPath);
+            }
+
         /// <summary>
         /// 获取所有的要素类
         /// </summary>
@@ -504,7 +517,7 @@ namespace RoadNetworkSystem
 
             #region ++++++++++++++++++无要素集，数据库中直接存的是要素类++++++++++++++++++++++
             IEnumDataset enumDs;
-            enumDs = _pWsp.get_Datasets(esriDatasetType.esriDTFeatureClass);        //从工作空间获取数据集 }
+            enumDs = Wsp.get_Datasets(esriDatasetType.esriDTFeatureClass);        //从工作空间获取数据集 }
             IFeatureClass pFeaCls = enumDs.Next() as IFeatureClass;
             while (pFeaCls != null)
             {
@@ -514,7 +527,7 @@ namespace RoadNetworkSystem
             #endregion ++++++++++++++++++无要素集，数据库中直接存的是要素类++++++++++++++++++++++
 
             #region ++++++++++++++++++存在要素集，获取要素集中的所有要素++++++++++++++++++++++
-            enumDs = _pWsp.get_Datasets(esriDatasetType.esriDTFeatureDataset);        //从工作空间获取数据集 }
+            enumDs = Wsp.get_Datasets(esriDatasetType.esriDTFeatureDataset);        //从工作空间获取数据集 }
             IFeatureDataset feaDs = enumDs.Next() as IFeatureDataset;
 
             if (feaDs != null)
@@ -1332,14 +1345,6 @@ namespace RoadNetworkSystem
             _functionFlag = Convert.ToInt32(FunEnum.NetworkExtraction_GuideSign_Segment);
             ExtractionDesigner extrctDsgnr = new ExtractionDesigner(this);
             extrctDsgnr.CopyFlag = (int)ExtractionDesigner.CopyFeatureClassAndTable.CopyForGuideSignAndSegmentNetowrk;
-            TriggerRoadNetworkExtractor(extrctDsgnr);
-        }
-
-        /// <summary>
-        /// 触发路网提取
-        /// </summary>
-        public void TriggerRoadNetworkExtractor(ExtractionDesigner extrctDsgnr)
-        {
             LayerHelper.ClearSelect(axMapControl1);
             int dis = splitContainer3.SplitterDistance;
             int spP2W = splitContainer4.Panel2.Width;
@@ -1348,14 +1353,15 @@ namespace RoadNetworkSystem
             splitContainer3.SplitterDistance = this.Width * 3 / 5;
             //splitContainer4.Panel2.Controls.Clear();
 
-            
+
             extrctDsgnr.SetExtractionPlatte();
 
             if (FeaClsRoad == null)
             {
                 MessageBox.Show("请打开Road图层");
-                Wsp = MapComponent.OpenArcMap(this.axMapControl1, _mdbPath);
-                getAllFeaClses(Wsp);
+                MapComponent.OpenArcMap(this.axMapControl1, _mdbPath);
+                UpdateGeoDatabase(_mdbPath);
+                UpdateOleDbConnection(_mdbPath);
             }
             else
             {
@@ -1364,6 +1370,8 @@ namespace RoadNetworkSystem
                 LayerHelper.LoadMapLayer(axMapControl1, layerNames);
             }
         }
+
+
 
 
         private void 中心线到仿真路网ToolStripMenuItem_Click(object sender, EventArgs e)

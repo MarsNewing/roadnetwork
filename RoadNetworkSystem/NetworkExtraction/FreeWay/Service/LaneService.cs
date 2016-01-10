@@ -21,10 +21,14 @@ namespace RoadNetworkSystem.NetworkExtraction.FreeWay.Service
         private IFeatureClass pFeaClsNode;
         private IFeatureClass pFeaClsArc;
 
-
+        private static OleDbConnection _conn;
         public LaneService(string mdbPath)
         {
             initFeatureClass(mdbPath);
+            if (_conn == null)
+            {
+                _conn = AccessHelper.OpenConnection(mdbPath);
+            }
         }
 
         private void initFeatureClass(string mdbPath)
@@ -65,8 +69,8 @@ namespace RoadNetworkSystem.NetworkExtraction.FreeWay.Service
 
             IDataset ds = pFeaClsSegment.FeatureDataset;
             string path = ds.Workspace.PathName;
-            OleDbConnection connection = AccessHelper.OpenConnection(path);
-            LaneDao laneDao = new LaneDao(connection);
+
+            LaneDao laneDao = new LaneDao(_conn);
             //创建Lane车道表（手动）
             IQueryFilter filter = new QueryFilterClass();
             filter.WhereClause = "";

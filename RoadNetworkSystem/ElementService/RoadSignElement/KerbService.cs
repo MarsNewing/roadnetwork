@@ -1,5 +1,6 @@
 ﻿using ESRI.ArcGIS.Geodatabase;
 using ESRI.ArcGIS.Geometry;
+using RoadNetworkSystem.ADO.Access;
 using RoadNetworkSystem.DataModel.RoadSign;
 using System;
 using System.Data.OleDb;
@@ -12,10 +13,14 @@ namespace RoadNetworkSystem.NetworkElement.RoadSignElement
 
         public IFeatureClass FeaClsKerb;
         public int KerbID;
+        private static OleDbConnection _conn;
         public KerbService(IFeatureClass pFeaClsKerb, int kerbID)
         {
             FeaClsKerb = pFeaClsKerb;
             KerbID = kerbID;
+
+            _conn = AccessHelper.OpenConnection(pFeaClsKerb.FeatureDataset.Workspace.PathName);
+
         }
 
         public Kerb GetEntity(IFeature pFeature)
@@ -100,16 +105,12 @@ namespace RoadNetworkSystem.NetworkElement.RoadSignElement
             IWorkspace pWs = FeaClsKerb.FeatureDataset.Workspace;
             string mdbPath = pWs.PathName;
 
-            OleDbConnection Conn = new OleDbConnection();
-            string conn_str = "Provider=Microsoft.Jet.OLEDB.4.0;Data Source=" + mdbPath + "; Persist Security Info=False";
-            Conn = new OleDbConnection(conn_str);
-            Conn.Open();
             string readStr = String.Format("select * from {0} where {1} = {2} and {3} = {4}", Kerb.KerbName, Kerb.ArcIDNm, arcID, Kerb.SerialNm, serial);
 
 
             OleDbCommand readCmd = new OleDbCommand();
             readCmd.CommandText = readStr;
-            readCmd.Connection = Conn;
+            readCmd.Connection = _conn;
             OleDbDataReader read;
             read = readCmd.ExecuteReader();
             IFeature featureKerb = null;
@@ -119,8 +120,6 @@ namespace RoadNetworkSystem.NetworkElement.RoadSignElement
                 break;
             }
             read.Close();
-            Conn.Close();
-            Conn.Dispose();
             featureKerb = GetFeature();
             return featureKerb;
         }

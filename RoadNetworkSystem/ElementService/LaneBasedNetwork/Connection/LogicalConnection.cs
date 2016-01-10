@@ -477,6 +477,40 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.Connection
             return exitArcEtys;
         }
 
+
+        /// <summary>
+        /// 获取直接方向
+        /// </summary>
+        /// <param name="pFeaClsNode"></param>
+        /// <param name="pFeaClsLink"></param>
+        /// <param name="pFeaClsArc"></param>
+        /// <param name="pFeaClsConnector"></param>
+        /// <param name="laneEty"></param>
+        /// <returns></returns>
+        public static List<string> GetLaneLeadTurnDir(IFeatureClass pFeaClsNode, IFeatureClass pFeaClsLink,
+            IFeatureClass pFeaClsArc, IFeatureClass pFeaClsConnector, Lane laneEty)
+        {
+            List<string> leadingDir = new List<string>();
+            LaneConnectorFeatureService laneConnectorService= new LaneConnectorFeatureService(pFeaClsConnector,0);
+
+            List<LaneConnector> connectors = laneConnectorService.GetConnectorByFromLane(laneEty.LaneID);
+            if (connectors == null)
+            {
+                return null;
+            }
+
+            foreach (LaneConnector connector in connectors)
+            {
+                if(leadingDir.Contains(connector.TurningDir))
+                {
+                    continue;
+                }
+                leadingDir.Add(connector.TurningDir);
+            }
+
+            return leadingDir;
+        }
+
         /// <summary>
         /// 获取一个车道的通过前方路段后，在前方交叉口处的所有可能转向
         /// </summary>
@@ -508,13 +542,16 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.Connection
             //最后一个是交叉口Link
             int entranceLinkID = linkIDs[linkIDs.Count - 1];
             //递归获取所有的转向
-            leadingDir = getLaneTurnDirInNode(pFeaClsConnector, laneID, linkID, entranceLinkID);
+            leadingDir = getLaneTurnDirInNode(pFeaClsConnector, laneID, linkID, entranceLinkID,0);
             _turnDirInNode = new List<string>();
 
             return leadingDir;
         }
 
         private static List<string> _turnDirInNode = new List<string>();
+
+        private const int MAX_RECURSION_TIMES = 4;
+
         /// <summary>
         /// 递归获取一个车道在前方交叉口的所有转向
         /// </summary>
@@ -523,7 +560,7 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.Connection
         /// <param name="cursorLinkID"></param>游标车道，初始值为当前车道的LinkID
         /// <param name="entranceLinkID"></param>交叉口入口LinkID
         /// <returns></returns>
-        private static List<string> getLaneTurnDirInNode(IFeatureClass pFeaClsConn,int laneID,int cursorLinkID, int entranceLinkID)
+        private static List<string> getLaneTurnDirInNode(IFeatureClass pFeaClsConn,int laneID,int cursorLinkID, int entranceLinkID,int recursionTime)
         {
 
             if (cursorLinkID == entranceLinkID)
@@ -534,7 +571,7 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.Connection
                 filterConn.WhereClause = LaneConnectorFeatureService.fromLaneIDNm + " = " + laneID;
                 cursorConnector = pFeaClsConn.Search(filterConn, false);
                 IFeature feaConn = cursorConnector.NextFeature();
-                while (feaConn != null)
+                while (feaConn != null && recursionTime < MAX_RECURSION_TIMES)
                 {
                     LaneConnector connEty = new LaneConnector();
                     LaneConnectorFeatureService laneConn = new LaneConnectorFeatureService(pFeaClsConn, 0);
@@ -556,7 +593,7 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.Connection
             {
 
 
-                while (cursorLinkID != entranceLinkID)
+                while (cursorLinkID != entranceLinkID && recursionTime < MAX_RECURSION_TIMES)
                 {
                     IFeatureCursor cursorConnector;
                     IQueryFilter filterConn = new QueryFilterClass();
@@ -564,7 +601,7 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.Connection
                     filterConn.WhereClause = LaneConnectorFeatureService.fromLaneIDNm + " = " + laneID;
                     cursorConnector = pFeaClsConn.Search(filterConn, false);
                     IFeature feaConn = cursorConnector.NextFeature();
-                    while (feaConn != null)
+                    while (feaConn != null && recursionTime < MAX_RECURSION_TIMES)
                     {
                         LaneConnector connEty = new LaneConnector();
                         LaneConnectorFeatureService laneConn = new LaneConnectorFeatureService(pFeaClsConn, 0);
@@ -581,9 +618,9 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.Connection
                                 _turnDirInNode.Add(connEty.TurningDir);
                             }
                         }
-
+                        ++recursionTime;
                         //递归啦
-                        getLaneTurnDirInNode(pFeaClsConn, laneID, cursorLinkID, entranceLinkID);
+                        getLaneTurnDirInNode(pFeaClsConn, laneID, cursorLinkID, entranceLinkID, recursionTime);
                         feaConn = cursorConnector.NextFeature();
                         System.GC.Collect();
                         System.GC.WaitForPendingFinalizers();

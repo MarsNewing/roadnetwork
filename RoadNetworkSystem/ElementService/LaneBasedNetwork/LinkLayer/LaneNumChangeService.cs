@@ -70,12 +70,37 @@ namespace RoadNetworkSystem.ElementService.LaneBasedNetwork.LinkLayer
         /// <param name="fromBreakPointId"></param>
         /// <param name="toBreakPointId"></param>
         /// <returns></returns>
-        public LaneNumChange GetOppositeDirectionLaneNumChange(int fromBreakPointId, int toBreakPointId)
+        public LaneNumChange GetOppositeDirectionLaneNumChange(int roadId,int oppositionDir,int fromBreakPointId, int toBreakPointId)
         {
-            string sql = "Select * from " + LaneNumChange.LaneNumChangeName +
+            string sql;
+            if (fromBreakPointId > 0 && toBreakPointId > 0)
+            {
+                sql = "Select * from " + LaneNumChange.LaneNumChangeName +
                 " where " + LaneNumChange.FromBreakPointID_Name + " = " + toBreakPointId +
-                " and  " + LaneNumChange.ToBreakPointID_Name + " = " + fromBreakPointId + 
-                " and  " + LaneNumChange.DoneFlag_Name + " = " + LaneNumChange.DONEFLAG_UNDO ;
+                " and  " + LaneNumChange.ToBreakPointID_Name + " = " + fromBreakPointId +
+                " and  " + LaneNumChange.DoneFlag_Name + " = " + LaneNumChange.DONEFLAG_UNDO;
+            }
+            else if (fromBreakPointId > 0)
+            {
+                sql = "Select * from " + LaneNumChange.LaneNumChangeName +
+                " where " + LaneNumChange.RoadID_Name + " = " + roadId +
+                " and  " + LaneNumChange.ToBreakPointID_Name + " = " + fromBreakPointId +
+                " and  " + LaneNumChange.DoneFlag_Name + " = " + LaneNumChange.DONEFLAG_UNDO;
+            }
+            else if (toBreakPointId > 0)
+            {
+                sql = "Select * from " + LaneNumChange.LaneNumChangeName +
+                " where " + LaneNumChange.FromBreakPointID_Name + " = " + toBreakPointId +
+                " and  " + LaneNumChange.RoadID_Name + " = " + roadId +
+                " and  " + LaneNumChange.DoneFlag_Name + " = " + LaneNumChange.DONEFLAG_UNDO;
+            }
+            else
+            {
+                sql = "Select * from " + LaneNumChange.LaneNumChangeName +
+                " where " + LaneNumChange.RoadID_Name + " = " + roadId +
+                " and  " + LaneNumChange.FlowDir_Name + " = " + oppositionDir +
+                " and  " + LaneNumChange.DoneFlag_Name + " = " + LaneNumChange.DONEFLAG_UNDO;
+            }
             OleDbCommand cmd = new OleDbCommand(sql, _conn);
             OleDbDataReader reader = cmd.ExecuteReader();
             if (reader.Read())
@@ -89,6 +114,7 @@ namespace RoadNetworkSystem.ElementService.LaneBasedNetwork.LinkLayer
                 laneNumChange.ToBreakPointID = toBreakPointId;
                 laneNumChange.LaneNum = laneNum;
                 laneNumChange.DoneFlag = done;
+                laneNumChange.RoadID = roadId;
 
                 laneNumChange.FlowDir = flowDir;
                 reader.Close();

@@ -5,6 +5,7 @@ using RoadNetworkSystem.GIS;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Windows.Forms;
 
 namespace RoadNetworkSystem.NetworkElement.MasterLayer
 {
@@ -164,7 +165,7 @@ namespace RoadNetworkSystem.NetworkElement.MasterLayer
             }
             catch (Exception ex)
             {
-                throw (ex);
+                MessageBox.Show(ex.ToString());
             }
             return segEty;
         }

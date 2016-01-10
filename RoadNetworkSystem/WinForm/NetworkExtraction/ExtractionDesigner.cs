@@ -649,8 +649,7 @@ namespace RoadNetworkSystem.WinForm.NetworkExtraction
                         //Copy road featureclass to the new geodatabase
                         GeodatabaseHelper.CopyFeaClsToDataset(((IDataset)_frm1.FeaClsRoad).Workspace, pFeaDataset,
                             _frm1.FeaClsRoad.AliasName, "Road");
-                        _frm1.Wsp = pFeaDataset.Workspace;
-
+                        _frm1.UpdateGeoDatabase(pFeaDataset.Workspace.PathName);
                         break;
                     }
 
@@ -665,8 +664,7 @@ namespace RoadNetworkSystem.WinForm.NetworkExtraction
                         GeodatabaseHelper.CopyDatatable2Workspace(((IDataset)_frm1.FeaClsRoad).Workspace, pFeaDataset.Workspace,
                             LaneNumChange.LaneNumChangeName, LaneNumChange.LaneNumChangeName);
 
-                        _frm1.Wsp = pFeaDataset.Workspace;
-                        _frm1.getAllFeaClses(_frm1.Wsp);
+                        _frm1.UpdateGeoDatabase(pFeaDataset.Workspace.PathName);
                         break;
                     }
                 default:
@@ -688,7 +686,7 @@ namespace RoadNetworkSystem.WinForm.NetworkExtraction
                 if (_frm1.comBox_extraction_function.SelectedIndex == (int)ExtractionType.路段路网)
                 {
 
-                    SegmentLayerFactory segFactory = new SegmentLayerFactory(_frm1);
+                    SegmentLayerBuilder segFactory = new SegmentLayerBuilder(_frm1);
                     segFactory.AssembleSegmentLayer(forbidddonBreakRoads, _ruleList);
 
 
@@ -700,9 +698,12 @@ namespace RoadNetworkSystem.WinForm.NetworkExtraction
                 }
                 else if (_frm1.comBox_extraction_function.SelectedIndex == (int)ExtractionType.车道级路网)
                 {
-                    
-                    SegmentLayerFactory segFactory = new SegmentLayerFactory(_frm1);
+
+                    SegmentLayerBuilder segFactory = new SegmentLayerBuilder(_frm1);
                     segFactory.AssembleSegmentLayer(forbidddonBreakRoads, _ruleList);
+                    //为避免打开conn后，数据库被独占，这样会导致在创建拓扑的时候的报错
+                    //因此在创建完拓扑后，在更新Connection
+                    _frm1.UpdateOleDbConnection(_frm1.MdbPath);
                     Road2BasicRoadNetwork road2BasicRoadNetwork = new Road2BasicRoadNetwork(_frm1);
                     road2BasicRoadNetwork.Convert2BasicRoadNetwork();
                 }
