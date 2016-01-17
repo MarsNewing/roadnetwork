@@ -67,6 +67,13 @@ namespace RoadNetworkSystem.ElementService.LaneBasedNetwork.NetworkBuilder.LaneL
 
                 LinkService linkService = new LinkService(_pFeaClsLink, arcCursor.LinkID);
                 IFeature linkFea = linkService.GetFeature();
+                if (linkFea == null)
+                {
+                    arcFeaCursor.Delete();
+                    arcFeaCursor = cursor.NextFeature();
+                    continue;
+
+                }
                 LinkMaster linkMstr = linkService.GetEntity(linkFea);
                 Link link = new Link();
                 link = link.Copy(linkMstr);

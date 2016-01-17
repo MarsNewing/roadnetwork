@@ -86,7 +86,7 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LinkLayer
                     }
                     else
                     {
-                        arcId = arcEty.LinkID + 10 + 1;
+                        arcId = arcEty.LinkID * 10 + 1;
                     }
                     newFea.set_Value(FeaClsArc.FindField(Arc.ArcIDNm), arcId);
                 }

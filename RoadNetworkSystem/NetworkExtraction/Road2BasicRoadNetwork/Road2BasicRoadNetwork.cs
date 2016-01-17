@@ -167,7 +167,7 @@ namespace RoadNetworkSystem.NetworkExtraction.Road2BasicRoadNetwork
 
                 Road road = roadService.GetEntity(pFeatureRoad);
 
-                if (road.RoadID == 1055)
+                if (road.RoadID == 900)
                 {
                     int test = 0;
                 }
@@ -251,10 +251,11 @@ namespace RoadNetworkSystem.NetworkExtraction.Road2BasicRoadNetwork
                     }
 
 
-
+                    currentLaneNumChange.DoneFlag = LaneNumChange.DONEFLAG_DONE;
                     laneNumChangeService.UpdateLaneNumChangeDoneFlag(currentLaneNumChange);
                     if (oppositionLaneNumChange != null)
                     {
+                        oppositionLaneNumChange.DoneFlag = LaneNumChange.DONEFLAG_DONE;
                         laneNumChangeService.UpdateLaneNumChangeDoneFlag(oppositionLaneNumChange);
                     }
                 }

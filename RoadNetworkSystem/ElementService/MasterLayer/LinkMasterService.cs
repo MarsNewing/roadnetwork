@@ -103,8 +103,8 @@ namespace RoadNetworkSystem.NetworkElement.MasterLayer
         public LinkMaster GetEntity(IFeature feaLink)
         {
             LinkMaster segEty = new LinkMaster();
-            try
-            {
+            //try
+            //{
                 if (feaLink.Fields.FindField(IDNm) > 0)
                     segEty.ID = Convert.ToInt32(feaLink.get_Value(feaLink.Fields.FindField(IDNm)));
 
@@ -162,11 +162,12 @@ namespace RoadNetworkSystem.NetworkElement.MasterLayer
 
                     
 
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.ToString());
-            }
+            //}
+            //catch (Exception ex)
+            //{
+            //    MessageBox.Show(feaLink.OID.ToString());
+            //    MessageBox.Show(ex.ToString());
+            //}
             return segEty;
         }
 

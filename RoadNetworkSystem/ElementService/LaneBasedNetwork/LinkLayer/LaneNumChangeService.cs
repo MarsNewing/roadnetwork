@@ -110,6 +110,8 @@ namespace RoadNetworkSystem.ElementService.LaneBasedNetwork.LinkLayer
 
                 int flowDir = Convert.ToInt32(reader[LaneNumChange.FlowDir_Name]);
                 LaneNumChange laneNumChange = new LaneNumChange();
+
+                laneNumChange.LaneNumChangeID = Convert.ToInt32(reader[LaneNumChange.LaneNumChangeID_Name]);
                 laneNumChange.FromBreakPointID = fromBreakPointId;
                 laneNumChange.ToBreakPointID = toBreakPointId;
                 laneNumChange.LaneNum = laneNum;

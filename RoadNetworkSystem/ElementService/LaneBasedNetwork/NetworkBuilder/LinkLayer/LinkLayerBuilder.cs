@@ -58,7 +58,7 @@ namespace RoadNetworkSystem.NetworkExtraction.LaneBasedNetwork.LinkLayer
                 Arc oppositionArc = new Arc();
                 oppositionArc.LinkID = link.ID;
                 oppositionArc.LaneNum = sameDirLaneNum;
-                oppositionArc.FlowDir = Link.FLOWDIR_SAME;
+                oppositionArc.FlowDir = Link.FLOWDIR_OPPOSITION;
 
                 ArcService arcService = new ArcService(_pFeaClsArc, 0);
                 IPolyline oppositionArcLine = LineHelper.CreateLineByLRS(linkLine, -oppoDirLaneNum * Lane.LANE_WEIDTH / 2,
