@@ -112,8 +112,9 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LinkLayer
                 if (oppositionArc != null)
                 {
                     oppositionArc.LinkID = temLink.ID;
-                    IPolyline oppositionArcLine = LineHelper.CreateLineByLRS(temLinkLine, sameArc.LaneNum * Lane.LANE_WEIDTH / 2,
+                    IPolyline oppositionArcLine = LineHelper.CreateLineByLRS(temLinkLine,Link.FLOWDIR_OPPOSITION * oppositionArc.LaneNum * Lane.LANE_WEIDTH / 2,
                        ArcService.ARC_CUT_PERCENTAGE * temLinkLine.Length, ArcService.ARC_CUT_PERCENTAGE * temLinkLine.Length);
+                    int test = 0;
 
                     oppositionArcLine.ReverseOrientation();
                     sameArcService.CreateArc(oppositionArc, oppositionArcLine);

@@ -365,6 +365,11 @@ namespace RoadNetworkSystem.NetworkExtraction.Road2BasicRoadNetwork
                 Link link = new Link();
                 link = link.Copy(linkMstr);
 
+                if (link.ID == 19)
+                {
+                    int test = 0;
+                }
+
                 List<IPolyline> lines = LineHelper.ConvertPolyline2Lines(pFeatureLink.Shape as IPolyline);
                 if (lines.Count > 1) 
                 {
