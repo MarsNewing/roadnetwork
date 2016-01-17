@@ -1314,13 +1314,13 @@ namespace RoadNetworkSystem
             _functionFlag = (int)FunEnum.RuleSetting;
 
             ruleSettingDesigner = new RuleSettingDesigner(this);
-            ruleSettingDesigner.SetRuleSettingPlatte();
-
+            
             int dis = splitContainer3.SplitterDistance;
             int spP2W = splitContainer4.Panel2.Width;
             button1.Text = ">>";
             splitContainer4.Panel2Collapsed = false;
             splitContainer3.SplitterDistance = this.Width * 3 / 5;
+            ruleSettingDesigner.SetRuleSettingPlatte();
         }
 
         private void 中心线构建ToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1336,8 +1336,6 @@ namespace RoadNetworkSystem
                 newRoad.Shape = col as IPolyline;
                 newRoad.Store();
             }
-
-            int inte = 0;
         }
 
         private void 中心线到路段路网ToolStripMenuItem_Click(object sender, EventArgs e)

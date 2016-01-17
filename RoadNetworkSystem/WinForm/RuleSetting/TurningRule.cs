@@ -41,15 +41,14 @@ namespace RoadNetworkSystem.WinForm.RuleSetting
         public void LayoutTurnarrowRule()
         {
             clearModifyGroup();
-            //if (_frm1.comboBox_Lane_Rule_Selection.SelectedText.Equals(RoadNetworkSystem.WinForm.RuleSetting.RuleSettingDesigner.LaneRule.转向))
-            //{ 
-            //}
             initConnectionRule();
             if (_frm1.SlctLane_Rule != null)
             {
  
             }
         }
+
+
 
 
         private void getNextArcsFeature()
