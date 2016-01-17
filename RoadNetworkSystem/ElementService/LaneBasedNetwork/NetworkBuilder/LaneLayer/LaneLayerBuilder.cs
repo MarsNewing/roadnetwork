@@ -285,6 +285,17 @@ namespace RoadNetworkSystem.NetworkExtraction.LaneBasedNetwork.LaneLayer
         public void CreateLaneTopo(IFeature linkFea, int linkFlowDir, Arc arcEty, PreNodeCutInfor preNodeCutInfor,
             NextNodeCutInfor nextNodeCutInfor)
         {
+
+            if (arcEty.ArcID == 611)
+            {
+                int test = 0;
+            }
+
+            if (arcEty.ArcID == 30)
+            {
+                int test = 0;
+            }
+
             LinkService linkService = new LinkService(_pFeaClsLink, 0);
             LinkMaster linkMstr = linkService.GetEntity(linkFea);
             Link link = new Link();
@@ -367,7 +378,7 @@ namespace RoadNetworkSystem.NetworkExtraction.LaneBasedNetwork.LaneLayer
 
             #region ----------------------------2 生成Arc的Lane、Boundary、StopLine、Kerb--------------------------------------------------
 
-            for (int i = Lane.leftPosition; i <= arcEty.LaneNum - Lane.rightPositionOffset; i++)
+            for (int i = Lane.LEFT_POSITION; i <= arcEty.LaneNum - Lane.rightPositionOffset; i++)
             {
                 #region ++++++++++++++++++++++++ 2.1 删除旧的Lane要素，保留属性++++++++++++++++++++++++
 
@@ -531,7 +542,7 @@ namespace RoadNetworkSystem.NetworkExtraction.LaneBasedNetwork.LaneLayer
 
                 #region ++++++++++++++++++++++++ 2.5 Link的交通流是双向 或 与当前Arc的交通流方向相同时++++++++++++++++++++++++-----------------
                 //当，才生成相应
-                if (linkFlowDir == arcEty.FlowDir || linkFlowDir == 0)
+                if (linkFlowDir == arcEty.FlowDir || linkFlowDir == Link.FLOWDIR_DOUBLE)
                 {
                     #region ********************* 2.5.1 创建车道边界线***************************
                     Boundary bounEty = new Boundary();
@@ -575,7 +586,7 @@ namespace RoadNetworkSystem.NetworkExtraction.LaneBasedNetwork.LaneLayer
 
                     #region ********************* 2.5.2 创建Kerb***************************
                     //编号2、3的kerb
-                    if (i == Lane.leftPosition)
+                    if (i == Lane.LEFT_POSITION)
                     {
                         KerbService kerb = new KerbService(_pFeaClsKerb, 0);
                         Kerb kerbEty2 = new Kerb();
@@ -601,6 +612,10 @@ namespace RoadNetworkSystem.NetworkExtraction.LaneBasedNetwork.LaneLayer
                         if (arcEty.FlowDir == 1)
                         {
                             kerbLine = LineHelper.CreateLineByLRS(refLinkLine, 0, preCut, nextCut);
+                            if (kerbLine.IsEmpty)
+                            {
+                                int test = 0;
+                            }
                             pnt2 = kerbLine.FromPoint;
                         }
                         else
@@ -917,7 +932,7 @@ namespace RoadNetworkSystem.NetworkExtraction.LaneBasedNetwork.LaneLayer
                         {
                             //删除旧的CenterLine
                             LaneFeatureService lane = new LaneFeatureService(_pFeaClsLane, 0);
-                            IFeature laneFea = lane.QueryFeatureBuRule(oppArcID, 0);
+                            IFeature laneFea = lane.QueryFeatureBuRule(oppArcID, Lane.LEFT_POSITION);
                             int centerLineID = Convert.ToInt32(laneFea.get_Value(_pFeaClsLane.FindField(LaneFeatureService.LeftBoundaryIDNm)));
                             BoundaryService boun = new BoundaryService(_pFeaClsBoundary, centerLineID);
                             IFeature bounFea = boun.GetFeature();
@@ -1017,14 +1032,14 @@ namespace RoadNetworkSystem.NetworkExtraction.LaneBasedNetwork.LaneLayer
                 Arc cursorArc = arcService.GetArcEty(pFeature);
                 LinkService linkService = new LinkService(_pFeaClsLink,cursorArc.LinkID);
                 IFeature linkFeature = linkService.GetFeature();
-                for (int i = Lane.leftPosition; i <= (cursorArc.LaneNum - Lane.rightPositionOffset); i++)
+                for (int i = Lane.LEFT_POSITION; i <= (cursorArc.LaneNum - Lane.rightPositionOffset); i++)
                 {
                     Lane lane = new Lane();
                     lane.LaneID = LaneFeatureService.GetLaneID(cursorArc.ArcID, i);
                     lane.ArcID=  cursorArc.ArcID;
                     lane.Position = i;
                     lane.LaneClosed= Lane.LANE_UNCLOSED;
-                    if(i == Lane.leftPosition)
+                    if(i == Lane.LEFT_POSITION)
                     {
                          
                         if(i ==  cursorArc.LaneNum - Lane.rightPositionOffset)

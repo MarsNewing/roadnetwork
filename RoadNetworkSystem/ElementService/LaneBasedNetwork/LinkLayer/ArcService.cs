@@ -358,7 +358,7 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LinkLayer
 
             //当前车道的宽度
             double curWidth = 0;
-            double cursorIndex = Lane.leftPosition;
+            double cursorIndex = Lane.LEFT_POSITION;
 
             //遍历所有的Lane
             while (pFeatureLane != null)

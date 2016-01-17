@@ -167,11 +167,6 @@ namespace RoadNetworkSystem.NetworkExtraction.Road2BasicRoadNetwork
 
                 Road road = roadService.GetEntity(pFeatureRoad);
 
-                if (road.RoadID == 900)
-                {
-                    int test = 0;
-                }
-
                 int flowDir = Convert.ToInt32(pFeatureRoad.get_Value(pFeatureRoad.Fields.FindField(RoadNetworkSystem.DataModel.Road.Road.FlowDirName)));
                
                 //遍历属于同一个Road的各个LaneNumChange
@@ -217,6 +212,7 @@ namespace RoadNetworkSystem.NetworkExtraction.Road2BasicRoadNetwork
                     if (oppositionLaneNumChange != null)
                     {
                         oppositionLaneNum = oppositionLaneNumChange.LaneNum;
+                        flowDir = Link.FLOWDIR_DOUBLE;
                     }
 
 

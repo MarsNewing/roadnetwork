@@ -13,6 +13,60 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.Connection
     class LogicalConnection
     {
         /// <summary>
+        /// 返回一个Arc通往各个方向的Arc列表，
+        /// </summary>
+        /// <param name="fromArc"></param>
+        /// <param name="pFeaClsLink"></param>
+        /// <param name="pFeaClsArc"></param>
+        /// <param name="pFeaClsNode"></param>
+        /// <param name="leftTurnArcs"></param>
+        /// <param name="rightTurnArcs"></param>
+        /// <param name="straightTurnArcs"></param>
+        /// <param name="uturnTurnArcs"></param>
+        public static void GetTurnTurningArcs(Arc fromArc,
+            IFeatureClass pFeaClsLink, IFeatureClass pFeaClsArc, IFeatureClass pFeaClsNode,
+            ref List<Arc> leftTurnArcs, ref List<Arc> rightTurnArcs,
+            ref List<Arc> straightTurnArcs, ref List<Arc> uturnTurnArcs)
+        {
+            Node nextNode = PhysicalConnection.getNextNode(pFeaClsLink, pFeaClsArc, pFeaClsNode, fromArc);
+            Arc[] exitArcs = GetNodeExitArcs(pFeaClsLink, pFeaClsArc, nextNode);
+            foreach(Arc temArc in exitArcs)
+            {
+                if (temArc == null)
+                {
+                    continue;
+                }
+                double angle = PhysicalConnection.GetLinksAngle(fromArc.LinkID, temArc.LinkID, nextNode);
+                string turnDir = PhysicalConnection.GetTurningDir(angle);
+                switch (turnDir)
+                {
+                    case LaneConnector.TURNING_LEFT:
+                        {
+                            leftTurnArcs.Add(temArc);
+                            break;
+                        }
+                    case LaneConnector.TURNING_RIGHT:
+                        {
+                            rightTurnArcs.Add(temArc);
+                            break;
+                        }
+                    case LaneConnector.TURNING_STRAIGHT:
+                        {
+                            straightTurnArcs.Add(temArc);
+                            break;
+                        }
+                    case LaneConnector.CHANGE_UTURN:
+                        {
+                            uturnTurnArcs.Add(temArc);
+                            break;
+                        }
+                    default:
+                        break;
+                }
+            }
+        }
+
+        /// <summary>
         /// 获取Arc行驶方向前后Node
         /// </summary>
         /// <param name="arc"></param>arc对象
