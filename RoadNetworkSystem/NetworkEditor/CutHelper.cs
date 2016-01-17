@@ -12,15 +12,16 @@ namespace RoadNetworkSystem.NetworkEditor
 {
     class CutHelper
     {
+        const int tolerance = 10;
         public static double getCutDefualt(double curWidth, double adjWidth, double angel)
         {
             double cut = 0.0;
             double angleInArc=angel * Math.PI / 180;
-            if (angel == 90)
+            if (angel > (90 - tolerance) && angel < (90 + tolerance))
             {
                 cut = adjWidth;
             }
-            else if (angel == 180 || angel == 0)
+            else if ((angel > (180-tolerance)) || angel < tolerance)
             {
                 cut = 0;
             }

@@ -7,7 +7,15 @@ namespace RoadNetworkSystem.DataModel.LaneBasedNetwork
     class Lane
     {
         public const string LaneName = "Lane";
-        public const int leftPosition = 1;
+
+        /// <summary>
+        /// 第一个车道的起始编号
+        /// </summary>
+        public const int LEFT_POSITION = 1;
+
+        /// <summary>
+        /// 最右侧车道编号与Arc.LaneNum的偏移值
+        /// </summary>
         public const int rightPositionOffset = 0;
         public const int LANE_CLOSED = 1;
         public const int LANE_UNCLOSED = 0;

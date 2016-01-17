@@ -121,6 +121,11 @@ namespace RoadNetworkSystem.ElementService.LaneBasedNetwork.NetworkBuilder.LaneL
                 ArcService arcService = new ArcService(_pFeaClsArc, 0);
                 Arc arcCursor = arcService.GetArcEty(arcFeaCursor);
 
+                if (arcCursor.ArcID == 290)
+                {
+                    int test = 0;
+                }
+
                 LinkService linkService = new LinkService(_pFeaClsLink, arcCursor.LinkID);
                 IFeature linkFea = linkService.GetFeature();
                 LinkMaster linkMstr = linkService.GetEntity(linkFea);
@@ -139,12 +144,24 @@ namespace RoadNetworkSystem.ElementService.LaneBasedNetwork.NetworkBuilder.LaneL
                 NodeMaster tNodeMstr = nodeService.GetNodeMasterEty(tNodeFeature);
                 Node tNode = new Node();
                 tNode = tNode.Copy(tNodeMstr);
+                Node preNode = null;
+                Node nextNode = null;
+                if (arcCursor.FlowDir == Link.FLOWDIR_SAME)
+                {
+                    preNode = fNode;
+                    nextNode = tNode;
+                }
+                else
+                {
+                    preNode = tNode;
+                    nextNode = fNode;
+                }
                 
                 PreNodeCutInforService preNodeCutInforService = new PreNodeCutInforService(_pFeaClsLink, _pFeaClsArc);
-                PreNodeCutInfor preNodeCutInfor = preNodeCutInforService.GetPreNodeCutInfor(fNode, arcCursor, link);
+                PreNodeCutInfor preNodeCutInfor = preNodeCutInforService.GetPreNodeCutInfor(preNode, arcCursor, link);
 
                 NextNodeCutInforService nextNodeCutInforService = new NextNodeCutInforService(_pFeaClsLink, _pFeaClsArc);
-                NextNodeCutInfor nextNodeCutInfor = nextNodeCutInforService.GetNextNodeCutInfor(tNode, arcCursor, link);
+                NextNodeCutInfor nextNodeCutInfor = nextNodeCutInforService.GetNextNodeCutInfor(nextNode, arcCursor, link);
 
                 IFeature nextNodeFea;
                 IFeature preNodeFea;
