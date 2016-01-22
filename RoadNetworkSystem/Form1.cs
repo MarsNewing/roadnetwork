@@ -1379,5 +1379,17 @@ namespace RoadNetworkSystem
             road2BasicRoadNetwork.Convert2BasicRoadNetwork();
         }
 
+        private void 数据库ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            IFeatureDataset feaDS = Wsp.get_Datasets(esriDatasetType.esriDTFeatureDataset).Next() as IFeatureDataset;
+            DatabaseDesigner.CreateBASE_FAC_LDT(feaDS);
+            DatabaseDesigner.CreateBASE_FAC_WDT(feaDS);
+            DatabaseDesigner.CreateBASE_FAC_VDT(feaDS);
+
+            DatabaseDesigner.CreateBASE_Float_LDT(Wsp as IWorkspace2);
+            DatabaseDesigner.CreateBASE_Float_VDT(Wsp as IWorkspace2);
+            DatabaseDesigner.CreateBASE_Float_WDT(Wsp as IWorkspace2);
+        }
+
     }
 }

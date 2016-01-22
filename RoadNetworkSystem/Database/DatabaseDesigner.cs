@@ -1,8 +1,10 @@
 ﻿using ESRI.ArcGIS.Geodatabase;
 using ESRI.ArcGIS.Geometry;
+using RoadNetworkSystem.DataModel.Float;
 using RoadNetworkSystem.DataModel.GuideSignNetwork;
 using RoadNetworkSystem.DataModel.LaneBasedNetwork;
 using RoadNetworkSystem.DataModel.RoadSign;
+using RoadNetworkSystem.DataModel.Sensor;
 using RoadNetworkSystem.FileDirectory;
 using RoadNetworkSystem.GIS.GeoDatabase.Dataset;
 using RoadNetworkSystem.NetworkElement.GuideSignNetwork;
@@ -943,6 +945,422 @@ namespace RoadNetworkSystem.NetworkExtraction.LaneBasedNetwork.DatabaseManager
 
         #endregion --------------创建指路标志路网-------------------------
 
+
+        #region -------------------- 检测器 -------------------------------
+        public static IFeatureClass CreateBASE_FAC_LDT(IFeatureDataset feaDS)
+        {
+            if (feaDS == null)
+            {
+                return null;
+            }
+            else
+            {
+                IFeatureWorkspace pFeatWorkspace = feaDS.Workspace as IFeatureWorkspace;
+                if (DatasetHelper.ExistDataset(pFeatWorkspace, BaseFacilityLDT.BaseFacilityLDT_Name))
+                {
+                    return pFeatWorkspace.OpenFeatureClass(BaseFacilityLDT.BaseFacilityLDT_Name);
+                }
+
+                IFields node1Fields = new FieldsClass();
+                IFieldsEdit pFieldsEdit = node1Fields as IFieldsEdit;
+
+                try
+                {
+                    IFieldEdit pFieldEdit = FeatureClassHelper.CreateField(BaseFacilityLDT.LDTID_NAME, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
+                    pFieldsEdit.AddField(pFieldEdit);
+
+                    pFieldEdit = FeatureClassHelper.CreateField(BaseFacilityLDT.CREATE_DATE_NAME, esriFieldType.esriFieldTypeDate, 50, 0, "", true, true);
+                    pFieldsEdit.AddField(pFieldEdit);
+
+                    pFieldEdit = FeatureClassHelper.CreateField(BaseFacilityLDT.DIR_NAME, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
+                    pFieldsEdit.AddField(pFieldEdit);
+
+
+                    pFieldEdit = FeatureClassHelper.CreateField(BaseFacilityLDT.LANEID_NAME, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
+                    pFieldsEdit.AddField(pFieldEdit);
+
+                    pFieldEdit = FeatureClassHelper.CreateField(BaseFacilityLDT.LINKID_NAME, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
+                    pFieldsEdit.AddField(pFieldEdit);
+
+                    pFieldEdit = FeatureClassHelper.CreateField(BaseFacilityLDT.MAINTAIN_DATE_NAME, esriFieldType.esriFieldTypeDate, 50, 0, "", true, true);
+                    pFieldsEdit.AddField(pFieldEdit);
+
+                    pFieldEdit = FeatureClassHelper.CreateField(BaseFacilityLDT.OFFSET_NAME, esriFieldType.esriFieldTypeDouble, 50, 0, "", true, true);
+                    pFieldsEdit.AddField(pFieldEdit);
+
+                    pFieldEdit = FeatureClassHelper.CreateField(BaseFacilityLDT.POS_NAME, esriFieldType.esriFieldTypeDouble, 50, 0, "", true, true);
+                    pFieldsEdit.AddField(pFieldEdit);
+
+                    pFieldEdit = FeatureClassHelper.CreateField(BaseFacilityLDT.STATUS_NAME, esriFieldType.esriFieldTypeString, 50, 0, "", true, true);
+                    pFieldsEdit.AddField(pFieldEdit);
+
+                    IFeatureClass pNodeClass = FeatureClassHelper.CreateFeatureClass(feaDS, BaseFacilityLDT.BaseFacilityLDT_Name, esriGeometryType.esriGeometryPoint, node1Fields, BaseFacilityLDT.BaseFacilityLDT_Name);
+                    return pNodeClass;
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.ToString());
+                    return null;
+                }
+            }
+
+        }
+        public static ITable CreateBASE_Float_LDT(IWorkspace2 workspace)
+        {
+            if (workspace == null)
+            {
+                return null;
+            }
+            else
+            {
+                IFeatureWorkspace pFeaWs = workspace as IFeatureWorkspace;
+
+                if (DatasetHelper.ExistDataset(pFeaWs, BaseFloatLDT.BaseFloatLDT_NAME))
+                {
+                    return pFeaWs.OpenTable(BaseFacilityLDT.BaseFacilityLDT_Name);
+                }
+
+                IFields fields = new FieldsClass();
+                IFieldsEdit pFieldsEdit = fields as IFieldsEdit;
+
+                IFieldEdit pFieldEdit = FeatureClassHelper.CreateField(BaseFloatLDT.DIR_NAME, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
+                pFieldsEdit.AddField(pFieldEdit);
+
+                pFieldEdit = FeatureClassHelper.CreateField(BaseFloatLDT.LANEID_NAME, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
+                pFieldsEdit.AddField(pFieldEdit);
+
+                pFieldEdit = FeatureClassHelper.CreateField(BaseFloatLDT.LDTID_NAME, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
+                pFieldsEdit.AddField(pFieldEdit);
+
+
+                pFieldEdit = FeatureClassHelper.CreateField(BaseFloatLDT.LINKID_NAME, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
+                pFieldsEdit.AddField(pFieldEdit);
+
+                pFieldEdit = FeatureClassHelper.CreateField(BaseFloatLDT.VELOCITY_NAME, esriFieldType.esriFieldTypeDouble, 50, 0, "", true, true);
+                pFieldsEdit.AddField(pFieldEdit);
+
+                pFieldEdit = FeatureClassHelper.CreateField(BaseFloatLDT.DENSITY_NAME, esriFieldType.esriFieldTypeDouble, 50, 0, "", true, true);
+                pFieldsEdit.AddField(pFieldEdit);
+
+
+                ITable pLaneTable = DataTableHelper.CreateTable(workspace, BaseFloatLDT.BaseFloatLDT_NAME, fields);
+                return pLaneTable;
+            }
+        }
+
+        public static IFeatureClass CreateBASE_FAC_VDT(IFeatureDataset feaDS)
+        {
+            if (feaDS == null)
+            {
+                return null;
+            }
+            else
+            {
+                IFeatureWorkspace pFeatWorkspace = feaDS.Workspace as IFeatureWorkspace;
+                if (DatasetHelper.ExistDataset(pFeatWorkspace, BaseFacilityVDT.BaseFacilityVDT_NAME))
+                {
+                    return pFeatWorkspace.OpenFeatureClass(BaseFacilityVDT.BaseFacilityVDT_NAME);
+                }
+
+                IFields node1Fields = new FieldsClass();
+                IFieldsEdit pFieldsEdit = node1Fields as IFieldsEdit;
+
+                try
+                {
+                    IFieldEdit pFieldEdit = FeatureClassHelper.CreateField(BaseFacilityVDT.VDTID_NAME, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
+                    pFieldsEdit.AddField(pFieldEdit);
+
+                    pFieldEdit = FeatureClassHelper.CreateField(BaseFacilityVDT.CREATE_DATE_NAME, esriFieldType.esriFieldTypeDate, 50, 0, "", true, true);
+                    pFieldsEdit.AddField(pFieldEdit);
+
+                    pFieldEdit = FeatureClassHelper.CreateField(BaseFacilityVDT.DIR_NAME, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
+                    pFieldsEdit.AddField(pFieldEdit);
+
+
+
+                    pFieldEdit = FeatureClassHelper.CreateField(BaseFacilityVDT.LINKID_NAME, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
+                    pFieldsEdit.AddField(pFieldEdit);
+
+                    pFieldEdit = FeatureClassHelper.CreateField(BaseFacilityVDT.MAINTAIN_DATE_NAME, esriFieldType.esriFieldTypeDate, 50, 0, "", true, true);
+                    pFieldsEdit.AddField(pFieldEdit);
+
+                    pFieldEdit = FeatureClassHelper.CreateField(BaseFacilityVDT.OFFSET_NAME, esriFieldType.esriFieldTypeDouble, 50, 0, "", true, true);
+                    pFieldsEdit.AddField(pFieldEdit);
+
+                    pFieldEdit = FeatureClassHelper.CreateField(BaseFacilityVDT.POS_NAME, esriFieldType.esriFieldTypeDouble, 50, 0, "", true, true);
+                    pFieldsEdit.AddField(pFieldEdit);
+
+                    pFieldEdit = FeatureClassHelper.CreateField(BaseFacilityVDT.STATUS_NAME, esriFieldType.esriFieldTypeString, 50, 0, "", true, true);
+                    pFieldsEdit.AddField(pFieldEdit);
+
+                    pFieldEdit = FeatureClassHelper.CreateField(BaseFacilityVDT.LANE1_NAME, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
+                    pFieldsEdit.AddField(pFieldEdit);
+
+                    pFieldEdit = FeatureClassHelper.CreateField(BaseFacilityVDT.LANE2_NAME, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
+                    pFieldsEdit.AddField(pFieldEdit);
+
+                    pFieldEdit = FeatureClassHelper.CreateField(BaseFacilityVDT.LANE3_NAME, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
+                    pFieldsEdit.AddField(pFieldEdit);
+
+                    pFieldEdit = FeatureClassHelper.CreateField(BaseFacilityVDT.LANE4_NAME, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
+                    pFieldsEdit.AddField(pFieldEdit);
+
+                    pFieldEdit = FeatureClassHelper.CreateField(BaseFacilityVDT.LANE5_NAME, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
+                    pFieldsEdit.AddField(pFieldEdit);
+
+                    pFieldEdit = FeatureClassHelper.CreateField(BaseFacilityVDT.LANE6_NAME, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
+                    pFieldsEdit.AddField(pFieldEdit);
+
+                    pFieldEdit = FeatureClassHelper.CreateField(BaseFacilityVDT.LANE7_NAME, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
+                    pFieldsEdit.AddField(pFieldEdit);
+
+                    pFieldEdit = FeatureClassHelper.CreateField(BaseFacilityVDT.LANE8_NAME, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
+                    pFieldsEdit.AddField(pFieldEdit);
+
+                    pFieldEdit = FeatureClassHelper.CreateField(BaseFacilityVDT.VDT_TYPE_NAME, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
+                    pFieldsEdit.AddField(pFieldEdit);
+
+                    IFeatureClass pNodeClass = FeatureClassHelper.CreateFeatureClass(feaDS, BaseFacilityVDT.BaseFacilityVDT_NAME,
+                        esriGeometryType.esriGeometryPoint, node1Fields, BaseFacilityVDT.BaseFacilityVDT_NAME);
+                    return pNodeClass;
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.ToString());
+                    return null;
+                }
+            }
+
+        }
+
+        public static ITable CreateBASE_Float_VDT(IWorkspace2 workspace)
+        {
+            if (workspace == null)
+            {
+                return null;
+            }
+            else
+            {
+                IFeatureWorkspace pFeaWs = workspace as IFeatureWorkspace;
+
+                if (DatasetHelper.ExistDataset(pFeaWs, BaseFloatVDT.BaseFloatVDT_NAME))
+                {
+                    return pFeaWs.OpenTable(BaseFloatVDT.BaseFloatVDT_NAME);
+                }
+
+                IFields fields = new FieldsClass();
+                IFieldsEdit pFieldsEdit = fields as IFieldsEdit;
+
+                IFieldEdit pFieldEdit = FeatureClassHelper.CreateField(BaseFloatVDT.DIR_NAME, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
+                pFieldsEdit.AddField(pFieldEdit);
+
+                pFieldEdit = FeatureClassHelper.CreateField(BaseFloatVDT.LANE1_QUANTITY_NAME, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
+                pFieldsEdit.AddField(pFieldEdit);
+
+                pFieldEdit = FeatureClassHelper.CreateField(BaseFloatVDT.LANE2_QUANTITY_NAME, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
+                pFieldsEdit.AddField(pFieldEdit);
+
+
+                pFieldEdit = FeatureClassHelper.CreateField(BaseFloatVDT.LANE3_QUANTITY_NAME, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
+                pFieldsEdit.AddField(pFieldEdit);
+
+
+                pFieldEdit = FeatureClassHelper.CreateField(BaseFloatVDT.LANE4_QUANTITY_NAME, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
+                pFieldsEdit.AddField(pFieldEdit);
+
+                pFieldEdit = FeatureClassHelper.CreateField(BaseFloatVDT.LANE5_QUANTITY_NAME, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
+                pFieldsEdit.AddField(pFieldEdit);
+
+                pFieldEdit = FeatureClassHelper.CreateField(BaseFloatVDT.LANE6_QUANTITY_NAME, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
+
+                pFieldEdit = FeatureClassHelper.CreateField(BaseFloatVDT.LANE7_QUANTITY_NAME, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
+                pFieldsEdit.AddField(pFieldEdit);
+
+
+                pFieldEdit = FeatureClassHelper.CreateField(BaseFloatVDT.LANE8_QUANTITY_NAME, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
+                pFieldsEdit.AddField(pFieldEdit);
+                pFieldsEdit.AddField(pFieldEdit);
+
+                pFieldEdit = FeatureClassHelper.CreateField(BaseFloatVDT.LANEID_NAME, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
+                pFieldsEdit.AddField(pFieldEdit);
+
+                pFieldEdit = FeatureClassHelper.CreateField(BaseFloatVDT.LINKID_NAME, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
+                pFieldsEdit.AddField(pFieldEdit);
+
+
+                pFieldEdit = FeatureClassHelper.CreateField(BaseFloatVDT.LONG_VEH_NAME, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
+                pFieldsEdit.AddField(pFieldEdit);
+
+                pFieldEdit = FeatureClassHelper.CreateField(BaseFloatVDT.TTIME_NAME, esriFieldType.esriFieldTypeDate, 50, 0, "", true, true);
+                pFieldsEdit.AddField(pFieldEdit);
+
+                pFieldEdit = FeatureClassHelper.CreateField(BaseFloatVDT.FTIME_NAME, esriFieldType.esriFieldTypeDate, 50, 0, "", true, true);
+                pFieldsEdit.AddField(pFieldEdit);
+
+
+                pFieldEdit = FeatureClassHelper.CreateField(BaseFloatVDT.VDT_INDEX_NAME, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
+                pFieldsEdit.AddField(pFieldEdit);
+
+
+                ITable pLaneTable = DataTableHelper.CreateTable(workspace, BaseFloatVDT.BaseFloatVDT_NAME, fields);
+                return pLaneTable;
+            }
+        }
+
+        public static IFeatureClass CreateBASE_FAC_WDT(IFeatureDataset feaDS)
+        {
+            if (feaDS == null)
+            {
+                return null;
+            }
+            else
+            {
+                IFeatureWorkspace pFeatWorkspace = feaDS.Workspace as IFeatureWorkspace;
+                if (DatasetHelper.ExistDataset(pFeatWorkspace, BaseFacilityWDT.BaseFacilityWDT_NAME))
+                {
+                    return pFeatWorkspace.OpenFeatureClass(BaseFacilityWDT.BaseFacilityWDT_NAME);
+                }
+
+                IFields node1Fields = new FieldsClass();
+                IFieldsEdit pFieldsEdit = node1Fields as IFieldsEdit;
+
+                try
+                {
+                    IFieldEdit pFieldEdit = FeatureClassHelper.CreateField(BaseFacilityWDT.WDTID_NAME, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
+                    pFieldsEdit.AddField(pFieldEdit);
+
+                    pFieldEdit = FeatureClassHelper.CreateField(BaseFacilityWDT.CREATE_DATE_NAME, esriFieldType.esriFieldTypeDate, 50, 0, "", true, true);
+                    pFieldsEdit.AddField(pFieldEdit);
+
+                    pFieldEdit = FeatureClassHelper.CreateField(BaseFacilityWDT.DIR_NAME, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
+                    pFieldsEdit.AddField(pFieldEdit);
+
+                    pFieldEdit = FeatureClassHelper.CreateField(BaseFacilityWDT.LINKID_NAME, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
+                    pFieldsEdit.AddField(pFieldEdit);
+
+                    pFieldEdit = FeatureClassHelper.CreateField(BaseFacilityWDT.MAINTAIN_DATE_NAME, esriFieldType.esriFieldTypeDate, 50, 0, "", true, true);
+                    pFieldsEdit.AddField(pFieldEdit);
+
+                    pFieldEdit = FeatureClassHelper.CreateField(BaseFacilityWDT.OFFSET_NAME, esriFieldType.esriFieldTypeDouble, 50, 0, "", true, true);
+                    pFieldsEdit.AddField(pFieldEdit);
+
+                    pFieldEdit = FeatureClassHelper.CreateField(BaseFacilityWDT.POS_NAME, esriFieldType.esriFieldTypeDouble, 50, 0, "", true, true);
+                    pFieldsEdit.AddField(pFieldEdit);
+
+                    pFieldEdit = FeatureClassHelper.CreateField(BaseFacilityWDT.STATUS_NAME, esriFieldType.esriFieldTypeString, 50, 0, "", true, true);
+                    pFieldsEdit.AddField(pFieldEdit);
+
+                    pFieldEdit = FeatureClassHelper.CreateField(BaseFacilityWDT.LANE1_NAME, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
+                    pFieldsEdit.AddField(pFieldEdit);
+
+                    pFieldEdit = FeatureClassHelper.CreateField(BaseFacilityWDT.LANE2_NAME, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
+                    pFieldsEdit.AddField(pFieldEdit);
+
+                    pFieldEdit = FeatureClassHelper.CreateField(BaseFacilityWDT.LANE3_NAME, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
+                    pFieldsEdit.AddField(pFieldEdit);
+
+                    pFieldEdit = FeatureClassHelper.CreateField(BaseFacilityWDT.LANE4_NAME, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
+                    pFieldsEdit.AddField(pFieldEdit);
+
+                    pFieldEdit = FeatureClassHelper.CreateField(BaseFacilityWDT.LANE5_NAME, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
+                    pFieldsEdit.AddField(pFieldEdit);
+
+                    pFieldEdit = FeatureClassHelper.CreateField(BaseFacilityWDT.LANE6_NAME, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
+                    pFieldsEdit.AddField(pFieldEdit);
+
+                    pFieldEdit = FeatureClassHelper.CreateField(BaseFacilityWDT.LANE7_NAME, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
+                    pFieldsEdit.AddField(pFieldEdit);
+
+                    pFieldEdit = FeatureClassHelper.CreateField(BaseFacilityWDT.LANE8_NAME, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
+                    pFieldsEdit.AddField(pFieldEdit);
+
+
+                    IFeatureClass pNodeClass = FeatureClassHelper.CreateFeatureClass(feaDS, BaseFacilityWDT.BaseFacilityWDT_NAME,
+                        esriGeometryType.esriGeometryPoint, node1Fields, BaseFacilityWDT.WDTID_NAME);
+                    return pNodeClass;
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.ToString());
+                    return null;
+                }
+            }
+
+        }
+        public static ITable CreateBASE_Float_WDT(IWorkspace2 workspace)
+        {
+            if (workspace == null)
+            {
+                return null;
+            }
+            else
+            {
+                IFeatureWorkspace pFeaWs = workspace as IFeatureWorkspace;
+
+                if (DatasetHelper.ExistDataset(pFeaWs, BaseFloatWDT.BaseFloatWDT_NAME))
+                {
+                    return pFeaWs.OpenTable(BaseFloatWDT.BaseFloatWDT_NAME);
+                }
+
+                IFields fields = new FieldsClass();
+                IFieldsEdit pFieldsEdit = fields as IFieldsEdit;
+
+                IFieldEdit pFieldEdit = FeatureClassHelper.CreateField(BaseFloatWDT.DIR_NAME, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
+                pFieldsEdit.AddField(pFieldEdit);
+
+                pFieldEdit = FeatureClassHelper.CreateField(BaseFloatWDT.LANE1_QUANTITY_NAME, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
+                pFieldsEdit.AddField(pFieldEdit);
+
+                pFieldEdit = FeatureClassHelper.CreateField(BaseFloatWDT.LANE2_QUANTITY_NAME, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
+                pFieldsEdit.AddField(pFieldEdit);
+
+                pFieldEdit = FeatureClassHelper.CreateField(BaseFloatWDT.LANE3_QUANTITY_NAME, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
+                pFieldsEdit.AddField(pFieldEdit);
+
+
+                pFieldEdit = FeatureClassHelper.CreateField(BaseFloatWDT.LANE4_QUANTITY_NAME, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
+                pFieldsEdit.AddField(pFieldEdit);
+
+                pFieldEdit = FeatureClassHelper.CreateField(BaseFloatWDT.LANE5_QUANTITY_NAME, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
+                pFieldsEdit.AddField(pFieldEdit);
+
+                pFieldEdit = FeatureClassHelper.CreateField(BaseFloatWDT.LANE6_QUANTITY_NAME, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
+
+                pFieldEdit = FeatureClassHelper.CreateField(BaseFloatWDT.LANE7_QUANTITY_NAME, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
+                pFieldsEdit.AddField(pFieldEdit);
+
+
+                pFieldEdit = FeatureClassHelper.CreateField(BaseFloatWDT.LANE8_QUANTITY_NAME, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
+                pFieldsEdit.AddField(pFieldEdit);
+                pFieldsEdit.AddField(pFieldEdit);
+
+                pFieldEdit = FeatureClassHelper.CreateField(BaseFloatWDT.LANEID_NAME, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
+                pFieldsEdit.AddField(pFieldEdit);
+
+                pFieldEdit = FeatureClassHelper.CreateField(BaseFloatWDT.LINKID_NAME, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
+                pFieldsEdit.AddField(pFieldEdit);
+
+
+                pFieldEdit = FeatureClassHelper.CreateField(BaseFloatWDT.LONG_VEH_NAME, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
+                pFieldsEdit.AddField(pFieldEdit);
+
+                pFieldEdit = FeatureClassHelper.CreateField(BaseFloatWDT.TTIME_NAME, esriFieldType.esriFieldTypeDate, 50, 0, "", true, true);
+                pFieldsEdit.AddField(pFieldEdit);
+
+                pFieldEdit = FeatureClassHelper.CreateField(BaseFloatWDT.FTIME_NAME, esriFieldType.esriFieldTypeDate, 50, 0, "", true, true);
+                pFieldsEdit.AddField(pFieldEdit);
+
+
+                pFieldEdit = FeatureClassHelper.CreateField(BaseFloatWDT.VDT_INDEX_NAME, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
+                pFieldsEdit.AddField(pFieldEdit);
+
+
+                ITable pLaneTable = DataTableHelper.CreateTable(workspace, BaseFloatWDT.BaseFloatWDT_NAME, fields);
+                return pLaneTable;
+            }
+        }
+
+        #endregion -------------------- 检测器 -------------------------------
 
     }
 }

@@ -78,6 +78,7 @@ namespace RoadNetworkSystem.ElementService.LaneBasedNetwork.LinkLayer
                 sql = "Select * from " + LaneNumChange.LaneNumChangeName +
                 " where " + LaneNumChange.FromBreakPointID_Name + " = " + toBreakPointId +
                 " and  " + LaneNumChange.ToBreakPointID_Name + " = " + fromBreakPointId +
+                " and  " + LaneNumChange.FlowDir_Name + " = " + oppositionDir +
                 " and  " + LaneNumChange.DoneFlag_Name + " = " + LaneNumChange.DONEFLAG_UNDO;
             }
             else if (fromBreakPointId > 0)
@@ -85,6 +86,7 @@ namespace RoadNetworkSystem.ElementService.LaneBasedNetwork.LinkLayer
                 sql = "Select * from " + LaneNumChange.LaneNumChangeName +
                 " where " + LaneNumChange.RoadID_Name + " = " + roadId +
                 " and  " + LaneNumChange.ToBreakPointID_Name + " = " + fromBreakPointId +
+                " and  " + LaneNumChange.FlowDir_Name + " = " + oppositionDir +
                 " and  " + LaneNumChange.DoneFlag_Name + " = " + LaneNumChange.DONEFLAG_UNDO;
             }
             else if (toBreakPointId > 0)
@@ -92,6 +94,7 @@ namespace RoadNetworkSystem.ElementService.LaneBasedNetwork.LinkLayer
                 sql = "Select * from " + LaneNumChange.LaneNumChangeName +
                 " where " + LaneNumChange.FromBreakPointID_Name + " = " + toBreakPointId +
                 " and  " + LaneNumChange.RoadID_Name + " = " + roadId +
+                " and  " + LaneNumChange.FlowDir_Name + " = " + oppositionDir +
                 " and  " + LaneNumChange.DoneFlag_Name + " = " + LaneNumChange.DONEFLAG_UNDO;
             }
             else
@@ -148,7 +151,8 @@ namespace RoadNetworkSystem.ElementService.LaneBasedNetwork.LinkLayer
 
             IPoint toPointPoint = new PointClass();
             BreakPointService breakPointService = new BreakPointService(pFeaClsBreakPoint, 0);
-            breakPointService.getBreakPointPoints(roadLine, currentLaneNumChange.FromBreakPointID, currentLaneNumChange.ToBreakPointID, currentLaneNumChange.FlowDir == Link.FLOWDIR_SAME ? true : false,
+            breakPointService.getBreakPointPoints(roadLine, currentLaneNumChange.FromBreakPointID, currentLaneNumChange.ToBreakPointID, 
+                currentLaneNumChange.FlowDir == Link.FLOWDIR_SAME ? true : false,
                 ref fromPointPoint, ref toPointPoint);
 
             double vector_x_LaneNumChange = toPointPoint.X - fromPointPoint.X;
