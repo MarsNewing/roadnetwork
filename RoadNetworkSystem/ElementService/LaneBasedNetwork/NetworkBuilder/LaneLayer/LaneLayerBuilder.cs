@@ -286,12 +286,12 @@ namespace RoadNetworkSystem.NetworkExtraction.LaneBasedNetwork.LaneLayer
             NextNodeCutInfor nextNodeCutInfor)
         {
 
-            if (arcEty.ArcID == 611)
+            if (arcEty.ArcID == 1071)
             {
                 int test = 0;
             }
 
-            if (arcEty.ArcID == 30)
+            if (arcEty.ArcID == 1061)
             {
                 int test = 0;
             }

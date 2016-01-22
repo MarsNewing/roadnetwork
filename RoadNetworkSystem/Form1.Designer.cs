@@ -78,6 +78,7 @@ namespace RoadNetworkSystem
             this.panel_Top = new System.Windows.Forms.Panel();
             this.axToolbarControl1 = new AxESRI.ArcGIS.Controls.AxToolbarControl();
             this.axLicenseControl1 = new AxESRI.ArcGIS.Controls.AxLicenseControl();
+            this.数据库ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -115,11 +116,11 @@ namespace RoadNetworkSystem
             this.路网编辑ToolStripMenuItem,
             this.编辑工具ToolStripMenuItem,
             this.高速公路ToolStripMenuItem,
-            this.规则ToolStripMenuItem});
+            this.规则ToolStripMenuItem,
+            this.数据库ToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Padding = new System.Windows.Forms.Padding(9, 3, 0, 3);
-            this.menuStrip1.Size = new System.Drawing.Size(1530, 34);
+            this.menuStrip1.Size = new System.Drawing.Size(1020, 25);
             this.menuStrip1.TabIndex = 1;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -131,7 +132,7 @@ namespace RoadNetworkSystem
             this.保存地图ToolStripMenuItem,
             this.退出ToolStripMenuItem});
             this.文件ToolStripMenuItem.Name = "文件ToolStripMenuItem";
-            this.文件ToolStripMenuItem.Size = new System.Drawing.Size(58, 28);
+            this.文件ToolStripMenuItem.Size = new System.Drawing.Size(44, 21);
             this.文件ToolStripMenuItem.Text = "文件";
             // 
             // 打开ToolStripMenuItem
@@ -140,20 +141,20 @@ namespace RoadNetworkSystem
             this.打开地图ToolStripMenuItem,
             this.打开mdbToolStripMenuItem});
             this.打开ToolStripMenuItem.Name = "打开ToolStripMenuItem";
-            this.打开ToolStripMenuItem.Size = new System.Drawing.Size(152, 28);
+            this.打开ToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
             this.打开ToolStripMenuItem.Text = "打开";
             // 
             // 打开地图ToolStripMenuItem
             // 
             this.打开地图ToolStripMenuItem.Name = "打开地图ToolStripMenuItem";
-            this.打开地图ToolStripMenuItem.Size = new System.Drawing.Size(157, 28);
+            this.打开地图ToolStripMenuItem.Size = new System.Drawing.Size(127, 22);
             this.打开地图ToolStripMenuItem.Text = "打开mxd";
             this.打开地图ToolStripMenuItem.Click += new System.EventHandler(this.打开地图ToolStripMenuItem_Click);
             // 
             // 打开mdbToolStripMenuItem
             // 
             this.打开mdbToolStripMenuItem.Name = "打开mdbToolStripMenuItem";
-            this.打开mdbToolStripMenuItem.Size = new System.Drawing.Size(157, 28);
+            this.打开mdbToolStripMenuItem.Size = new System.Drawing.Size(127, 22);
             this.打开mdbToolStripMenuItem.Text = "打开mdb";
             this.打开mdbToolStripMenuItem.Click += new System.EventHandler(this.打开mdbToolStripMenuItem_Click);
             // 
@@ -165,48 +166,48 @@ namespace RoadNetworkSystem
             this.仿真路网数据库ToolStripMenuItem,
             this.指路标志路网数据库ToolStripMenuItem});
             this.新建ToolStripMenuItem.Name = "新建ToolStripMenuItem";
-            this.新建ToolStripMenuItem.Size = new System.Drawing.Size(152, 28);
+            this.新建ToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
             this.新建ToolStripMenuItem.Text = "新建";
             // 
             // 空数据库ToolStripMenuItem
             // 
             this.空数据库ToolStripMenuItem.Name = "空数据库ToolStripMenuItem";
-            this.空数据库ToolStripMenuItem.Size = new System.Drawing.Size(242, 28);
+            this.空数据库ToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
             this.空数据库ToolStripMenuItem.Text = "空数据库";
             this.空数据库ToolStripMenuItem.Click += new System.EventHandler(this.空数据库ToolStripMenuItem_Click);
             // 
             // 基础路网数据库ToolStripMenuItem
             // 
             this.基础路网数据库ToolStripMenuItem.Name = "基础路网数据库ToolStripMenuItem";
-            this.基础路网数据库ToolStripMenuItem.Size = new System.Drawing.Size(242, 28);
+            this.基础路网数据库ToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
             this.基础路网数据库ToolStripMenuItem.Text = "基础路网数据库";
             this.基础路网数据库ToolStripMenuItem.Click += new System.EventHandler(this.基础路网数据库ToolStripMenuItem_Click);
             // 
             // 仿真路网数据库ToolStripMenuItem
             // 
             this.仿真路网数据库ToolStripMenuItem.Name = "仿真路网数据库ToolStripMenuItem";
-            this.仿真路网数据库ToolStripMenuItem.Size = new System.Drawing.Size(242, 28);
+            this.仿真路网数据库ToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
             this.仿真路网数据库ToolStripMenuItem.Text = "仿真路网数据库";
             this.仿真路网数据库ToolStripMenuItem.Click += new System.EventHandler(this.仿真路网数据库ToolStripMenuItem_Click);
             // 
             // 指路标志路网数据库ToolStripMenuItem
             // 
             this.指路标志路网数据库ToolStripMenuItem.Name = "指路标志路网数据库ToolStripMenuItem";
-            this.指路标志路网数据库ToolStripMenuItem.Size = new System.Drawing.Size(242, 28);
+            this.指路标志路网数据库ToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
             this.指路标志路网数据库ToolStripMenuItem.Text = "指路标志路网数据库";
             this.指路标志路网数据库ToolStripMenuItem.Click += new System.EventHandler(this.指路标志路网数据库ToolStripMenuItem_Click);
             // 
             // 保存地图ToolStripMenuItem
             // 
             this.保存地图ToolStripMenuItem.Name = "保存地图ToolStripMenuItem";
-            this.保存地图ToolStripMenuItem.Size = new System.Drawing.Size(152, 28);
+            this.保存地图ToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
             this.保存地图ToolStripMenuItem.Text = "保存地图";
             this.保存地图ToolStripMenuItem.Click += new System.EventHandler(this.保存地图ToolStripMenuItem_Click);
             // 
             // 退出ToolStripMenuItem
             // 
             this.退出ToolStripMenuItem.Name = "退出ToolStripMenuItem";
-            this.退出ToolStripMenuItem.Size = new System.Drawing.Size(152, 28);
+            this.退出ToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
             this.退出ToolStripMenuItem.Text = "退出";
             this.退出ToolStripMenuItem.Click += new System.EventHandler(this.退出ToolStripMenuItem_Click);
             // 
@@ -215,13 +216,13 @@ namespace RoadNetworkSystem
             this.路网提取ToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.中心线到路段路网ToolStripMenuItem});
             this.路网提取ToolStripMenuItem.Name = "路网提取ToolStripMenuItem";
-            this.路网提取ToolStripMenuItem.Size = new System.Drawing.Size(94, 28);
+            this.路网提取ToolStripMenuItem.Size = new System.Drawing.Size(68, 21);
             this.路网提取ToolStripMenuItem.Text = "路网提取";
             // 
             // 中心线到路段路网ToolStripMenuItem
             // 
             this.中心线到路段路网ToolStripMenuItem.Name = "中心线到路段路网ToolStripMenuItem";
-            this.中心线到路段路网ToolStripMenuItem.Size = new System.Drawing.Size(224, 28);
+            this.中心线到路段路网ToolStripMenuItem.Size = new System.Drawing.Size(172, 22);
             this.中心线到路段路网ToolStripMenuItem.Text = "中心线到路段路网";
             this.中心线到路段路网ToolStripMenuItem.Click += new System.EventHandler(this.中心线到路段路网ToolStripMenuItem_Click);
             // 
@@ -232,19 +233,19 @@ namespace RoadNetworkSystem
             this.paramicsToolStripMenuItem,
             this.基础路网ToolStripMenuItem});
             this.路网转换ToolStripMenuItem.Name = "路网转换ToolStripMenuItem";
-            this.路网转换ToolStripMenuItem.Size = new System.Drawing.Size(94, 28);
+            this.路网转换ToolStripMenuItem.Size = new System.Drawing.Size(68, 21);
             this.路网转换ToolStripMenuItem.Text = "路网转换";
             // 
             // vissimToolStripMenuItem
             // 
             this.vissimToolStripMenuItem.Name = "vissimToolStripMenuItem";
-            this.vissimToolStripMenuItem.Size = new System.Drawing.Size(157, 28);
+            this.vissimToolStripMenuItem.Size = new System.Drawing.Size(128, 22);
             this.vissimToolStripMenuItem.Text = "Vissim";
             // 
             // paramicsToolStripMenuItem
             // 
             this.paramicsToolStripMenuItem.Name = "paramicsToolStripMenuItem";
-            this.paramicsToolStripMenuItem.Size = new System.Drawing.Size(157, 28);
+            this.paramicsToolStripMenuItem.Size = new System.Drawing.Size(128, 22);
             this.paramicsToolStripMenuItem.Text = "Paramics";
             // 
             // 基础路网ToolStripMenuItem
@@ -254,27 +255,27 @@ namespace RoadNetworkSystem
             this.paramicsToolStripMenuItem1,
             this.transModelerToolStripMenuItem});
             this.基础路网ToolStripMenuItem.Name = "基础路网ToolStripMenuItem";
-            this.基础路网ToolStripMenuItem.Size = new System.Drawing.Size(157, 28);
+            this.基础路网ToolStripMenuItem.Size = new System.Drawing.Size(128, 22);
             this.基础路网ToolStripMenuItem.Text = "基础路网";
             // 
             // vissimToolStripMenuItem1
             // 
             this.vissimToolStripMenuItem1.Name = "vissimToolStripMenuItem1";
-            this.vissimToolStripMenuItem1.Size = new System.Drawing.Size(199, 28);
+            this.vissimToolStripMenuItem1.Size = new System.Drawing.Size(158, 22);
             this.vissimToolStripMenuItem1.Text = "Vissim";
             this.vissimToolStripMenuItem1.Click += new System.EventHandler(this.vissimToolStripMenuItem1_Click);
             // 
             // paramicsToolStripMenuItem1
             // 
             this.paramicsToolStripMenuItem1.Name = "paramicsToolStripMenuItem1";
-            this.paramicsToolStripMenuItem1.Size = new System.Drawing.Size(199, 28);
+            this.paramicsToolStripMenuItem1.Size = new System.Drawing.Size(158, 22);
             this.paramicsToolStripMenuItem1.Text = "Paramics";
             this.paramicsToolStripMenuItem1.Click += new System.EventHandler(this.paramicsToolStripMenuItem1_Click);
             // 
             // transModelerToolStripMenuItem
             // 
             this.transModelerToolStripMenuItem.Name = "transModelerToolStripMenuItem";
-            this.transModelerToolStripMenuItem.Size = new System.Drawing.Size(199, 28);
+            this.transModelerToolStripMenuItem.Size = new System.Drawing.Size(158, 22);
             this.transModelerToolStripMenuItem.Text = "TransModeler";
             this.transModelerToolStripMenuItem.Click += new System.EventHandler(this.transModelerToolStripMenuItem_Click);
             // 
@@ -284,27 +285,27 @@ namespace RoadNetworkSystem
             this.仿真路网构建ToolStripMenuItem,
             this.中心线构建ToolStripMenuItem});
             this.路网编辑ToolStripMenuItem.Name = "路网编辑ToolStripMenuItem";
-            this.路网编辑ToolStripMenuItem.Size = new System.Drawing.Size(94, 28);
+            this.路网编辑ToolStripMenuItem.Size = new System.Drawing.Size(68, 21);
             this.路网编辑ToolStripMenuItem.Text = "路网编辑";
             // 
             // 仿真路网构建ToolStripMenuItem
             // 
             this.仿真路网构建ToolStripMenuItem.Name = "仿真路网构建ToolStripMenuItem";
-            this.仿真路网构建ToolStripMenuItem.Size = new System.Drawing.Size(242, 28);
+            this.仿真路网构建ToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
             this.仿真路网构建ToolStripMenuItem.Text = "仿真路网构建";
             this.仿真路网构建ToolStripMenuItem.Click += new System.EventHandler(this.仿真路网构建ToolStripMenuItem_Click);
             // 
             // 中心线构建ToolStripMenuItem
             // 
             this.中心线构建ToolStripMenuItem.Name = "中心线构建ToolStripMenuItem";
-            this.中心线构建ToolStripMenuItem.Size = new System.Drawing.Size(242, 28);
+            this.中心线构建ToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
             this.中心线构建ToolStripMenuItem.Text = "中心线构建仿真路网";
             this.中心线构建ToolStripMenuItem.Click += new System.EventHandler(this.中心线构建ToolStripMenuItem_Click);
             // 
             // 编辑工具ToolStripMenuItem
             // 
             this.编辑工具ToolStripMenuItem.Name = "编辑工具ToolStripMenuItem";
-            this.编辑工具ToolStripMenuItem.Size = new System.Drawing.Size(94, 28);
+            this.编辑工具ToolStripMenuItem.Size = new System.Drawing.Size(68, 21);
             this.编辑工具ToolStripMenuItem.Text = "编辑工具";
             this.编辑工具ToolStripMenuItem.Click += new System.EventHandler(this.编辑工具ToolStripMenuItem_Click);
             // 
@@ -315,51 +316,49 @@ namespace RoadNetworkSystem
             this.新建车道ToolStripMenuItem,
             this.车道连接器ToolStripMenuItem});
             this.高速公路ToolStripMenuItem.Name = "高速公路ToolStripMenuItem";
-            this.高速公路ToolStripMenuItem.Size = new System.Drawing.Size(94, 28);
+            this.高速公路ToolStripMenuItem.Size = new System.Drawing.Size(68, 21);
             this.高速公路ToolStripMenuItem.Text = "高速公路";
             // 
             // 动态分段ToolStripMenuItem
             // 
             this.动态分段ToolStripMenuItem.Name = "动态分段ToolStripMenuItem";
-            this.动态分段ToolStripMenuItem.Size = new System.Drawing.Size(170, 28);
+            this.动态分段ToolStripMenuItem.Size = new System.Drawing.Size(136, 22);
             this.动态分段ToolStripMenuItem.Text = "动态分段";
             this.动态分段ToolStripMenuItem.Click += new System.EventHandler(this.动态分段ToolStripMenuItem_Click);
             // 
             // 新建车道ToolStripMenuItem
             // 
             this.新建车道ToolStripMenuItem.Name = "新建车道ToolStripMenuItem";
-            this.新建车道ToolStripMenuItem.Size = new System.Drawing.Size(170, 28);
+            this.新建车道ToolStripMenuItem.Size = new System.Drawing.Size(136, 22);
             this.新建车道ToolStripMenuItem.Text = "新建车道";
             this.新建车道ToolStripMenuItem.Click += new System.EventHandler(this.新建车道ToolStripMenuItem_Click);
             // 
             // 车道连接器ToolStripMenuItem
             // 
             this.车道连接器ToolStripMenuItem.Name = "车道连接器ToolStripMenuItem";
-            this.车道连接器ToolStripMenuItem.Size = new System.Drawing.Size(170, 28);
+            this.车道连接器ToolStripMenuItem.Size = new System.Drawing.Size(136, 22);
             this.车道连接器ToolStripMenuItem.Text = "车道连接器";
             this.车道连接器ToolStripMenuItem.Click += new System.EventHandler(this.车道连接器ToolStripMenuItem_Click);
             // 
             // 规则ToolStripMenuItem
             // 
             this.规则ToolStripMenuItem.Name = "规则ToolStripMenuItem";
-            this.规则ToolStripMenuItem.Size = new System.Drawing.Size(58, 28);
+            this.规则ToolStripMenuItem.Size = new System.Drawing.Size(44, 21);
             this.规则ToolStripMenuItem.Text = "规则";
             this.规则ToolStripMenuItem.Click += new System.EventHandler(this.规则ToolStripMenuItem_Click);
             // 
             // statusStrip1
             // 
-            this.statusStrip1.Location = new System.Drawing.Point(0, 834);
+            this.statusStrip1.Location = new System.Drawing.Point(0, 549);
             this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Padding = new System.Windows.Forms.Padding(2, 0, 21, 0);
-            this.statusStrip1.Size = new System.Drawing.Size(1530, 22);
+            this.statusStrip1.Size = new System.Drawing.Size(1020, 22);
             this.statusStrip1.TabIndex = 3;
             this.statusStrip1.Text = "statusStrip1";
             // 
             // splitContainer1
             // 
             this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.splitContainer1.Location = new System.Drawing.Point(0, 62);
-            this.splitContainer1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.splitContainer1.Location = new System.Drawing.Point(0, 53);
             this.splitContainer1.Name = "splitContainer1";
             // 
             // splitContainer1.Panel1
@@ -369,16 +368,14 @@ namespace RoadNetworkSystem
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.splitContainer3);
-            this.splitContainer1.Size = new System.Drawing.Size(1530, 772);
-            this.splitContainer1.SplitterDistance = 219;
-            this.splitContainer1.SplitterWidth = 6;
+            this.splitContainer1.Size = new System.Drawing.Size(1020, 496);
+            this.splitContainer1.SplitterDistance = 146;
             this.splitContainer1.TabIndex = 4;
             // 
             // splitContainer2
             // 
             this.splitContainer2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.splitContainer2.Location = new System.Drawing.Point(0, 0);
-            this.splitContainer2.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.splitContainer2.Name = "splitContainer2";
             this.splitContainer2.Orientation = System.Windows.Forms.Orientation.Horizontal;
             // 
@@ -389,36 +386,32 @@ namespace RoadNetworkSystem
             // splitContainer2.Panel2
             // 
             this.splitContainer2.Panel2.Controls.Add(this.axMapControl2);
-            this.splitContainer2.Size = new System.Drawing.Size(219, 772);
-            this.splitContainer2.SplitterDistance = 510;
-            this.splitContainer2.SplitterWidth = 6;
+            this.splitContainer2.Size = new System.Drawing.Size(146, 496);
+            this.splitContainer2.SplitterDistance = 327;
             this.splitContainer2.TabIndex = 0;
             // 
             // axTOCControl1
             // 
             this.axTOCControl1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.axTOCControl1.Location = new System.Drawing.Point(0, 0);
-            this.axTOCControl1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.axTOCControl1.Name = "axTOCControl1";
             this.axTOCControl1.OcxState = ((System.Windows.Forms.AxHost.State)(resources.GetObject("axTOCControl1.OcxState")));
-            this.axTOCControl1.Size = new System.Drawing.Size(219, 510);
+            this.axTOCControl1.Size = new System.Drawing.Size(146, 327);
             this.axTOCControl1.TabIndex = 0;
             // 
             // axMapControl2
             // 
             this.axMapControl2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.axMapControl2.Location = new System.Drawing.Point(0, 0);
-            this.axMapControl2.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.axMapControl2.Name = "axMapControl2";
             this.axMapControl2.OcxState = ((System.Windows.Forms.AxHost.State)(resources.GetObject("axMapControl2.OcxState")));
-            this.axMapControl2.Size = new System.Drawing.Size(219, 256);
+            this.axMapControl2.Size = new System.Drawing.Size(146, 165);
             this.axMapControl2.TabIndex = 0;
             // 
             // splitContainer3
             // 
             this.splitContainer3.Dock = System.Windows.Forms.DockStyle.Fill;
             this.splitContainer3.Location = new System.Drawing.Point(0, 0);
-            this.splitContainer3.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.splitContainer3.Name = "splitContainer3";
             // 
             // splitContainer3.Panel1
@@ -428,9 +421,8 @@ namespace RoadNetworkSystem
             // splitContainer3.Panel2
             // 
             this.splitContainer3.Panel2.Controls.Add(this.splitContainer4);
-            this.splitContainer3.Size = new System.Drawing.Size(1305, 772);
-            this.splitContainer3.SplitterDistance = 841;
-            this.splitContainer3.SplitterWidth = 6;
+            this.splitContainer3.Size = new System.Drawing.Size(870, 496);
+            this.splitContainer3.SplitterDistance = 560;
             this.splitContainer3.TabIndex = 0;
             // 
             // tabControl1
@@ -439,20 +431,18 @@ namespace RoadNetworkSystem
             this.tabControl1.Controls.Add(this.tabPage2);
             this.tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tabControl1.Location = new System.Drawing.Point(0, 0);
-            this.tabControl1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(841, 772);
+            this.tabControl1.Size = new System.Drawing.Size(560, 496);
             this.tabControl1.TabIndex = 2;
             // 
             // tabPage1
             // 
             this.tabPage1.Controls.Add(this.axMapControl1);
-            this.tabPage1.Location = new System.Drawing.Point(4, 28);
-            this.tabPage1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
-            this.tabPage1.Padding = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.tabPage1.Size = new System.Drawing.Size(833, 740);
+            this.tabPage1.Padding = new System.Windows.Forms.Padding(3, 3, 3, 3);
+            this.tabPage1.Size = new System.Drawing.Size(552, 470);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "地图";
             this.tabPage1.UseVisualStyleBackColor = true;
@@ -460,22 +450,20 @@ namespace RoadNetworkSystem
             // axMapControl1
             // 
             this.axMapControl1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.axMapControl1.Location = new System.Drawing.Point(4, 4);
-            this.axMapControl1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.axMapControl1.Location = new System.Drawing.Point(3, 3);
             this.axMapControl1.Name = "axMapControl1";
             this.axMapControl1.OcxState = ((System.Windows.Forms.AxHost.State)(resources.GetObject("axMapControl1.OcxState")));
-            this.axMapControl1.Size = new System.Drawing.Size(825, 732);
+            this.axMapControl1.Size = new System.Drawing.Size(546, 464);
             this.axMapControl1.TabIndex = 1;
             this.axMapControl1.OnMouseUp += new AxESRI.ArcGIS.Controls.IMapControlEvents2_OnMouseUpEventHandler(this.axMapControl1_OnMouseUp);
             // 
             // tabPage2
             // 
             this.tabPage2.Controls.Add(this.axPageLayoutControl1);
-            this.tabPage2.Location = new System.Drawing.Point(4, 28);
-            this.tabPage2.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
-            this.tabPage2.Padding = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.tabPage2.Size = new System.Drawing.Size(834, 712);
+            this.tabPage2.Padding = new System.Windows.Forms.Padding(3, 3, 3, 3);
+            this.tabPage2.Size = new System.Drawing.Size(553, 489);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "制版";
             this.tabPage2.UseVisualStyleBackColor = true;
@@ -483,11 +471,10 @@ namespace RoadNetworkSystem
             // axPageLayoutControl1
             // 
             this.axPageLayoutControl1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.axPageLayoutControl1.Location = new System.Drawing.Point(4, 4);
-            this.axPageLayoutControl1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.axPageLayoutControl1.Location = new System.Drawing.Point(3, 3);
             this.axPageLayoutControl1.Name = "axPageLayoutControl1";
             this.axPageLayoutControl1.OcxState = ((System.Windows.Forms.AxHost.State)(resources.GetObject("axPageLayoutControl1.OcxState")));
-            this.axPageLayoutControl1.Size = new System.Drawing.Size(826, 704);
+            this.axPageLayoutControl1.Size = new System.Drawing.Size(547, 483);
             this.axPageLayoutControl1.TabIndex = 0;
             // 
             // splitContainer4
@@ -495,7 +482,6 @@ namespace RoadNetworkSystem
             this.splitContainer4.Dock = System.Windows.Forms.DockStyle.Fill;
             this.splitContainer4.FixedPanel = System.Windows.Forms.FixedPanel.Panel1;
             this.splitContainer4.Location = new System.Drawing.Point(0, 0);
-            this.splitContainer4.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.splitContainer4.Name = "splitContainer4";
             // 
             // splitContainer4.Panel1
@@ -507,18 +493,16 @@ namespace RoadNetworkSystem
             this.splitContainer4.Panel2.Controls.Add(this.panel_Bottom);
             this.splitContainer4.Panel2.Controls.Add(this.panel_Middle);
             this.splitContainer4.Panel2.Controls.Add(this.panel_Top);
-            this.splitContainer4.Size = new System.Drawing.Size(458, 772);
+            this.splitContainer4.Size = new System.Drawing.Size(306, 496);
             this.splitContainer4.SplitterDistance = 25;
-            this.splitContainer4.SplitterWidth = 6;
             this.splitContainer4.TabIndex = 0;
             // 
             // button1
             // 
             this.button1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.button1.Location = new System.Drawing.Point(0, 0);
-            this.button1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(25, 772);
+            this.button1.Size = new System.Drawing.Size(25, 496);
             this.button1.TabIndex = 0;
             this.button1.Tag = "1";
             this.button1.Text = ">>";
@@ -528,39 +512,35 @@ namespace RoadNetworkSystem
             // panel_Bottom
             // 
             this.panel_Bottom.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panel_Bottom.Location = new System.Drawing.Point(0, 727);
-            this.panel_Bottom.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.panel_Bottom.Location = new System.Drawing.Point(0, 466);
             this.panel_Bottom.Name = "panel_Bottom";
-            this.panel_Bottom.Size = new System.Drawing.Size(427, 45);
+            this.panel_Bottom.Size = new System.Drawing.Size(277, 30);
             this.panel_Bottom.TabIndex = 2;
             // 
             // panel_Middle
             // 
             this.panel_Middle.AutoScroll = true;
             this.panel_Middle.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel_Middle.Location = new System.Drawing.Point(0, 150);
-            this.panel_Middle.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.panel_Middle.Location = new System.Drawing.Point(0, 100);
             this.panel_Middle.Name = "panel_Middle";
-            this.panel_Middle.Size = new System.Drawing.Size(427, 622);
+            this.panel_Middle.Size = new System.Drawing.Size(277, 396);
             this.panel_Middle.TabIndex = 1;
             // 
             // panel_Top
             // 
             this.panel_Top.Dock = System.Windows.Forms.DockStyle.Top;
             this.panel_Top.Location = new System.Drawing.Point(0, 0);
-            this.panel_Top.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.panel_Top.Name = "panel_Top";
-            this.panel_Top.Size = new System.Drawing.Size(427, 150);
+            this.panel_Top.Size = new System.Drawing.Size(277, 100);
             this.panel_Top.TabIndex = 0;
             // 
             // axToolbarControl1
             // 
             this.axToolbarControl1.Dock = System.Windows.Forms.DockStyle.Top;
-            this.axToolbarControl1.Location = new System.Drawing.Point(0, 34);
-            this.axToolbarControl1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.axToolbarControl1.Location = new System.Drawing.Point(0, 25);
             this.axToolbarControl1.Name = "axToolbarControl1";
             this.axToolbarControl1.OcxState = ((System.Windows.Forms.AxHost.State)(resources.GetObject("axToolbarControl1.OcxState")));
-            this.axToolbarControl1.Size = new System.Drawing.Size(1530, 28);
+            this.axToolbarControl1.Size = new System.Drawing.Size(1020, 28);
             this.axToolbarControl1.TabIndex = 2;
             this.axToolbarControl1.OnMouseDown += new AxESRI.ArcGIS.Controls.IToolbarControlEvents_OnMouseDownEventHandler(this.axToolbarControl1_OnMouseDown);
             // 
@@ -568,24 +548,29 @@ namespace RoadNetworkSystem
             // 
             this.axLicenseControl1.Enabled = true;
             this.axLicenseControl1.Location = new System.Drawing.Point(108, 113);
-            this.axLicenseControl1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.axLicenseControl1.Name = "axLicenseControl1";
             this.axLicenseControl1.OcxState = ((System.Windows.Forms.AxHost.State)(resources.GetObject("axLicenseControl1.OcxState")));
             this.axLicenseControl1.Size = new System.Drawing.Size(32, 32);
             this.axLicenseControl1.TabIndex = 0;
             // 
+            // 数据库ToolStripMenuItem
+            // 
+            this.数据库ToolStripMenuItem.Name = "数据库ToolStripMenuItem";
+            this.数据库ToolStripMenuItem.Size = new System.Drawing.Size(56, 21);
+            this.数据库ToolStripMenuItem.Text = "数据库";
+            this.数据库ToolStripMenuItem.Click += new System.EventHandler(this.数据库ToolStripMenuItem_Click);
+            // 
             // Form1
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 18F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1530, 856);
+            this.ClientSize = new System.Drawing.Size(1020, 571);
             this.Controls.Add(this.splitContainer1);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.axToolbarControl1);
             this.Controls.Add(this.axLicenseControl1);
             this.Controls.Add(this.menuStrip1);
             this.MainMenuStrip = this.menuStrip1;
-            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.Name = "Form1";
             this.Text = "RoadNetworkSystem";
             this.Load += new System.EventHandler(this.Form1_Load);
@@ -1024,6 +1009,7 @@ namespace RoadNetworkSystem
 
         private ToolStripMenuItem 中心线到路段路网ToolStripMenuItem;
         private ToolStripMenuItem 中心线构建ToolStripMenuItem;
+        private ToolStripMenuItem 数据库ToolStripMenuItem;
 
 
     }

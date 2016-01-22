@@ -151,32 +151,51 @@ namespace RoadNetworkSystem.NetworkExtraction.Road2BasicRoadNetwork
 
         #region ------------------ 在交通组织中断处打断Segment生成Link --------------------
 
+
         /// <summary>
         /// 在交通组织中断处打断
         /// </summary>
         private void breakSegmentInTrafficDisturb()
         {
             //BreakPoint,LaneNumChange
+
+            List<int> untagRoads = new List<int>();
+
             IQueryFilter filter = new QueryFilterClass();
             filter.WhereClause = "";
             IFeatureCursor query = _feaClsRoad.Search(filter, false);
             IFeature pFeatureRoad = query.NextFeature();
+
             while (pFeatureRoad != null)
             {
                 RoadService roadService = new RoadService(_feaClsRoad,0);
 
                 Road road = roadService.GetEntity(pFeatureRoad);
 
-                int flowDir = Convert.ToInt32(pFeatureRoad.get_Value(pFeatureRoad.Fields.FindField(RoadNetworkSystem.DataModel.Road.Road.FlowDirName)));
+
+                int flowDir = Link.FLOWDIR_DOUBLE;
                
                 //遍历属于同一个Road的各个LaneNumChange
                 string sql = "Select * from " + LaneNumChange.LaneNumChangeName +
-                    " where " + LaneNumChange.RoadID_Name + " = " + Convert.ToInt32(pFeatureRoad.get_Value(pFeatureRoad.Fields.FindField(LaneNumChange.RoadID_Name))) +
-                    " and  " + LaneNumChange.DoneFlag_Name + " = " + LaneNumChange.DONEFLAG_UNDO;
+                    " where " + LaneNumChange.RoadID_Name + " = " + road.RoadID;
                 OleDbCommand cmd = new OleDbCommand(sql, _conn);
                 OleDbDataReader reader = cmd.ExecuteReader();
+
+                bool tagedFlag = false;
                 while (reader.Read())
                 {
+                    tagedFlag = true;
+                    int doneFlag = Convert.ToInt32(reader[LaneNumChange.DoneFlag_Name]);
+                    if (doneFlag == LaneNumChange.DONEFLAG_DONE)
+                    {
+                        continue;
+                    }
+
+                    if (road.RoadID == 2482)
+                    {
+                        int test = 0;
+                    }
+
                     int fromBreakPointId  = -1;
                     if(reader[LaneNumChange.FromBreakPointID_Name] != DBNull.Value)
                     {
@@ -209,6 +228,7 @@ namespace RoadNetworkSystem.NetworkExtraction.Road2BasicRoadNetwork
                         fromBreakPointId, toBreakPointId);
 
                     int oppositionLaneNum = -1;
+                    flowDir = breakPointFlowDir;
                     if (oppositionLaneNumChange != null)
                     {
                         oppositionLaneNum = oppositionLaneNumChange.LaneNum;
@@ -257,8 +277,13 @@ namespace RoadNetworkSystem.NetworkExtraction.Road2BasicRoadNetwork
                 }
                 reader.Close();
                 reader.Dispose();
+                if (!tagedFlag)
+                {
+                    untagRoads.Add(road.RoadID);
+                }
                 pFeatureRoad = query.NextFeature();
             }
+
         }
 
 
@@ -286,7 +311,15 @@ namespace RoadNetworkSystem.NetworkExtraction.Road2BasicRoadNetwork
                 return null;
             }
 
-            return LineHelper.CutPolylineByPointsOnLine(roadLine, fromBreakPointPoint, toBreakPointPoint);
+            if (breakPointRoadLineSameFlag)
+            {
+                return LineHelper.CutPolylineByPointsOnLine(roadLine, fromBreakPointPoint, toBreakPointPoint);
+            }
+            else
+            {
+                return LineHelper.CutPolylineByPointsOnLine(roadLine, toBreakPointPoint, fromBreakPointPoint);
+            }
+
         }
 
 

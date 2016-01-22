@@ -61,6 +61,8 @@
   <ItemGroup>
     <Compile Include="ADO\Access\AccessHelper.cs" />
     <Compile Include="Database\DatabaseDesigner.cs" />
+    <Compile Include="DataModel\Float\BaseFloatVDT.cs" />
+    <Compile Include="DataModel\Float\BaseFloatWDT.cs" />
     <Compile Include="DataModel\GuideSignNetwork\Arc1.cs" />
     <Compile Include="DataModel\GuideSignNetwork\Node1.cs" />
     <Compile Include="DataModel\LaneBasedNetwork\Arc.cs" />
@@ -80,6 +82,10 @@
     <Compile Include="DataModel\Road\LinkMaster.cs" />
     <Compile Include="DataModel\Road\NodeMaster.cs" />
     <Compile Include="DataModel\Road\Road.cs" />
+    <Compile Include="DataModel\Sensor\BaseFacilityLDT.cs" />
+    <Compile Include="DataModel\Float\BaseFloatLDT.cs" />
+    <Compile Include="DataModel\Sensor\BaseFacilityVDT.cs" />
+    <Compile Include="DataModel\Sensor\BaseFacilityWDT.cs" />
     <Compile Include="DataModel\SignRule\BoundaryRule.cs" />
     <Compile Include="DataModel\SignRule\Rule.cs" />
     <Compile Include="DataTransform\ParamicsDataTransform\Basic2Paramics.cs" />

@@ -52,7 +52,7 @@ namespace RoadNetworkSystem.ElementService.LaneBasedNetwork.LinkLayer
                 }
                 else
                 {
-                    fromBreakPointPoint = roadLine.FromPoint;
+                    fromBreakPointPoint = roadLine.ToPoint;
                 }
             }
 
@@ -71,7 +71,7 @@ namespace RoadNetworkSystem.ElementService.LaneBasedNetwork.LinkLayer
                 }
                 else
                 {
-                    toBreakPointPoint = roadLine.ToPoint;
+                    toBreakPointPoint = roadLine.FromPoint;
                 }
             }
 
