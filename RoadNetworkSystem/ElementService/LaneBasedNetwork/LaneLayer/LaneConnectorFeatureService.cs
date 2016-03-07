@@ -14,6 +14,16 @@ using System.Windows.Forms;
 
 namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LaneLayer
 {
+
+    /// <summary>
+    /// 记录一个Lane与一个Arc多个车道的连通情况
+    /// </summary>
+    public struct LaneArcConnectedInfo
+    {
+        public Lane FromLane;
+        public List<Lane> ToLanes;
+        public string Dir;
+    }
     class LaneConnectorFeatureService
     {
         /// <summary>

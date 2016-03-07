@@ -152,7 +152,7 @@ namespace RoadNetworkSystem.WinForm
 
                     //保存Node
                     NodeService node = new NodeService(_frm1.FeaClsNode, 0, _frm1.CrtPnt);
-                    //MessageBox.Show((_frm1.FeaClsNode as IDataset).Workspace.PathName);
+                    //MessageBox.Show((g_frm1.FeaClsNode as IDataset).Workspace.PathName);
                     Node nodeEty = new Node();
                     nodeEty.ID = 0;
                     
@@ -328,16 +328,16 @@ namespace RoadNetworkSystem.WinForm
 
         //private static void setOperationGroupBox()
         //{
-        //    _frm1.button_link_split = new Button();
-        //    WinFormDesigner.layoutButton(_frm1.button_link_split, "打断", _frm1.groupBox_Link_Operation.Controls,
-        //        new System.Drawing.Point(_frm1.label_link_roadType.Location.X, 30), DockStyle.None, 20, 50);
+        //    g_frm1.button_link_split = new Button();
+        //    WinFormDesigner.layoutButton(g_frm1.button_link_split, "打断", g_frm1.groupBox_Link_Operation.Controls,
+        //        new System.Drawing.Point(g_frm1.label_link_roadType.Location.X, 30), DockStyle.None, 20, 50);
 
-        //    _frm1.button_link_merge = new Button();
-        //    int btn_merge_X = _frm1.label_link_roadType.Location.X + _frm1.button_link_split.Width + 20;
-        //    WinFormDesigner.layoutButton(_frm1.button_link_merge, "合并", _frm1.groupBox_Link_Operation.Controls,
+        //    g_frm1.button_link_merge = new Button();
+        //    int btn_merge_X = g_frm1.label_link_roadType.Location.X + g_frm1.button_link_split.Width + 20;
+        //    WinFormDesigner.layoutButton(g_frm1.button_link_merge, "合并", g_frm1.groupBox_Link_Operation.Controls,
         //        new System.Drawing.Point(btn_merge_X, 30), DockStyle.None, 20, 50);
 
-        //    _frm1.groupBox_Link_Operation.Height = _frm1.button_link_split.Location.Y + _frm1.button_link_split.Height + 30;
+        //    g_frm1.groupBox_Link_Operation.Height = g_frm1.button_link_split.Location.Y + g_frm1.button_link_split.Height + 30;
         //}
 
     }

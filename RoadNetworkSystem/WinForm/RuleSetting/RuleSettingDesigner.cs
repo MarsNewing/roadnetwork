@@ -59,7 +59,7 @@ namespace RoadNetworkSystem.WinForm.RuleSetting
             WinFormDesigner.ClearPanel(_frm1.panel_Middle);
             WinFormDesigner.ClearPanel(_frm1.panel_Bottom);
             WinFormDesigner.ClearPanel(_frm1.panel_Top);
-            //_frm1.groupBox1.Visible = false;
+            //g_frm1.groupBox1.Visible = false;
             _frm1.panel_Top.Visible = true;
 
             _frm1.panel_Top.Visible = true;

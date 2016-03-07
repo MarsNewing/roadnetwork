@@ -416,7 +416,7 @@ namespace RoadNetworkSystem.WinForm.NetworkEditor
             _frm1.label_link_roadType = new Label();
             WinFormDesigner.layoutLabel(_frm1.label_link_roadType, "道路类型", _frm1.groupBox_Link_BasicAtrr.Controls,
                 new System.Drawing.Point(LEFTX, LEFTY), DockStyle.None);
-            //_frm1.label_link_roadType.Width = Convert.ToInt32(_frm1.label_link_roadType.Font.Size * 5);
+            //g_frm1.label_link_roadType.Width = Convert.ToInt32(g_frm1.label_link_roadType.Font.Size * 5);
 
             _frm1.comBox_link_roadType = new ComboBox();
             setRoadTypeCombox();
@@ -429,7 +429,7 @@ namespace RoadNetworkSystem.WinForm.NetworkEditor
             WinFormDesigner.layoutLabel(_frm1.label_link_roadNm, "道路名", _frm1.groupBox_Link_BasicAtrr.Controls,
                 new System.Drawing.Point(LEFTX, _frm1.label_link_roadType.Location.Y + _frm1.label_link_roadType.Height + LINEWIDTH),
                 DockStyle.None);
-            //_frm1.label_link_roadNm.Width = Convert.ToInt32(_frm1.label_link_roadNm.Font.Size * 4);
+            //g_frm1.label_link_roadNm.Width = Convert.ToInt32(g_frm1.label_link_roadNm.Font.Size * 4);
 
 
             _frm1.textBox_link_roadNm = new TextBox();
@@ -454,7 +454,7 @@ namespace RoadNetworkSystem.WinForm.NetworkEditor
             _frm1.label_link_SameFlow = new Label();
             WinFormDesigner.layoutLabel(_frm1.label_link_SameFlow, "车道数", _frm1.groupBox_Link_Flow.Controls,
                 new System.Drawing.Point(RIGHTX, _frm1.checkBox_link_SameFlow.Location.Y + 5), DockStyle.None);
-            //_frm1.label_link_SameFlow.Width = Convert.ToInt32(_frm1.label_link_SameFlow.Font.Size * 4);
+            //g_frm1.label_link_SameFlow.Width = Convert.ToInt32(g_frm1.label_link_SameFlow.Font.Size * 4);
             
 
             _frm1.upDown_link_SameLaneMun = new NumericUpDown();
@@ -479,7 +479,7 @@ namespace RoadNetworkSystem.WinForm.NetworkEditor
             _frm1.label_link_OppFlow = new Label();
             WinFormDesigner.layoutLabel(_frm1.label_link_OppFlow, "车道数", _frm1.groupBox_Link_Flow.Controls,
                 new System.Drawing.Point(RIGHTX, oppFlowCheckBox_y + 5), DockStyle.None);
-            //_frm1.label_link_OppFlow.Width = Convert.ToInt32(_frm1.label_link_OppFlow.Font.Size * 4);
+            //g_frm1.label_link_OppFlow.Width = Convert.ToInt32(g_frm1.label_link_OppFlow.Font.Size * 4);
 
             //同向车道数，
             _frm1.upDown_link_OppLaneMun = new NumericUpDown();
@@ -575,34 +575,34 @@ namespace RoadNetworkSystem.WinForm.NetworkEditor
         /// </summary>
         public static void SetLinkPalette(Form1 frm1)
         {
-            _frm1 = frm1;
+            g_frm1 = frm1;
 
-            _frm1.fileLabel = new Label();
-            WinFormDesigner.layoutLabel(_frm1.fileLabel, "Fuck", _frm1.panel_public_Middle, new System.Drawing.Point(35, 30));
+            g_frm1.fileLabel = new Label();
+            WinFormDesigner.layoutLabel(g_frm1.fileLabel, "Fuck", g_frm1.panel_public_Middle, new System.Drawing.Point(35, 30));
 
-            _frm1.tabControl_link = new TabControl();
+            g_frm1.tabControl_link = new TabControl();
             List<TabPage> pageList = new List<TabPage>();
             //初始化tabPage_link_core
-            _frm1.tabPage_link_core = new TabPage();
+            g_frm1.tabPage_link_core = new TabPage();
             //初始化tabPage_link_Flag
-            _frm1.tabPage_link_Flag = new TabPage();
+            g_frm1.tabPage_link_Flag = new TabPage();
             layoutLinkCorePage();
             layoutLinkFlagPage();
-            pageList.Add(_frm1.tabPage_link_core);
-            pageList.Add(_frm1.tabPage_link_Flag);
+            pageList.Add(g_frm1.tabPage_link_core);
+            pageList.Add(g_frm1.tabPage_link_Flag);
 
 
 
-            WinFormDesigner.layoutTabControl(_frm1.tabControl_link, _frm1.panel_public_Middle, new System.Drawing.Point(4, 4), pageList);
-            _frm1.tabControl_link.SelectedIndex = 0;
-            _frm1.tabControl_link.TabIndex = 0;
+            WinFormDesigner.layoutTabControl(g_frm1.tabControl_link, g_frm1.panel_public_Middle, new System.Drawing.Point(4, 4), pageList);
+            g_frm1.tabControl_link.SelectedIndex = 0;
+            g_frm1.tabControl_link.TabIndex = 0;
         }
 
 
         private static void layoutLinkCorePage()
         {
-            _frm1.tabPage_link_core.Text = "Core";
-            _frm1.tabPage_link_core.AutoScroll = true;
+            g_frm1.tabPage_link_core.Text = "Core";
+            g_frm1.tabPage_link_core.AutoScroll = true;
             
             
         }
@@ -611,8 +611,8 @@ namespace RoadNetworkSystem.WinForm.NetworkEditor
 
         private static void layoutLinkFlagPage()
         {
-            _frm1.tabPage_link_core.Text = "Flag";
-            _frm1.tabPage_link_Flag.AutoScroll = true;
+            g_frm1.tabPage_link_core.Text = "Flag";
+            g_frm1.tabPage_link_Flag.AutoScroll = true;
         }
 
 

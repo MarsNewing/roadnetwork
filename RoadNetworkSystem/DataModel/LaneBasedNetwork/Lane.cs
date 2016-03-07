@@ -4,7 +4,7 @@ using System.Text;
 
 namespace RoadNetworkSystem.DataModel.LaneBasedNetwork
 {
-    class Lane
+    public class Lane
     {
         public const string LaneName = "Lane";
 

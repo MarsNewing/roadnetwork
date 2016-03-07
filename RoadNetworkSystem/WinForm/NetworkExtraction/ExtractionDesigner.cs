@@ -75,7 +75,7 @@ namespace RoadNetworkSystem.WinForm.NetworkExtraction
             WinFormDesigner.ClearPanel(_frm1.panel_Middle);
             WinFormDesigner.ClearPanel(_frm1.panel_Bottom);
             WinFormDesigner.ClearPanel(_frm1.panel_Top);
-            //_frm1.groupBox1.Visible = false;
+            //g_frm1.groupBox1.Visible = false;
             _frm1.panel_Top.Visible = true;
 
             _frm1.panel_Top.Visible = true;
@@ -149,7 +149,7 @@ namespace RoadNetworkSystem.WinForm.NetworkExtraction
 
             //设置提取的路网类型
             _frm1.comBox_extraction_function = new System.Windows.Forms.ComboBox();
-            //_frm1.comBox_extraction_function.Items.AddRange(Enum.GetNames(typeof(ExtractionType)));
+            //g_frm1.comBox_extraction_function.Items.AddRange(Enum.GetNames(typeof(ExtractionType)));
             List<string> items = new List<string>();
             items.AddRange(Enum.GetNames(typeof(ExtractionType)));
             //object o = (object)0;
@@ -207,23 +207,23 @@ namespace RoadNetworkSystem.WinForm.NetworkExtraction
         /// </summary>
         //private void layoutData()
         //{
-        //    _frm1.button_extration_road = new System.Windows.Forms.Button();
+        //    g_frm1.button_extration_road = new System.Windows.Forms.Button();
             
-        //    WinFormDesigner.layoutButton(_frm1.button_extration_road, "选择Road图层", _frm1.groupBox_extraction_data.Controls, new System.Drawing.Point(LEFTX, LEFTY),
+        //    WinFormDesigner.layoutButton(g_frm1.button_extration_road, "选择Road图层", g_frm1.groupBox_extraction_data.Controls, new System.Drawing.Point(LEFTX, LEFTY),
         //        System.Windows.Forms.DockStyle.None, BTNWIDTH, 100);
-        //    _frm1.button_extration_road.Click += button_extration_road_Click;
+        //    g_frm1.button_extration_road.Click += button_extration_road_Click;
         //}
 
 
         //void button_extration_road_Click(object sender, EventArgs e)
         //{
         //    //清空地图
-        //    _frm1.axMapControl1.ClearLayers();
+        //    g_frm1.axMapControl1.ClearLayers();
         //    ICommand pCommand = new ControlsAddDataCommandClass();
-        //    pCommand.OnCreate(_frm1.axMapControl1.Object);
+        //    pCommand.OnCreate(g_frm1.axMapControl1.Object);
         //    pCommand.OnClick();
-        //    IFeatureLayer roadFeaLayer = _frm1.axMapControl1.Map.Layer[0] as IFeatureLayer;
-        //    _frm1.FeaClsRoad = roadFeaLayer.FeatureClass;
+        //    IFeatureLayer roadFeaLayer = g_frm1.axMapControl1.Map.Layer[0] as IFeatureLayer;
+        //    g_frm1.FeaClsRoad = roadFeaLayer.FeatureClass;
         //}
         #endregion ----------------------选择Road图层-------------------------------
 
@@ -498,7 +498,7 @@ namespace RoadNetworkSystem.WinForm.NetworkExtraction
                 new System.Drawing.Point(LEFTX, LEFTY), DockStyle.None, BTNWIDTH, _frm1.listBox_extraction_type1.Width);
             _frm1.button_extaction_AddRoadPair.Click += button_extaction_AddRoadPair_Click;
 
-            //_frm1.button_extaction_AddRoadPair.AutoSize = true;
+            //g_frm1.button_extaction_AddRoadPair.AutoSize = true;
 
             int btnRoad_x = _frm1.button_extaction_AddRoadPair.Location.X + _frm1.button_extaction_AddRoadPair.Width + LINEWIDTH * 2;
 
@@ -753,7 +753,7 @@ namespace RoadNetworkSystem.WinForm.NetworkExtraction
             //    feaName.Add(RoadEntity.RoadNm);
             //   List<string> strList=new List<string>();
             //   strList.Add("Road");
-            //   IFeatureClass pFeatureClsRoad = FeatureClassHelper.GetFeaClsInAccess(_frm1.MdbPath, strList)[0];
+            //   IFeatureClass pFeatureClsRoad = FeatureClassHelper.GetFeaClsInAccess(g_frm1.MdbPath, strList)[0];
             //   SegmentLayerFactory rsFactory = new SegmentLayerFactory(pFeatureClsRoad);
 
             //    List<NodeInfor> updateNodeInforList = new List<NodeInfor>();
@@ -781,7 +781,7 @@ namespace RoadNetworkSystem.WinForm.NetworkExtraction
            //feaName.Add(RoadEntity.RoadNm);
            //List<string> strList = new List<string>();
            //strList.Add("Road");
-           //IFeatureClass pFeatureClsRoad = FeatureClassHelper.GetFeaClsInAccess(_frm1.MdbPath, strList)[0];
+           //IFeatureClass pFeatureClsRoad = FeatureClassHelper.GetFeaClsInAccess(g_frm1.MdbPath, strList)[0];
            //Arc1LayerFactory rsFactory = new Arc1LayerFactory(pFeatureClsRoad);
 
            //List<NodeInfor> updateNodeInforList = new List<NodeInfor>();
