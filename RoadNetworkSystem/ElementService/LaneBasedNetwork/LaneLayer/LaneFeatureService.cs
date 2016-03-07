@@ -19,21 +19,7 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LaneLayer
         /// <summary>
         /// 规定了数据模型，请不要在其他类中直接读取数据
         /// </summary>
-        public const string LaneIDNm = "LaneID";
-        public const string PositionNm = "Position";
-
-        public const string ArcIDNm = "ArcID";
-        public const string ChangeNm = "Change";
-        public const string LeftBoundaryIDNm = "LeftBoundaryID";
-
-
-        public const string RightBoundaryIDNm = "RightBoundaryID";
-        public const string VehClassesNm = "VehClasses";
-        public const string LaneClosedNm = "LaneClosed";
-
-        public const string WidthNm = "Width";
-        public const string OtherNm = "Other";
-
+        
 
         public IFeatureClass FeaClsLane;
         public int LaneID;
@@ -74,7 +60,7 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LaneLayer
         public IFeature GetFeature()
         {
             IQueryFilter queryFilter = new QueryFilterClass();
-            queryFilter.WhereClause = String.Format("{0}={1}",LaneIDNm, LaneID);
+            queryFilter.WhereClause = String.Format("{0}={1}", Lane.LaneIDNm, LaneID);
             IFeatureCursor cursor = FeaClsLane.Search(queryFilter, false);
             IFeature pFeature = cursor.NextFeature();
             if (pFeature != null)
@@ -107,7 +93,7 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LaneLayer
             IFeature featureLane = null;
             while (read.Read())
             {
-                LaneID = Convert.ToInt32(read[LaneIDNm]);
+                LaneID = Convert.ToInt32(read[Lane.LaneIDNm]);
                 break;
             }
             read.Close();
@@ -121,29 +107,29 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LaneLayer
             Lane laneEty = new Lane();
             if (pFeature != null)
             {
-                if (FeaClsLane.FindField(LaneIDNm) > 0)
-                    laneEty.LaneID = Convert.ToInt32(pFeature.get_Value(FeaClsLane.FindField(LaneIDNm)));
+                if (FeaClsLane.FindField(Lane.LaneIDNm) > 0)
+                    laneEty.LaneID = Convert.ToInt32(pFeature.get_Value(FeaClsLane.FindField(Lane.LaneIDNm)));
                 
-                if (FeaClsLane.FindField(ChangeNm) > 0)
-                    laneEty.Change = Convert.ToString(pFeature.get_Value(FeaClsLane.FindField(ChangeNm)));
-                if (FeaClsLane.FindField(PositionNm) > 0)
-                    laneEty.Position = Convert.ToInt32(pFeature.get_Value(FeaClsLane.FindField(PositionNm)));
-                if (FeaClsLane.FindField(LeftBoundaryIDNm) > 0)
-                    laneEty.LeftBoundaryID = Convert.ToInt32(pFeature.get_Value(FeaClsLane.FindField(LeftBoundaryIDNm)));
+                if (FeaClsLane.FindField(Lane.ChangeNm) > 0)
+                    laneEty.Change = Convert.ToString(pFeature.get_Value(FeaClsLane.FindField(Lane.ChangeNm)));
+                if (FeaClsLane.FindField(Lane.PositionNm) > 0)
+                    laneEty.Position = Convert.ToInt32(pFeature.get_Value(FeaClsLane.FindField(Lane.PositionNm)));
+                if (FeaClsLane.FindField(Lane.LeftBoundaryIDNm) > 0)
+                    laneEty.LeftBoundaryID = Convert.ToInt32(pFeature.get_Value(FeaClsLane.FindField(Lane.LeftBoundaryIDNm)));
 
-                if (FeaClsLane.FindField(RightBoundaryIDNm) > 0)
-                    laneEty.RightBoundaryID = Convert.ToInt32(pFeature.get_Value(FeaClsLane.FindField(RightBoundaryIDNm)));
-                if (FeaClsLane.FindField(ArcIDNm) > 0)
-                    laneEty.ArcID = Convert.ToInt32(pFeature.get_Value(FeaClsLane.FindField(ArcIDNm)));
-                if (FeaClsLane.FindField(VehClassesNm) > 0)
-                    laneEty.VehClasses = Convert.ToString(pFeature.get_Value(FeaClsLane.FindField(VehClassesNm)));
+                if (FeaClsLane.FindField(Lane.RightBoundaryIDNm) > 0)
+                    laneEty.RightBoundaryID = Convert.ToInt32(pFeature.get_Value(FeaClsLane.FindField(Lane.RightBoundaryIDNm)));
+                if (FeaClsLane.FindField(Lane.ArcIDNm) > 0)
+                    laneEty.ArcID = Convert.ToInt32(pFeature.get_Value(FeaClsLane.FindField(Lane.ArcIDNm)));
+                if (FeaClsLane.FindField(Lane.VehClassesNm) > 0)
+                    laneEty.VehClasses = Convert.ToString(pFeature.get_Value(FeaClsLane.FindField(Lane.VehClassesNm)));
 
-                if (FeaClsLane.FindField(LaneClosedNm) > 0)
-                    laneEty.LaneClosed = Convert.ToInt32(pFeature.get_Value(FeaClsLane.FindField(LaneClosedNm)));
-                if (FeaClsLane.FindField(OtherNm) > 0)
-                    laneEty.LaneClosed = Convert.ToInt32(pFeature.get_Value(FeaClsLane.FindField(OtherNm)));
-                if (FeaClsLane.FindField(WidthNm) > 0)
-                    laneEty.Width = Convert.ToDouble(pFeature.get_Value(FeaClsLane.FindField(WidthNm)));
+                if (FeaClsLane.FindField(Lane.LaneClosedNm) > 0)
+                    laneEty.LaneClosed = Convert.ToInt32(pFeature.get_Value(FeaClsLane.FindField(Lane.LaneClosedNm)));
+                if (FeaClsLane.FindField(Lane.OtherNm) > 0)
+                    laneEty.LaneClosed = Convert.ToInt32(pFeature.get_Value(FeaClsLane.FindField(Lane.OtherNm)));
+                if (FeaClsLane.FindField(Lane.WidthNm) > 0)
+                    laneEty.Width = Convert.ToDouble(pFeature.get_Value(FeaClsLane.FindField(Lane.WidthNm)));
 
             }
             return laneEty;
@@ -228,36 +214,36 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LaneLayer
 
             if (updateLaneEty.LaneID > 0)
             {
-                if (FeaClsLane.FindField(LaneIDNm) >= 0)
-                    laneFeature.set_Value(FeaClsLane.FindField(LaneIDNm), updateLaneEty.LaneID);
+                if (FeaClsLane.FindField(Lane.LaneIDNm) >= 0)
+                    laneFeature.set_Value(FeaClsLane.FindField(Lane.LaneIDNm), updateLaneEty.LaneID);
             }
             else
             {
-                if (FeaClsLane.FindField(LaneIDNm) >= 0)
-                    laneFeature.set_Value(FeaClsLane.FindField(LaneIDNm), laneFeature.OID);
+                if (FeaClsLane.FindField(Lane.LaneIDNm) >= 0)
+                    laneFeature.set_Value(FeaClsLane.FindField(Lane.LaneIDNm), laneFeature.OID);
             }
-            if (FeaClsLane.FindField(PositionNm) >= 0)
-                laneFeature.set_Value(FeaClsLane.FindField(PositionNm), updateLaneEty.Position);
+            if (FeaClsLane.FindField(Lane.PositionNm) >= 0)
+                laneFeature.set_Value(FeaClsLane.FindField(Lane.PositionNm), updateLaneEty.Position);
 
 
-            if (FeaClsLane.FindField(ChangeNm) >= 0)
-                laneFeature.set_Value(FeaClsLane.FindField(ChangeNm), updateLaneEty.Change);
-            if (FeaClsLane.FindField(ArcIDNm) >= 0)
-                laneFeature.set_Value(FeaClsLane.FindField(ArcIDNm), updateLaneEty.ArcID);
-            if (FeaClsLane.FindField(LeftBoundaryIDNm) >= 0)
-                laneFeature.set_Value(FeaClsLane.FindField(LeftBoundaryIDNm), updateLaneEty.LeftBoundaryID);
+            if (FeaClsLane.FindField(Lane.ChangeNm) >= 0)
+                laneFeature.set_Value(FeaClsLane.FindField(Lane.ChangeNm), updateLaneEty.Change);
+            if (FeaClsLane.FindField(Lane.ArcIDNm) >= 0)
+                laneFeature.set_Value(FeaClsLane.FindField(Lane.ArcIDNm), updateLaneEty.ArcID);
+            if (FeaClsLane.FindField(Lane.LeftBoundaryIDNm) >= 0)
+                laneFeature.set_Value(FeaClsLane.FindField(Lane.LeftBoundaryIDNm), updateLaneEty.LeftBoundaryID);
 
-            if (FeaClsLane.FindField(RightBoundaryIDNm) >= 0)
-                laneFeature.set_Value(FeaClsLane.FindField(RightBoundaryIDNm), updateLaneEty.RightBoundaryID);
-            if (FeaClsLane.FindField(VehClassesNm) >= 0)
-                laneFeature.set_Value(FeaClsLane.FindField(VehClassesNm), updateLaneEty.VehClasses);
-            if (FeaClsLane.FindField(LaneClosedNm) >= 0)
-                laneFeature.set_Value(FeaClsLane.FindField(LaneClosedNm), updateLaneEty.LaneClosed);
+            if (FeaClsLane.FindField(Lane.RightBoundaryIDNm) >= 0)
+                laneFeature.set_Value(FeaClsLane.FindField(Lane.RightBoundaryIDNm), updateLaneEty.RightBoundaryID);
+            if (FeaClsLane.FindField(Lane.VehClassesNm) >= 0)
+                laneFeature.set_Value(FeaClsLane.FindField(Lane.VehClassesNm), updateLaneEty.VehClasses);
+            if (FeaClsLane.FindField(Lane.LaneClosedNm) >= 0)
+                laneFeature.set_Value(FeaClsLane.FindField(Lane.LaneClosedNm), updateLaneEty.LaneClosed);
 
-            if (FeaClsLane.FindField(WidthNm) >= 0)
-                laneFeature.set_Value(FeaClsLane.FindField(WidthNm), updateLaneEty.Width);
-            if (FeaClsLane.FindField(OtherNm) >= 0)
-                laneFeature.set_Value(FeaClsLane.FindField(OtherNm), updateLaneEty.Other);
+            if (FeaClsLane.FindField(Lane.WidthNm) >= 0)
+                laneFeature.set_Value(FeaClsLane.FindField(Lane.WidthNm), updateLaneEty.Width);
+            if (FeaClsLane.FindField(Lane.OtherNm) >= 0)
+                laneFeature.set_Value(FeaClsLane.FindField(Lane.OtherNm), updateLaneEty.Other);
 
             laneFeature.Shape = line;
             laneFeature.Store();
@@ -270,7 +256,7 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LaneLayer
         {
             IFeatureCursor cursor;
             IQueryFilter filter = new QueryFilterClass();
-            filter.WhereClause = String.Format("{0} = {1}", LaneIDNm, prelaneID);
+            filter.WhereClause = String.Format("{0} = {1}", Lane.LaneIDNm, prelaneID);
 
             cursor= FeaClsLane.Search(filter, false);
             IFeature laneFea = cursor.NextFeature();
@@ -280,43 +266,43 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LaneLayer
                 Lane preLaneEty = GetEntity(laneFea);
                 if (updateLaneConnEty.ArcID != preLaneEty.ArcID)
                 {
-                    laneFea.set_Value(FeaClsLane.FindField(ArcIDNm), updateLaneConnEty.ArcID);
+                    laneFea.set_Value(FeaClsLane.FindField(Lane.ArcIDNm), updateLaneConnEty.ArcID);
                 }
                 if (!updateLaneConnEty.Change.Equals(preLaneEty.Change))
                 {
-                    laneFea.set_Value(FeaClsLane.FindField(ChangeNm), updateLaneConnEty.Change);
+                    laneFea.set_Value(FeaClsLane.FindField(Lane.ChangeNm), updateLaneConnEty.Change);
                 }
                 if (!updateLaneConnEty.LeftBoundaryID.Equals(preLaneEty.LeftBoundaryID))
                 {
-                    laneFea.set_Value(FeaClsLane.FindField(LeftBoundaryIDNm), updateLaneConnEty.LeftBoundaryID);
+                    laneFea.set_Value(FeaClsLane.FindField(Lane.LeftBoundaryIDNm), updateLaneConnEty.LeftBoundaryID);
                 }
 
 
                 if (!updateLaneConnEty.RightBoundaryID.Equals(preLaneEty.RightBoundaryID))
                 {
-                    laneFea.set_Value(FeaClsLane.FindField(RightBoundaryIDNm), updateLaneConnEty.RightBoundaryID);
+                    laneFea.set_Value(FeaClsLane.FindField(Lane.RightBoundaryIDNm), updateLaneConnEty.RightBoundaryID);
                 }
                 if (updateLaneConnEty.LaneClosed != preLaneEty.LaneClosed)
                 {
-                    laneFea.set_Value(FeaClsLane.FindField(LaneClosedNm), updateLaneConnEty.LaneClosed);
+                    laneFea.set_Value(FeaClsLane.FindField(Lane.LaneClosedNm), updateLaneConnEty.LaneClosed);
                 }
                 if (!updateLaneConnEty.VehClasses.Equals(preLaneEty.VehClasses))
                 {
-                    laneFea.set_Value(FeaClsLane.FindField(VehClassesNm), updateLaneConnEty.VehClasses);
+                    laneFea.set_Value(FeaClsLane.FindField(Lane.VehClassesNm), updateLaneConnEty.VehClasses);
                 }
 
                 if (updateLaneConnEty.Width != preLaneEty.Width)
                 {
-                    laneFea.set_Value(FeaClsLane.FindField(WidthNm), updateLaneConnEty.Width);
+                    laneFea.set_Value(FeaClsLane.FindField(Lane.WidthNm), updateLaneConnEty.Width);
                 }
                 if (updateLaneConnEty.Other != preLaneEty.Other)
                 {
-                    laneFea.set_Value(FeaClsLane.FindField(OtherNm), updateLaneConnEty.Other);
+                    laneFea.set_Value(FeaClsLane.FindField(Lane.OtherNm), updateLaneConnEty.Other);
                 }
 
                 if (updateLaneConnEty.Position != preLaneEty.Position)
                 {
-                    laneFea.set_Value(FeaClsLane.FindField(PositionNm), updateLaneConnEty.Position);
+                    laneFea.set_Value(FeaClsLane.FindField(Lane.PositionNm), updateLaneConnEty.Position);
                 }
 
                 laneFea.Store();

@@ -115,10 +115,6 @@ namespace RoadNetworkSystem
 
         #region ****************数据库*******************
 
-        /// <summary>
-        /// 数据库所在文件夹的目录
-        /// </summary>
-        public string solutionPath = "";
 
         /// <summary>
         /// 数据库的名称
@@ -360,7 +356,7 @@ namespace RoadNetworkSystem
             /// <param name="e"></param>
             private void 空数据库ToolStripMenuItem_Click(object sender, EventArgs e)
             {
-                DatabaseDesigner.CreateGDGDialoge(ref solutionPath, ref MdbName, ref _mdbPath);
+                DatabaseDesigner.CreateGDGDialoge(ref _rootPath, ref MdbName, ref _mdbPath);
                 UpdateGeoDatabase(_mdbPath);
                 UpdateOleDbConnection(_mdbPath);
             }
@@ -382,7 +378,7 @@ namespace RoadNetworkSystem
             /// <param name="e"></param>
             private void 仿真路网数据库ToolStripMenuItem_Click(object sender, EventArgs e)
             {
-                IWorkspace temWorkSpace = DatabaseDesigner.CreateGDGDialoge(ref solutionPath, ref MdbName, ref _mdbPath);
+                IWorkspace temWorkSpace = DatabaseDesigner.CreateGDGDialoge(ref _rootPath, ref MdbName, ref _mdbPath);
                 DatabaseDesigner.CreateSimNetworkDb(temWorkSpace);
                 addMayLayers(temWorkSpace);
                 UpdateGeoDatabase(temWorkSpace.PathName);
@@ -397,7 +393,7 @@ namespace RoadNetworkSystem
             /// <param name="e"></param>
             private void 指路标志路网数据库ToolStripMenuItem_Click(object sender, EventArgs e)
             {
-                DatabaseDesigner.CreateGDGDialoge(ref solutionPath, ref MdbName, ref _mdbPath);
+                DatabaseDesigner.CreateGDGDialoge(ref _rootPath, ref MdbName, ref _mdbPath);
                 UpdateGeoDatabase(_mdbPath);
                 UpdateOleDbConnection(_mdbPath);
             }
@@ -436,19 +432,19 @@ namespace RoadNetworkSystem
             private void vissimToolStripMenuItem1_Click(object sender, EventArgs e)
             {
                 Basic2Vissim basic2Vissim = new Basic2Vissim(Conn);
-                basic2Vissim.CreateVissimdata(solutionPath, _mdbPath);
+                basic2Vissim.CreateVissimdata(_rootPath, _mdbPath);
             }
 
             private void paramicsToolStripMenuItem1_Click(object sender, EventArgs e)
             {
                 Basic2Paramics basic2Paramics = new Basic2Paramics(Conn);
-                basic2Paramics.CreateParamicsdata(solutionPath, _mdbPath);
+                basic2Paramics.CreateParamicsdata(_rootPath, _mdbPath);
             }
 
             private void transModelerToolStripMenuItem_Click(object sender, EventArgs e)
             {
                 Basic2Vissim basic2Vissim = new Basic2Vissim(Conn);
-                basic2Vissim.CreateVissimdata(solutionPath, _mdbPath);
+                basic2Vissim.CreateVissimdata(_rootPath, _mdbPath);
             }
             #endregion ------------路网转换------------
 

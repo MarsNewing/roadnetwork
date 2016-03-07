@@ -86,7 +86,6 @@ C:\Users\newingming\Documents\Visual Studio 2012\Projects\roadnetwork\RoadNetwor
 C:\Users\newingming\Documents\Visual Studio 2012\Projects\roadnetwork\RoadNetworkSystem\bin\Debug\ESRI.ArcGIS.Server.xml
 C:\Users\newingming\Documents\Visual Studio 2012\Projects\roadnetwork\RoadNetworkSystem\bin\Debug\ESRI.ArcGIS.SystemUI.xml
 C:\Users\newingming\Documents\Visual Studio 2012\Projects\roadnetwork\RoadNetworkSystem\bin\Debug\AxInterop.esriControls.dll
-C:\Users\newingming\Documents\Visual Studio 2012\Projects\roadnetwork\RoadNetworkSystem\obj\Debug\RoadNetworkSystem.csprojResolveAssemblyReference.cache
 C:\Users\newingming\Documents\Visual Studio 2012\Projects\roadnetwork\RoadNetworkSystem\obj\Debug\RoadNetworkSystem.Form1.resources
 C:\Users\newingming\Documents\Visual Studio 2012\Projects\roadnetwork\RoadNetworkSystem\obj\Debug\RoadNetworkSystem.Properties.Resources.resources
 C:\Users\newingming\Documents\Visual Studio 2012\Projects\roadnetwork\RoadNetworkSystem\obj\Debug\RoadNetworkSystem.csproj.GenerateResource.Cache

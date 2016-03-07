@@ -395,7 +395,8 @@ namespace RoadNetworkSystem.VissimDataTransform
                 OverNode = SearchOverNode(pFeatClsArc, fromArcID, toArcID, fnumlane, tnumlane, flanepos, tlanepos);
                 OleDbCommand insertCom = new OleDbCommand();
                 insertCom.Connection = _conn;
-                str = "insert into Vissim_Connector(id,Name,FLink,TLink,FLane,TLane,FPos,TPos,Overnode) Values(" + m + ",'" + rodename + "'," + flink + "," + tlink + ",'" + flane + "','" + tlane + "'," + FPos + "," + TPos + ",'" + OverNode + "')";
+                str = "insert into Vissim_Connector(id,Name,FLink,TLink,FLane,TLane,FPos,TPos,Overnode) "+
+                    "Values(" + m + ",'" + rodename + "'," + flink + "," + tlink + ",'" + flane + "','" + tlane + "'," + FPos + "," + TPos + ",'" + OverNode + "')";
                 insertCom.CommandText = str;
                 insertCom.ExecuteNonQuery();
             }

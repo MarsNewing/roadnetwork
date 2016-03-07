@@ -21,7 +21,7 @@ namespace RoadNetworkSystem.WinForm.RuleSetting
         /// <summary>
         /// 某个arc方向的车道信息
         /// </summary>
-        private List<Lane> turningArcLanes;
+        private List<Lane> g_turningArcLanes;
             
 
         /*
@@ -31,12 +31,12 @@ namespace RoadNetworkSystem.WinForm.RuleSetting
          * 4：掉头
          * 
          */
-        Dictionary<int, IFeature> turnArc;
+        Dictionary<int, IFeature> g_turnArc;
 
         public TurningRule(Form1 frm1)
         {
             g_frm1 = frm1;
-           
+            g_turningArcLanes = new List<Lane>();
         }
 
         private void clearModifyGroup()

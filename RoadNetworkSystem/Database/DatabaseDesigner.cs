@@ -511,44 +511,44 @@ namespace RoadNetworkSystem.NetworkExtraction.LaneBasedNetwork.DatabaseManager
                             IFieldsEdit pFieldsEdit = fields as IFieldsEdit;
 
 
-                            IFieldEdit pFieldEdit = FeatureClassHelper.CreateField(LaneFeatureService.ArcIDNm, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
+                            IFieldEdit pFieldEdit = FeatureClassHelper.CreateField(Lane.ArcIDNm, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
                             pFieldsEdit.AddField(pFieldEdit);
 
-                            pFieldEdit = FeatureClassHelper.CreateField(LaneFeatureService.LaneIDNm, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
-                            pFieldsEdit.AddField(pFieldEdit);
-
-
-                            pFieldEdit = FeatureClassHelper.CreateField(LaneFeatureService.PositionNm, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
+                            pFieldEdit = FeatureClassHelper.CreateField(Lane.LaneIDNm, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
                             pFieldsEdit.AddField(pFieldEdit);
 
 
-                            pFieldEdit = FeatureClassHelper.CreateField(LaneFeatureService.ArcIDNm, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
-                            pFieldsEdit.AddField(pFieldEdit);
-
-                            pFieldEdit = FeatureClassHelper.CreateField(LaneFeatureService.ChangeNm, esriFieldType.esriFieldTypeString, 50, 0, "", true, true);
-                            pFieldsEdit.AddField(pFieldEdit);
-
-                            pFieldEdit = FeatureClassHelper.CreateField(LaneFeatureService.LeftBoundaryIDNm, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
+                            pFieldEdit = FeatureClassHelper.CreateField(Lane.PositionNm, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
                             pFieldsEdit.AddField(pFieldEdit);
 
 
-                            pFieldEdit = FeatureClassHelper.CreateField(LaneFeatureService.RightBoundaryIDNm, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
+                            pFieldEdit = FeatureClassHelper.CreateField(Lane.ArcIDNm, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
                             pFieldsEdit.AddField(pFieldEdit);
 
-                            pFieldEdit = FeatureClassHelper.CreateField(LaneFeatureService.VehClassesNm, esriFieldType.esriFieldTypeString, 50, 0, "", true, true);
+                            pFieldEdit = FeatureClassHelper.CreateField(Lane.ChangeNm, esriFieldType.esriFieldTypeString, 50, 0, "", true, true);
                             pFieldsEdit.AddField(pFieldEdit);
 
-                            pFieldEdit = FeatureClassHelper.CreateField(LaneFeatureService.LaneClosedNm, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
+                            pFieldEdit = FeatureClassHelper.CreateField(Lane.LeftBoundaryIDNm, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
                             pFieldsEdit.AddField(pFieldEdit);
 
 
-                            pFieldEdit = FeatureClassHelper.CreateField(LaneFeatureService.WidthNm, esriFieldType.esriFieldTypeDouble, 50, 0, "", true, true);
+                            pFieldEdit = FeatureClassHelper.CreateField(Lane.RightBoundaryIDNm, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
                             pFieldsEdit.AddField(pFieldEdit);
 
-                            pFieldEdit = FeatureClassHelper.CreateField(LaneFeatureService.OtherNm, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
+                            pFieldEdit = FeatureClassHelper.CreateField(Lane.VehClassesNm, esriFieldType.esriFieldTypeString, 50, 0, "", true, true);
                             pFieldsEdit.AddField(pFieldEdit);
 
-                            IFeatureClass pLaneClass = FeatureClassHelper.CreateFeatureClass(feaDS, Lane.LaneName, esriGeometryType.esriGeometryPolyline, fields, LaneFeatureService.LaneIDNm);
+                            pFieldEdit = FeatureClassHelper.CreateField(Lane.LaneClosedNm, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
+                            pFieldsEdit.AddField(pFieldEdit);
+
+
+                            pFieldEdit = FeatureClassHelper.CreateField(Lane.WidthNm, esriFieldType.esriFieldTypeDouble, 50, 0, "", true, true);
+                            pFieldsEdit.AddField(pFieldEdit);
+
+                            pFieldEdit = FeatureClassHelper.CreateField(Lane.OtherNm, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
+                            pFieldsEdit.AddField(pFieldEdit);
+
+                            IFeatureClass pLaneClass = FeatureClassHelper.CreateFeatureClass(feaDS, Lane.LaneName, esriGeometryType.esriGeometryPolyline, fields, Lane.LaneIDNm);
                             return pLaneClass;
 
                         }

@@ -386,7 +386,7 @@ namespace RoadNetworkSystem.ParamicsDataTransform
 
 
                                         //查找当前fromlane的车道位置
-                                        s_Str = "select [Position] from "+Lane.LaneName+" where "+LaneFeatureService.LaneIDNm+"=" +
+                                        s_Str = "select [Position] from "+Lane.LaneName+" where "+Lane.LaneIDNm+"=" +
                                             dat.Rows[i][LaneConnectorFeatureService.fromArcIDNm].ToString();
 
                                         s_String = new OleDbCommand(s_Str, _conn);
@@ -406,7 +406,7 @@ namespace RoadNetworkSystem.ParamicsDataTransform
 
                                         //--------------------------------------
                                         //查找当前tolane的车道位置
-                                        s_Str = "select [Position] from  " + Lane.LaneName + " where " + LaneFeatureService.LaneIDNm + "="
+                                        s_Str = "select [Position] from  " + Lane.LaneName + " where " + Lane.LaneIDNm + "="
                                             + dat.Rows[i][LaneConnectorFeatureService.fromArcIDNm].ToString();
                                         s_String = new OleDbCommand(s_Str, _conn);
                                         LanePosition2 = Convert.ToInt16(s_String.ExecuteScalar());
@@ -507,7 +507,7 @@ namespace RoadNetworkSystem.ParamicsDataTransform
                                 lanenext.OutNum = 1;
 
                                 //查找当前fromlane的车道位置
-                                s_Str = "select [Position] from "+Lane.LaneName+" where "+LaneFeatureService.LaneIDNm+"=" + 
+                                s_Str = "select [Position] from "+Lane.LaneName+" where "+Lane.LaneIDNm+"=" + 
                                     dat.Rows[i][LaneConnectorFeatureService.fromLaneIDNm].ToString();
                                 s_String = new OleDbCommand(s_Str, _conn);
                                 LanePosition1 = Convert.ToInt16(s_String.ExecuteScalar());
@@ -517,7 +517,7 @@ namespace RoadNetworkSystem.ParamicsDataTransform
 
                                 //--------------------------------------
                                 //查找当前tolane的车道位置
-                                s_Str = "select [Position] from " + Lane.LaneName + " where " + LaneFeatureService.LaneIDNm + "=" + 
+                                s_Str = "select [Position] from " + Lane.LaneName + " where " + Lane.LaneIDNm + "=" + 
                                     dat.Rows[i][LaneConnectorFeatureService.toLaneIDNm].ToString();
                                 s_String = new OleDbCommand(s_Str, _conn);
                                 LanePosition2 = Convert.ToInt16(s_String.ExecuteScalar());

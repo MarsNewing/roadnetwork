@@ -468,11 +468,11 @@ namespace RoadNetworkSystem.TransmodelerDataTransform
 
 
                 n++;
-                laneid = Convert.ToInt32(reader[LaneFeatureService.LaneIDNm]);
-                lanearcid = Convert.ToInt32(reader[LaneFeatureService.ArcIDNm]);
-                lanepos = Convert.ToInt32(reader[LaneFeatureService.PositionNm]);
+                laneid = Convert.ToInt32(reader[Lane.LaneIDNm]);
+                lanearcid = Convert.ToInt32(reader[Lane.ArcIDNm]);
+                lanepos = Convert.ToInt32(reader[Lane.PositionNm]);
                 //lanepos = lanepos - 1;钮中铭修改于20150109,定义Position从0开始结束
-                lanechange = Convert.ToString(reader[LaneFeatureService.ChangeNm]);
+                lanechange = Convert.ToString(reader[Lane.ChangeNm]);
                 string Str_1 = "select " + Arc.LinkIDNm + " from " + Arc.ArcFeatureName + " where " + Arc.ArcIDNm + "=" + lanearcid;
                 OleDbCommand Com_1 = new OleDbCommand(Str_1, _conn);
                 laneseg = Convert.ToInt32(Com_1.ExecuteScalar());

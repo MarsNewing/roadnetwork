@@ -333,7 +333,7 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LinkLayer
             {
                 try
                 {
-                    int lFld = pFeaClsLane.FindField(LaneFeatureService.WidthNm);
+                    int lFld = pFeaClsLane.FindField(Lane.WidthNm);
                     double temLaneWidth = Convert.ToDouble(pFeatureLane.get_Value(lFld));
                     curWidth = curWidth + temLaneWidth;
                     pFeatureLane = cursor.NextFeature();
@@ -365,7 +365,7 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LinkLayer
             {
                 try
                 {
-                    int lFld = pFeaClsLane.FindField(LaneFeatureService.WidthNm);
+                    int lFld = pFeaClsLane.FindField(Lane.WidthNm);
                     double temLaneWidth = Convert.ToDouble(pFeatureLane.get_Value(lFld));
                     if (cursorIndex <= serial)
                     {

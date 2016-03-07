@@ -242,7 +242,7 @@ namespace RoadNetworkSystem.NetworkElement.RoadSignElement
         {
             IFeatureCursor cursor;
             IQueryFilter filter = new QueryFilterClass();
-            filter.WhereClause = LaneFeatureService.ArcIDNm + " = " + arcID;
+            filter.WhereClause = Lane.ArcIDNm + " = " + arcID;
             cursor = pFeaClsLane.Search(filter, false);
             IFeature pFeature = cursor.NextFeature();
 
@@ -289,7 +289,8 @@ namespace RoadNetworkSystem.NetworkElement.RoadSignElement
                 //删掉车道内部的导向箭头
                 IFeatureCursor cursorArrow;
                 IQueryFilter filterArrow = new QueryFilterClass();
-                filterArrow.WhereClause = TurnArrowService.LaneIDNm + " = " + Convert.ToInt32(pFeature.get_Value(pFeaClsLane.FindField(LaneFeatureService.LaneIDNm)));
+                filterArrow.WhereClause = TurnArrowService.LaneIDNm + " = " +
+                    Convert.ToInt32(pFeature.get_Value(pFeaClsLane.FindField(Lane.LaneIDNm)));
                 cursorArrow = FeaClsTurnArrow.Search(filterArrow, false);
                 IFeature feaArrow = cursorArrow.NextFeature();
                 while (feaArrow != null)
@@ -306,7 +307,7 @@ namespace RoadNetworkSystem.NetworkElement.RoadSignElement
                 arrowEty.ArcID = ArrowID;
                 arrowEty.ANGLE = angle;
                 arrowEty.ArrowType = 0;
-                arrowEty.LaneID = Convert.ToInt32(pFeature.get_Value(pFeaClsLane.FindField(LaneFeatureService.LaneIDNm)));
+                arrowEty.LaneID = Convert.ToInt32(pFeature.get_Value(pFeaClsLane.FindField(Lane.LaneIDNm)));
                 arrowEty.Other = 0;
                 arrowEty.PrecedeArrows = "";
                 arrowEty.Serial = 0;
@@ -324,7 +325,7 @@ namespace RoadNetworkSystem.NetworkElement.RoadSignElement
         {
             IFeatureCursor cursor;
             IQueryFilter filter = new QueryFilterClass();
-            filter.WhereClause = LaneFeatureService.ArcIDNm + " = " + arcID;
+            filter.WhereClause = Lane.ArcIDNm + " = " + arcID;
             cursor = pFeaClsLane.Search(filter, false);
             IFeature pFeature = cursor.NextFeature();
             int preArrowID = 0;
@@ -366,7 +367,7 @@ namespace RoadNetworkSystem.NetworkElement.RoadSignElement
                 //删掉车道内部的导向箭头
                 IFeatureCursor cursorArrow;
                 IQueryFilter filterArrow = new QueryFilterClass();
-                filterArrow.WhereClause = TurnArrowService.LaneIDNm + " = " + Convert.ToInt32(pFeature.get_Value(pFeaClsLane.FindField(LaneFeatureService.LaneIDNm)));
+                filterArrow.WhereClause = TurnArrowService.LaneIDNm + " = " + Convert.ToInt32(pFeature.get_Value(pFeaClsLane.FindField(Lane.LaneIDNm)));
                 cursorArrow = FeaClsTurnArrow.Search(filterArrow, false);
                 IFeature feaArrow = cursorArrow.NextFeature();
                 while (feaArrow != null)

@@ -390,7 +390,7 @@ namespace RoadNetworkSystem.NetworkEditor.EditorFlow
                 LaneFeatureService lane = new LaneFeatureService(_pFeaClsLane, 0);
                 IFeatureCursor cursorLane;
                 IQueryFilter filterLane = new QueryFilterClass();
-                filterLane.WhereClause = LaneFeatureService.ArcIDNm + " = " + arcEty.ArcID;
+                filterLane.WhereClause = Lane.ArcIDNm + " = " + arcEty.ArcID;
                 cursorLane = _pFeaClsLane.Search(filterLane, false);
                 IFeature laneFea = cursorLane.NextFeature();
 

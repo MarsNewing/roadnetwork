@@ -398,13 +398,13 @@ namespace RoadNetworkSystem.VissimDataTransform
 
                 int m = 9999 + ConnectorID;
                 int k = 0, j = 0;
-                for (int i = fnumlane - 1; i >= FIRSTLANEPOS; i--)
+                for (int i = fnumlane; i >= FIRSTLANEPOS; i--)
                 {
                     k++;
                     if (flanepos == i)
                         flane = k;
                 }
-                for (int i = tnumlane - 1; i >= FIRSTLANEPOS; i--)
+                for (int i = tnumlane; i >= FIRSTLANEPOS; i--)
                 {
                     j++;
                     if (tlanepos == i)
@@ -688,8 +688,12 @@ namespace RoadNetworkSystem.VissimDataTransform
                 Measure = 0.100;
                 tPoint = SearchPoint(line, tnumlane, lanwidth, Measure);
 
-                pPoint1 = fPoint[flanepos] as IPoint;
-                pPoint2 = tPoint[tlanepos] as IPoint;
+                if (flanepos >= fPoint.Count)
+                {
+                    int test = 0;
+                }
+                pPoint1 = fPoint[flanepos - Lane.LEFT_POSITION] as IPoint;
+                pPoint2 = tPoint[tlanepos - Lane.LEFT_POSITION] as IPoint;
 
                 pPoint3X = (pPoint1.X + pPoint2.X) / 2;
                 pPoint3Y = (pPoint1.Y + pPoint2.Y) / 2;
