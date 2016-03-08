@@ -1241,12 +1241,12 @@ namespace RoadNetworkSystem
                                     (int)RoadNetworkSystem.WinForm.RuleSetting.RuleSettingDesigner.RuleRoadItem.车道)
                                 {
                                     SlctLane_Rule = pFeature;
-                                    if (comboBox_Lane_Rule_Selection.SelectedText.Equals(RoadNetworkSystem.WinForm.RuleSetting.RuleSettingDesigner.LaneRule.横向连通))
+                                    if (comboBox_Lane_Rule_Selection.SelectedIndex == Convert.ToInt32(RoadNetworkSystem.WinForm.RuleSetting.RuleSettingDesigner.LaneRule.横向连通))
                                     {
                                         LaternConnection laternConnection = new LaternConnection(this);
                                         laternConnection.LayoutLaternConnection();
                                     }
-                                    else if (comboBox_Lane_Rule_Selection.SelectedText.Equals(RoadNetworkSystem.WinForm.RuleSetting.RuleSettingDesigner.LaneRule.转向))
+                                    else if (comboBox_Lane_Rule_Selection.SelectedIndex == Convert.ToInt32(RoadNetworkSystem.WinForm.RuleSetting.RuleSettingDesigner.LaneRule.转向))
                                     {
                                         TurningRule turningRule = new TurningRule(this);
                                         turningRule.LayoutTurnarrowRule();

@@ -24,9 +24,13 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.Connection
         /// <param name="straightTurnArcs"></param>
         /// <param name="uturnTurnArcs"></param>
         public static void GetTurnTurningArcs(Arc fromArc,
-            IFeatureClass pFeaClsLink, IFeatureClass pFeaClsArc, IFeatureClass pFeaClsNode,
-            ref List<Arc> leftTurnArcs, ref List<Arc> rightTurnArcs,
-            ref List<Arc> straightTurnArcs, ref List<Arc> uturnTurnArcs)
+            IFeatureClass pFeaClsLink,
+            IFeatureClass pFeaClsArc, 
+            IFeatureClass pFeaClsNode,
+            ref List<Arc> leftTurnArcs, 
+            ref List<Arc> rightTurnArcs,
+            ref List<Arc> straightTurnArcs, 
+            ref List<Arc> uturnTurnArcs)
         {
             Node nextNode = PhysicalConnection.getNextNode(pFeaClsLink, pFeaClsArc, pFeaClsNode, fromArc);
             Arc[] exitArcs = GetNodeExitArcs(pFeaClsLink, pFeaClsArc, nextNode);
@@ -73,7 +77,10 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.Connection
         /// <param name="link"></param>link对象
         /// <param name="nextNode"></param>前方NodeID
         /// <param name="preNode"></param>后方NodeID
-        public static void GetArcCorresponseNodes(ArcService arc, LinkService link, ref int nextNode, ref int preNode)
+        public static void GetArcCorresponseNodes(ArcService arc, 
+            LinkService link,
+            ref int nextNode, 
+            ref int preNode)
         {
             Arc arcEty = new Arc();
             arcEty = arc.GetArcEty(arc.ArcFeature);
@@ -103,7 +110,8 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.Connection
         /// <param name="fromLink"></param>起始Link
         /// <param name="toLink"></param>终止Link
         /// <returns></returns>
-        public static string GetTurningDir(LinkService fromLink, LinkService toLink)
+        public static string GetTurningDir(LinkService fromLink, 
+            LinkService toLink)
         {
             //返回的Link的相对方向
             string TurningDir = "";
@@ -206,7 +214,9 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.Connection
         /// <param name="junctionNode"></param>
         /// <param name="exitLinkEty"></param>
         /// <returns></returns>
-        public static IFeature GetExitArc(IFeatureClass pFeaClsArc, int junctionNode, Link exitLinkEty)
+        public static IFeature GetExitArc(IFeatureClass pFeaClsArc, 
+            int junctionNode, 
+            Link exitLinkEty)
         {
 
             int nextArcFlowDir = 0;
@@ -245,8 +255,11 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.Connection
         /// <param name="preNode"></param>
         /// <param name="currentArcId"></param>
         /// <returns></returns>
-        public static int getPreNodeLateralOffsideLanes(IFeatureClass pFeaClsLink,IFeatureClass pFeaClsArc,IFeatureClass pFeaClsNode, 
-            Node preNode, int currentArcId)
+        public static int getPreNodeLateralOffsideLanes(IFeatureClass pFeaClsLink,
+            IFeatureClass pFeaClsArc,
+            IFeatureClass pFeaClsNode, 
+            Node preNode, 
+            int currentArcId)
         {
             Arc[] entranceArcs = GetNodeEntranceArcs(pFeaClsLink, pFeaClsArc, preNode);
             List<Arc> entranceArcList = filterInvalidArcs(entranceArcs);
@@ -329,7 +342,9 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.Connection
         /// <param name="nextNode"></param>
         /// <param name="currentArcId"></param>
         /// <returns></returns>
-        public static int getNextNodeLateralOffsideLanes(IFeatureClass pFeaClsLink, IFeatureClass pFeaClsArc, IFeatureClass pFeaClsNode, 
+        public static int getNextNodeLateralOffsideLanes(IFeatureClass pFeaClsLink,
+            IFeatureClass pFeaClsArc, 
+            IFeatureClass pFeaClsNode, 
             Node nextNode, int currentArcId)
         {
 
@@ -388,7 +403,8 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.Connection
         }
 
 
-        private static Arc getRequiredArcByLinkId(List<Arc> arcs, int linkId)
+        private static Arc getRequiredArcByLinkId(List<Arc> arcs, 
+            int linkId)
         {
             foreach (Arc temArc in arcs)
             {
@@ -406,7 +422,8 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.Connection
         /// <param name="currentArc"></param>
         /// <param name="pFeaClsLink"></param>
         /// <returns></returns>
-        public static bool isOnewayArc(Arc currentArc,IFeatureClass pFeaClsLink)
+        public static bool isOnewayArc(Arc currentArc,
+            IFeatureClass pFeaClsLink)
         {
             LinkService linkService = new LinkService(pFeaClsLink, currentArc.LinkID);
             IFeature linkFea = linkService.GetFeature();
@@ -430,7 +447,8 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.Connection
         /// <param name="junctionNode"></param>
         /// <param name="entranceLinkEty"></param>
         /// <returns></returns>
-        public static IFeature GetEntranceArc(IFeatureClass pFeaClsArc, int junctionNode, Link entranceLinkEty)
+        public static IFeature GetEntranceArc(IFeatureClass pFeaClsArc, 
+            int junctionNode, Link entranceLinkEty)
         {
             int preArcFlowDir = 0;
 
@@ -459,7 +477,9 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.Connection
         }
 
 
-        public static Arc[] GetNodeEntranceArcs(IFeatureClass pFeaClsLink,IFeatureClass pFeaClsArc,Node junctionEty)
+        public static Arc[] GetNodeEntranceArcs(IFeatureClass pFeaClsLink,
+            IFeatureClass pFeaClsArc,
+            Node junctionEty)
         {
             
             string[] adjLinks = junctionEty.AdjIDs.Split('\\');
@@ -495,7 +515,9 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.Connection
         }
 
 
-        public static Arc[] GetNodeExitArcs(IFeatureClass pFeaClsLink, IFeatureClass pFeaClsArc, Node junctionEty)
+        public static Arc[] GetNodeExitArcs(IFeatureClass pFeaClsLink, 
+            IFeatureClass pFeaClsArc, 
+            Node junctionEty)
         {
 
             string[] adjLinks = junctionEty.AdjIDs.Split('\\');
@@ -541,7 +563,8 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.Connection
         /// <param name="pFeaClsConnector"></param>
         /// <param name="laneEty"></param>
         /// <returns></returns>
-        public static List<string> GetLaneLeadTurnDir(IFeatureClass pFeaClsNode, IFeatureClass pFeaClsLink,
+        public static List<string> GetLaneLeadTurnDir(IFeatureClass pFeaClsNode,
+            IFeatureClass pFeaClsLink,
             IFeatureClass pFeaClsArc, IFeatureClass pFeaClsConnector, Lane laneEty)
         {
             List<string> leadingDir = new List<string>();
@@ -614,7 +637,11 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.Connection
         /// <param name="cursorLinkID"></param>游标车道，初始值为当前车道的LinkID
         /// <param name="entranceLinkID"></param>交叉口入口LinkID
         /// <returns></returns>
-        private static List<string> getLaneTurnDirInNode(IFeatureClass pFeaClsConn,int laneID,int cursorLinkID, int entranceLinkID,int recursionTime)
+        private static List<string> getLaneTurnDirInNode(IFeatureClass pFeaClsConn,
+            int laneID,
+            int cursorLinkID, 
+            int entranceLinkID,
+            int recursionTime)
         {
 
             if (cursorLinkID == entranceLinkID)
@@ -696,7 +723,10 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.Connection
         /// <param name="linkID"></param>
         /// <param name="nextNodeID"></param>
         /// <returns></returns>
-        public static List<int> getEntranceLinkInSeg(IFeatureClass pFeaClsLink,IFeatureClass pFeaClsNode,int linkID,int nextNodeID)
+        public static List<int> getEntranceLinkInSeg(IFeatureClass pFeaClsLink,
+            IFeatureClass pFeaClsNode,
+            int linkID,
+            int nextNodeID)
         {
            
             bool entranceLinkFlag = false;

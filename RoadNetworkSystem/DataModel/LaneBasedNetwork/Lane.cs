@@ -4,9 +4,23 @@ using System.Text;
 
 namespace RoadNetworkSystem.DataModel.LaneBasedNetwork
 {
-    class Lane
+    public class Lane
     {
         public const string LaneName = "Lane";
+        public const string LaneIDNm = "LaneID";
+        public const string PositionNm = "Position";
+
+        public const string ArcIDNm = "ArcID";
+        public const string ChangeNm = "Change";
+        public const string LeftBoundaryIDNm = "LeftBoundaryID";
+
+
+        public const string RightBoundaryIDNm = "RightBoundaryID";
+        public const string VehClassesNm = "VehClasses";
+        public const string LaneClosedNm = "LaneClosed";
+
+        public const string WidthNm = "Width";
+        public const string OtherNm = "Other";
 
         /// <summary>
         /// 第一个车道的起始编号

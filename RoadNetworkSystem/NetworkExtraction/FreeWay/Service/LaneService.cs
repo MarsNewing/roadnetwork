@@ -49,7 +49,7 @@ namespace RoadNetworkSystem.NetworkExtraction.FreeWay.Service
             feaNames.Add(Node.FEATURE_NODE_NAME);
             feaNames.Add(Arc.FEATURE_ARC_NAME);
 
-            feaClsList = FeatureClassHelper.GetFeaClsInAccess(mdbPath, feaNames);
+            feaClsList = FeatureClassHelper.GetFeaClsesInAccess(mdbPath, feaNames);
             pFeaClsRoad = feaClsList[0];
             pFeaClsSegment = feaClsList[1];
             pFeaClsSegNode = feaClsList[2];

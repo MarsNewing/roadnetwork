@@ -88,8 +88,8 @@ namespace RoadNetworkSystem.WinForm.NetworkEditor
 
             ////在Core选项卡中添加一个groupbox，用于管理相关操作
 
-            //WinFormDesigner.layoutGroupBox(_frm1.groupBox_Link_Operation, "Operation", _frm1.tabPage_link_core.Controls,
-            //    new Point(0, _frm1.groupBox_Link_BasicAtrr.Height), DockStyle.Top, 100,1);
+            //WinFormDesigner.layoutGroupBox(g_frm1.groupBox_Link_Operation, "Operation", g_frm1.tabPage_link_core.Controls,
+            //    new Point(0, g_frm1.groupBox_Link_BasicAtrr.Height), DockStyle.Top, 100,1);
 
 
             #endregion 设置中间编辑面板

@@ -570,14 +570,14 @@ namespace RoadNetworkSystem.NetworkExtraction.LaneBasedNetwork.LaneLayer
                     {
 
                         preBounID = curBounID;
-                        laneFeature.set_Value(_pFeaClsLane.FindField(LaneFeatureService.RightBoundaryIDNm), curBounID);
+                        laneFeature.set_Value(_pFeaClsLane.FindField(Lane.RightBoundaryIDNm), curBounID);
                         laneFeature.Store();
                     }
                     //其他车道左右侧边界线均可生成
                     else
                     {
-                        laneFeature.set_Value(_pFeaClsLane.FindField(LaneFeatureService.LeftBoundaryIDNm), preBounID);
-                        laneFeature.set_Value(_pFeaClsLane.FindField(LaneFeatureService.RightBoundaryIDNm), curBounID);
+                        laneFeature.set_Value(_pFeaClsLane.FindField(Lane.LeftBoundaryIDNm), preBounID);
+                        laneFeature.set_Value(_pFeaClsLane.FindField(Lane.RightBoundaryIDNm), curBounID);
                         laneFeature.Store();
                         preBounID = curBounID;
                     }
@@ -891,7 +891,7 @@ namespace RoadNetworkSystem.NetworkExtraction.LaneBasedNetwork.LaneLayer
                             pArcFea = cursor.NextFeature();
                             continue;
                         }
-                        int centerLineID = Convert.ToInt32(laneFea.get_Value(_pFeaClsLane.FindField(LaneFeatureService.LeftBoundaryIDNm)));
+                        int centerLineID = Convert.ToInt32(laneFea.get_Value(_pFeaClsLane.FindField(Lane.LeftBoundaryIDNm)));
                         BoundaryService boun = new BoundaryService(_pFeaClsBoundary, centerLineID);
                         IFeature bounFea = boun.GetFeature();
                         if (bounFea != null)
@@ -933,7 +933,7 @@ namespace RoadNetworkSystem.NetworkExtraction.LaneBasedNetwork.LaneLayer
                             //删除旧的CenterLine
                             LaneFeatureService lane = new LaneFeatureService(_pFeaClsLane, 0);
                             IFeature laneFea = lane.QueryFeatureBuRule(oppArcID, Lane.LEFT_POSITION);
-                            int centerLineID = Convert.ToInt32(laneFea.get_Value(_pFeaClsLane.FindField(LaneFeatureService.LeftBoundaryIDNm)));
+                            int centerLineID = Convert.ToInt32(laneFea.get_Value(_pFeaClsLane.FindField(Lane.LeftBoundaryIDNm)));
                             BoundaryService boun = new BoundaryService(_pFeaClsBoundary, centerLineID);
                             IFeature bounFea = boun.GetFeature();
                             if (bounFea != null)
@@ -1001,7 +1001,7 @@ namespace RoadNetworkSystem.NetworkExtraction.LaneBasedNetwork.LaneLayer
             IFeature sameLane = lane1.QueryFeatureBuRule(sameArcID, 0);
             if (sameLane != null)
             {
-                sameLane.set_Value(_pFeaClsLane.FindField(LaneFeatureService.LeftBoundaryIDNm), bounID);
+                sameLane.set_Value(_pFeaClsLane.FindField(Lane.LeftBoundaryIDNm), bounID);
                 sameLane.Store();
             }
 
@@ -1009,7 +1009,7 @@ namespace RoadNetworkSystem.NetworkExtraction.LaneBasedNetwork.LaneLayer
             IFeature oppLane = lane1.QueryFeatureBuRule(oppArcID, 0);
             if (oppLane != null)
             {
-                oppLane.set_Value(_pFeaClsLane.FindField(LaneFeatureService.LeftBoundaryIDNm), bounID);
+                oppLane.set_Value(_pFeaClsLane.FindField(Lane.LeftBoundaryIDNm), bounID);
                 oppLane.Store();
             }
 
@@ -1035,6 +1035,7 @@ namespace RoadNetworkSystem.NetworkExtraction.LaneBasedNetwork.LaneLayer
                 for (int i = Lane.LEFT_POSITION; i <= (cursorArc.LaneNum - Lane.rightPositionOffset); i++)
                 {
                     Lane lane = new Lane();
+                    
                     lane.LaneID = LaneFeatureService.GetLaneID(cursorArc.ArcID, i);
                     lane.ArcID=  cursorArc.ArcID;
                     lane.Position = i;

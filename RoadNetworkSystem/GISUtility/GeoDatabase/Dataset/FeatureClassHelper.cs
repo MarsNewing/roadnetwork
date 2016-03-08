@@ -10,7 +10,20 @@ namespace RoadNetworkSystem.GIS.GeoDatabase.Dataset
 {
     class FeatureClassHelper
     {
-        public static List<IFeatureClass> GetFeaClsInAccess(string mdbPath, List<string> feaClsNames)
+        public static IFeatureClass GetFeaClsInAccess(string mdbPath, string feaClsName)
+        {
+
+            List<IFeatureClass> feaClsList = new List<IFeatureClass>();
+
+            IAoInitialize m_AoInitialize = new AoInitialize();
+            m_AoInitialize.Initialize(esriLicenseProductCode.esriLicenseProductCodeArcInfo);
+            IWorkspaceFactory pWsFct = new AccessWorkspaceFactoryClass();
+            IWorkspace pWks = pWsFct.OpenFromFile(mdbPath, 0);
+
+            return (pWks as IFeatureWorkspace).OpenFeatureClass(feaClsName);
+        }
+
+        public static List<IFeatureClass> GetFeaClsesInAccess(string mdbPath, List<string> feaClsNames)
         {
 
             List<IFeatureClass> feaClsList = new List<IFeatureClass>();

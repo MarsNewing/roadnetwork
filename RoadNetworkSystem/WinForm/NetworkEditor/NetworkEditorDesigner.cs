@@ -76,14 +76,14 @@ namespace RoadNetworkSystem.WinForm.NetworkEditor
             WinFormDesigner.ClearPanel(_frm1.panel_Top);
             WinFormDesigner.ClearPanel(_frm1.panel_Bottom);
             WinFormDesigner.ClearPanel(_frm1.panel_Middle);
-            //_frm1.groupBox1.Visible = false;
+            //g_frm1.groupBox1.Visible = false;
             _frm1.panel_Top.Visible = true;
 
             _frm1.panel_Top.Visible = true;
             _frm1.panel_Top.AutoScroll = true;
 
-            //_frm1.panel_Bottom.Visible = true;
-            //_frm1.splitContainer5.Visible = false;
+            //g_frm1.panel_Bottom.Visible = true;
+            //g_frm1.splitContainer5.Visible = false;
         }
 
         private static void setPartsHeight()

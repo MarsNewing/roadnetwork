@@ -44,7 +44,7 @@ namespace RoadNetworkSystem.GIS.Interactive
         }
 
 
-        public static void HightLine(AxMapControl axMapControl1, IPolyline line, int rColor, int gColor,
+        public static IElement HightLine(AxMapControl axMapControl1, IPolyline line, int rColor, int gColor,
             int bColor, int size, esriSimpleLineStyle smapleStyle)
         {
             ILineElement pLineElement;
@@ -72,6 +72,27 @@ namespace RoadNetworkSystem.GIS.Interactive
             IGraphicsContainer pGraphicsContainer = pMap as IGraphicsContainer;
             pGraphicsContainer.AddElement(pLElement, 0);//把刚刚的element转到容器上  
             axMapControl1.ActiveView.PartialRefresh(esriViewDrawPhase.esriViewGraphics, null, null);
+            return pLElement;
+        }
+
+
+        public static void Refresh(AxMapControl axMapControl1)
+        {
+            //刷新所有的被选中的东东
+            IGraphicsContainer pGraphicsContainer = axMapControl1.ActiveView as IGraphicsContainer;//把地图的当前view作为图片的容器
+            pGraphicsContainer.DeleteAllElements();//显示储存在 IElement 中图形，这样就持久化了。
+            axMapControl1.Refresh();
+        }
+
+        public static void ClearElement(AxMapControl axMapControl1, IElement element)
+        {
+            if (null == element)
+            {
+                return;
+            }
+            IGraphicsContainer pGraphicsContainer = axMapControl1.ActiveView as IGraphicsContainer;//把地图的当前view作为图片的容器
+            pGraphicsContainer.DeleteElement(element);
+            axMapControl1.Refresh();
         }
 
         /// <summary>

@@ -14,6 +14,16 @@ using System.Windows.Forms;
 
 namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LaneLayer
 {
+
+    /// <summary>
+    /// 记录一个Lane与一个Arc多个车道的连通情况
+    /// </summary>
+    public struct LaneArcConnectedInfo
+    {
+        public Lane FromLane;
+        public List<Lane> ToLanes;
+        public string Dir;
+    }
     class LaneConnectorFeatureService
     {
         /// <summary>
@@ -248,6 +258,18 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LaneLayer
 
         }
 
+
+        public IFeature GetConnectorByLaneIds(int fromLaneId, int toLaneId)
+        {
+            IQueryFilter LCFilter1 = new QueryFilterClass();
+            LCFilter1.WhereClause = String.Format("fromLaneID={0} AND toLaneID={1}", fromLaneId, toLaneId);
+
+            IFeatureCursor LaneConnectorCursor1 = _pFeaClsConnector.Search(LCFilter1, false);
+            IFeature LaneConnectorRow1 = LaneConnectorCursor1.NextFeature();
+            return LaneConnectorRow1;
+
+        }
+
         /// <summary>
         /// 判断两个车道间是否存在车道连接器
         /// </summary>
@@ -279,12 +301,7 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LaneLayer
         {
             int connectorID = -1;
 
-            IQueryFilter LCFilter1 = new QueryFilterClass();
-            LCFilter1.WhereClause = String.Format("fromLaneID={0} AND toLaneID={1}", fromLaneID, toLaneID);
-
-            IFeatureCursor LaneConnectorCursor1 = _pFeaClsConnector.Search(LCFilter1, false);
-            IFeature LaneConnectorRow1 = LaneConnectorCursor1.NextFeature();
-
+            IFeature LaneConnectorRow1 = GetConnectorByLaneIds(fromLaneID, toLaneID);
             if (LaneConnectorRow1 != null)
             {
                 connectorID = Convert.ToInt32(LaneConnectorRow1.get_Value(_pFeaClsConnector.FindField("ConnectorID")));
@@ -551,7 +568,7 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LaneLayer
             {
                 return;
             }
-            int fromLaneID = Convert.ToInt32(fromLaneFea.get_Value(pFeaClsLane.FindField(LaneFeatureService.LaneIDNm)));
+            int fromLaneID = Convert.ToInt32(fromLaneFea.get_Value(pFeaClsLane.FindField(Lane.LaneIDNm)));
             IPolyline fromLine = fromLaneFea.ShapeCopy as IPolyline;
 
             int toArcID = toArc.ArcID;
@@ -560,7 +577,7 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LaneLayer
             {
                 return;
             }
-            int toLaneID = Convert.ToInt32(toLaneFea.get_Value(pFeaClsLane.FindField(LaneFeatureService.LaneIDNm)));
+            int toLaneID = Convert.ToInt32(toLaneFea.get_Value(pFeaClsLane.FindField(Lane.LaneIDNm)));
             IPolyline toLine = toLaneFea.ShapeCopy as IPolyline;
             IPolyline bezierLine = getConnectorShape(fromLine, toLine, nodePntForLeft, isStraignt);
 
@@ -698,11 +715,11 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LaneLayer
                 toLanePosition = Lane.LEFT_POSITION;
 
                 fromLaneFea = lane.QueryFeatureBuRule(fromArcID, fromLanePostition);
-                fromLaneID = Convert.ToInt32(fromLaneFea.get_Value(pFeaClsLane.FindField(LaneFeatureService.LaneIDNm)));
+                fromLaneID = Convert.ToInt32(fromLaneFea.get_Value(pFeaClsLane.FindField(Lane.LaneIDNm)));
                 fromLine = fromLaneFea.ShapeCopy as IPolyline;
 
                 toLaneFea = lane.QueryFeatureBuRule(toArcID, toLanePosition);
-                toLaneID = Convert.ToInt32(toLaneFea.get_Value(pFeaClsLane.FindField(LaneFeatureService.LaneIDNm)));
+                toLaneID = Convert.ToInt32(toLaneFea.get_Value(pFeaClsLane.FindField(Lane.LaneIDNm)));
                 toLine = toLaneFea.ShapeCopy as IPolyline;
                 bezierLine = getConnectorShape(fromLine, toLine, null, true);
 
@@ -723,7 +740,7 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LaneLayer
         /// <param name="nodePntForLeft"></param> Node 的几何，当该值为空值，获取两车道交点为中间控制点
         /// <param name="straightFlag"></param>
         /// <returns></returns>
-        private IPolyline getConnectorShape(IPolyline fromLine, IPolyline toLine,IPoint nodePnt,bool straightFlag)
+        public IPolyline getConnectorShape(IPolyline fromLine, IPolyline toLine,IPoint nodePnt,bool straightFlag)
         {
             IPolyline bezier = new PolylineClass();
             if (straightFlag == true)

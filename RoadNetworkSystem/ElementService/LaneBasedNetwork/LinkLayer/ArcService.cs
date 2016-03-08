@@ -3,6 +3,7 @@ using ESRI.ArcGIS.Geometry;
 using RoadNetworkSystem.ADO.Access;
 using RoadNetworkSystem.DataModel.LaneBasedNetwork;
 using RoadNetworkSystem.GIS;
+using RoadNetworkSystem.GIS.GeoDatabase.Dataset;
 using RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LaneLayer;
 using System;
 using System.Collections.Generic;
@@ -333,7 +334,7 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LinkLayer
             {
                 try
                 {
-                    int lFld = pFeaClsLane.FindField(LaneFeatureService.WidthNm);
+                    int lFld = pFeaClsLane.FindField(Lane.WidthNm);
                     double temLaneWidth = Convert.ToDouble(pFeatureLane.get_Value(lFld));
                     curWidth = curWidth + temLaneWidth;
                     pFeatureLane = cursor.NextFeature();
@@ -365,7 +366,7 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LinkLayer
             {
                 try
                 {
-                    int lFld = pFeaClsLane.FindField(LaneFeatureService.WidthNm);
+                    int lFld = pFeaClsLane.FindField(Lane.WidthNm);
                     double temLaneWidth = Convert.ToDouble(pFeatureLane.get_Value(lFld));
                     if (cursorIndex <= serial)
                     {
@@ -387,6 +388,51 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LinkLayer
             System.GC.WaitForPendingFinalizers();
 
             return curWidth;
+        }
+
+        /// <summary>
+        /// 找到Arc内部的所有的Lane
+        /// </summary>
+        /// <returns></returns>
+        public List<Lane> getLaneWithinArc()
+        {
+            List<Lane> lanes = new List<Lane>();
+            IFeature pFeatureArc = GetArcFeature();
+            IFeatureClass pFeaClsLane = FeatureClassHelper.GetFeaClsInAccess(FeaClsArc.FeatureDataset.Workspace.PathName,Lane.LaneName);
+            if(null == pFeaClsLane)
+            {
+                return null;
+            }
+            if(null == pFeatureArc)
+            {
+                return null;
+            }
+            Arc arc = GetArcEty(pFeatureArc);
+
+            for (int i = Lane.LEFT_POSITION; i <= (arc.LaneNum - Lane.rightPositionOffset); i++)
+            {
+                int LaneId = LaneFeatureService.GetLaneID(arc.ArcID, i);
+                LaneFeatureService laneFeatureService = new LaneFeatureService(pFeaClsLane, LaneId);
+                IFeature pTemFeature = laneFeatureService.GetFeature();
+                if(null == pTemFeature)
+                {
+                    continue;
+                }
+                Lane temLane = laneFeatureService.GetEntity(pTemFeature);
+                if (null == temLane)
+                {
+                    continue;
+                }
+
+                lanes.Add(temLane);
+            }
+
+            if (null == lanes ||
+                0 == lanes.Count)
+            {
+                return null;
+            }
+            return lanes;
         }
     }
 }

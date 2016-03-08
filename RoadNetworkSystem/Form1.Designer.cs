@@ -1001,10 +1001,14 @@ namespace RoadNetworkSystem
         public ComboBox comBox_Lane_Rule_Next_Arcs;
         public Label label_Lane_Rule_Next_Lane_Serial;
 
-        public CheckBox checkBox_Lane_Rule_Turning_Left;
-        public CheckBox checkBox_Lane_Rule_Turning_Right;
-        public CheckBox checkBox_Lane_Rule_Turning_Straight;
-        public CheckBox checkBox_Lane_Rule_Turning_UTurn;
+        public CheckBox checkBox_Lane_Rule_Turning_Lane1;
+        public CheckBox checkBox_Lane_Rule_Turning_Lane2;
+        public CheckBox checkBox_Lane_Rule_Turning_Lane3;
+        public CheckBox checkBox_Lane_Rule_Turning_Lane4;
+        public CheckBox checkBox_Lane_Rule_Turning_Lane5;
+        public CheckBox checkBox_Lane_Rule_Turning_Lane6;
+        public CheckBox checkBox_Lane_Rule_Turning_Lane7; 
+        public CheckBox checkBox_Lane_Rule_Turning_Lane8;
         #endregion *********************规则设定***************************
 
         private ToolStripMenuItem 中心线到路段路网ToolStripMenuItem;

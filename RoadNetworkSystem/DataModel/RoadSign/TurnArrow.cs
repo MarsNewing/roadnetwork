@@ -6,6 +6,29 @@ namespace RoadNetworkSystem.DataModel.RoadSign
 {
     class TurnArrow
     {
+        public enum TURNING_ITEM
+        {
+            左转,
+            直行,
+            右转,
+            掉头
+        }
+
+        public enum ARROW_TURNING
+        {
+            左,
+            左直,
+            左右,
+            左掉头,
+            直行,
+            直掉头,
+            直右,
+            右,
+            掉头
+        }
+
+
+
         /// <summary>
         /// 规定了数据模型，请不要在其他类中直接读取数据
         /// </summary>
