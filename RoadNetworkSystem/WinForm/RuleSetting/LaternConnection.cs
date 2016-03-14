@@ -21,6 +21,8 @@ namespace RoadNetworkSystem.WinForm.RuleSetting
 {
     class LaternConnection
     {
+        public const string groupBox_Lane_Rule_Modify_Text = "连通状态";
+
         private Form1 _frm1;
         private static OleDbConnection _conn;
         public LaternConnection(Form1 frm1)
@@ -42,13 +44,41 @@ namespace RoadNetworkSystem.WinForm.RuleSetting
         }
 
 
+        private void clearPanel2()
+        {
+            if (_frm1.spltCtn_Rule_Setting_Att.Panel2 != null)
+            {
+                _frm1.spltCtn_Rule_Setting_Att.Panel2.Controls.Clear();
+            }
+        }
+
+
         /// <summary>
         /// 设置横向连通
         /// </summary>
         public void LayoutLaternConnection()
         {
             clearModifyGroup();
+            clearPanel2();
+            updatePublicControls();
+            layoutLaternConnectionControls();
+            initConnectionCheckBoxState();
+        }
 
+        /// <summary>
+        /// 更新公共控件
+        /// </summary>
+        void updatePublicControls()
+        {
+            _frm1.groupBox_Lane_Rule_Modify.Text = groupBox_Lane_Rule_Modify_Text;
+            _frm1.spltCtn_Rule_Setting_Att.SplitterDistance = 110;
+        }
+
+        /// <summary>
+        /// 布局横向连通的控件
+        /// </summary>
+        void layoutLaternConnectionControls()
+        {
             int location_x = 10;
             int location_Left_Y = 20;
             _frm1.label_Lane_Rule_Left_Connnection = new Label();
@@ -71,8 +101,7 @@ namespace RoadNetworkSystem.WinForm.RuleSetting
                 new Point(location_CheckBox_X, location_Right_Y - 5), DockStyle.None);
 
 
-            int location_Button_Y = _frm1.label_Lane_Rule_Right_Connnection.Location.Y + _frm1.label_Lane_Rule_Right_Connnection.Height 
-                + RuleSettingDesigner.LINE_WIDTH;
+            int location_Button_Y = _frm1.label_Lane_Rule_Right_Connnection.Location.Y + _frm1.label_Lane_Rule_Right_Connnection.Height + RuleSettingDesigner.LINE_WIDTH;
             _frm1.button_Lane_Rule_Modify = new Button();
             WinFormDesigner.layoutButton(_frm1.button_Lane_Rule_Modify, "修改", _frm1.groupBox_Lane_Rule_Modify.Controls,
                 new Point(location_x, location_Button_Y), DockStyle.None,
@@ -80,6 +109,14 @@ namespace RoadNetworkSystem.WinForm.RuleSetting
 
             _frm1.button_Lane_Rule_Modify.Click += button_Lane_Rule_Modify_Click;
 
+        }
+
+
+        /// <summary>
+        /// 初始化横向连通控件（checkbox）的被选中的值
+        /// </summary>
+        void initConnectionCheckBoxState()
+        {
             Lane laneEty = getLaneEty();
             if (laneEty == null)
                 return;
@@ -104,9 +141,7 @@ namespace RoadNetworkSystem.WinForm.RuleSetting
             {
                 _frm1.checkBox_Lane_Rule_Right_Connnection.Checked = false;
             }
-
         }
-
 
         private Lane getLaneEty()
         {

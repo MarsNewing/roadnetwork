@@ -1224,7 +1224,7 @@ namespace RoadNetworkSystem
                         IFeature pFeature = pEnumFea.Next();
                         if (pEnumFea.Next() != null)
                         {
-                            MessageBox.Show("选择多于一个Road要素");
+                            MessageBox.Show("选择多于一个要素");
                         }
                         else
                         {

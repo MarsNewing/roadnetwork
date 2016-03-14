@@ -981,6 +981,8 @@ namespace RoadNetworkSystem
 
 
         public SplitContainer spltCtn_Rule_Selectiont_Att;
+        public SplitContainer spltCtn_Rule_Setting_Att;
+
 
         public GroupBox groupBox_Lane_Rule_Selection;
         public ComboBox comboBox_Lane_Rule_Selection;
@@ -997,6 +999,9 @@ namespace RoadNetworkSystem
 
 
         //导向箭头
+
+        public GroupBox groupBox_Lane_Rule_Turn_Lanes;
+
         public Label label_Lane_Rule_Next_Arcs;
         public ComboBox comBox_Lane_Rule_Next_Arcs;
         public Label label_Lane_Rule_Next_Lane_Serial;

@@ -54,7 +54,16 @@ namespace RoadNetworkSystem.WinForm.RuleSetting
         }
 
 
-        private void clearParentCtrl()
+        public void SetRuleSettingPlatte()
+        {
+            clearParentCtrl();
+            initPanel();
+            _frm1.Resize += _frm1_Resize;
+        }
+
+
+
+        void clearParentCtrl()
         {
             WinFormDesigner.ClearPanel(_frm1.panel_Middle);
             WinFormDesigner.ClearPanel(_frm1.panel_Bottom);
@@ -66,7 +75,7 @@ namespace RoadNetworkSystem.WinForm.RuleSetting
             _frm1.panel_Top.AutoScroll = true;
         }
 
-        private void clearTopAndMiddlePanel()
+        void clearTopAndMiddlePanel()
         {
             WinFormDesigner.ClearPanel(_frm1.panel_Middle);
             WinFormDesigner.ClearPanel(_frm1.panel_Top);
@@ -75,30 +84,15 @@ namespace RoadNetworkSystem.WinForm.RuleSetting
             _frm1.panel_Top.AutoScroll = true;
         }
 
-        public void SetRuleSettingPlatte()
+
+        private void initValue()
         {
-            clearParentCtrl();
-            initPanel();
-            _frm1.Resize+=_frm1_Resize;
+            _frm1.SlctArc_Rule = null;
+            _frm1.SlctLane_Rule = null;
         }
 
-        void comboBox_Layer_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (_frm1.comboBox_Layer.SelectedText.Equals(Arc.ArcFeatureName))
-            {
-                _frm1.button_Add.Tag = 1;
-                _frm1.button_Refresh.Tag = 1;
-                setArcAtt();
-            }
-            else
-            {
-                _frm1.button_Add.Tag = 2;
-                _frm1.button_Refresh.Tag = 2;
-                setLaneAtt();
-            }
-        }
 
-        private void initPanel()
+        void initPanel()
         {
             _frm1.groupBox_Arc_Rule_Att = new System.Windows.Forms.GroupBox();
             _frm1.groupBox_Arc_Rule_Att.Visible = true;
@@ -109,11 +103,11 @@ namespace RoadNetworkSystem.WinForm.RuleSetting
             _frm1.comboBox_Layer.SelectedIndex = 1;
         }
 
-        private void splitMiddlePanel(GroupBox groupBox)
+        void splitMiddlePanel(GroupBox groupBox)
         {
             _frm1.spltCtn_Rule_Selectiont_Att = new SplitContainer();
             _frm1.spltCtn_Rule_Selectiont_Att.Orientation = Orientation.Horizontal;
-            _frm1.spltCtn_Rule_Selectiont_Att.SplitterDistance = 40;
+            _frm1.spltCtn_Rule_Selectiont_Att.SplitterDistance = 20;
             _frm1.spltCtn_Rule_Selectiont_Att.SplitterWidth = 2;
            
             _frm1.spltCtn_Rule_Selectiont_Att.Dock = DockStyle.Fill;
@@ -121,7 +115,7 @@ namespace RoadNetworkSystem.WinForm.RuleSetting
             groupBox.Controls.Add(_frm1.spltCtn_Rule_Selectiont_Att);
         }
 
-        private void clearModifyGroup() 
+        void clearModifyGroup() 
         {
             if (_frm1.groupBox_Lane_Rule_Modify != null)
             {
@@ -193,17 +187,26 @@ namespace RoadNetworkSystem.WinForm.RuleSetting
             _frm1.comboBox_Lane_Rule_Selection.SelectedIndex = Convert.ToInt32(LaneRule.横向连通);
             _frm1.comboBox_Lane_Rule_Selection.SelectedIndexChanged += comboBox_Lane_Rule_Selection_SelectedIndexChanged;
 
+            _frm1.spltCtn_Rule_Setting_Att = new SplitContainer();
+            _frm1.spltCtn_Rule_Setting_Att.Orientation = Orientation.Horizontal;
+            _frm1.spltCtn_Rule_Setting_Att.SplitterDistance = 120;
+            _frm1.spltCtn_Rule_Setting_Att.SplitterWidth = 2;
+            _frm1.spltCtn_Rule_Setting_Att.Dock = DockStyle.Fill;
+
+            _frm1.spltCtn_Rule_Selectiont_Att.Panel2.Controls.Add(_frm1.spltCtn_Rule_Setting_Att);
+
             //设置修改group
             _frm1.groupBox_Lane_Rule_Modify = new GroupBox();
-            WinFormDesigner.setGroupBoxStyle(_frm1.groupBox_Lane_Rule_Modify, "修改", new Point(location_X, 10), DockStyle.Fill, 100, 100);
-            _frm1.spltCtn_Rule_Selectiont_Att.Panel2.Controls.Add(_frm1.groupBox_Lane_Rule_Modify);
+            WinFormDesigner.setGroupBoxStyle(_frm1.groupBox_Lane_Rule_Modify,
+                LaternConnection.groupBox_Lane_Rule_Modify_Text,
+                new Point(location_X, 10),
+                DockStyle.Fill, 100, 100);
+
+            _frm1.spltCtn_Rule_Setting_Att.Panel1.Controls.Add(_frm1.groupBox_Lane_Rule_Modify);
 
             //默认设置为横向连通关系修改
             LaternConnection laternConnection = new LaternConnection(_frm1);
             laternConnection.LayoutLaternConnection();
-            
-
-
         }
 
         void comboBox_Lane_Rule_Selection_SelectedIndexChanged(object sender, EventArgs e)
@@ -268,7 +271,7 @@ namespace RoadNetworkSystem.WinForm.RuleSetting
 
         #endregion  ------------------- Lane属性设置 -------------------------
 
-        private void setBottomPanel()
+        void setBottomPanel()
         {
             _frm1.splitContainer5 = new SplitContainer();
             _frm1.splitContainer5.SplitterDistance = 125;
@@ -306,6 +309,22 @@ namespace RoadNetworkSystem.WinForm.RuleSetting
            
         }
 
+        void comboBox_Layer_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (_frm1.comboBox_Layer.SelectedText.Equals(Arc.ArcFeatureName))
+            {
+                _frm1.button_Add.Tag = 1;
+                _frm1.button_Refresh.Tag = 1;
+                setArcAtt();
+            }
+            else
+            {
+                _frm1.button_Add.Tag = 2;
+                _frm1.button_Refresh.Tag = 2;
+                setLaneAtt();
+            }
+        }
+
         void button_Refresh_Click(object sender, EventArgs e)
         {
             if (Convert.ToInt32(_frm1.button_Refresh.Tag) == 2)
@@ -318,12 +337,6 @@ namespace RoadNetworkSystem.WinForm.RuleSetting
 
                 //initValue();
             }
-        }
-
-        private void initValue()
-        {
-            _frm1.SlctArc_Rule=  null;
-            _frm1.SlctLane_Rule = null;
         }
 
         void button_Add_Click(object sender, EventArgs e)
@@ -367,7 +380,7 @@ namespace RoadNetworkSystem.WinForm.RuleSetting
             }
         }
 
-        private void setLayerList()
+        void setLayerList()
         {
             List<string> itemList = new List<string>();
             itemList.Add(Arc.ArcFeatureName);

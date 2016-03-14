@@ -90,10 +90,10 @@ namespace RoadNetworkSystem.WinForm
 
         public static void layoutCheckBox(CheckBox checkBox,string text, Control.ControlCollection ctrlCol, System.Drawing.Point pnt, DockStyle style)
         {
-            checkBox.Location = pnt;
-            checkBox.Dock = style;
             checkBox.Text = text;
             checkBox.Checked = false;
+            checkBox.Location = pnt;
+            checkBox.Dock = style;
             ctrlCol.Add(checkBox);
         }
 

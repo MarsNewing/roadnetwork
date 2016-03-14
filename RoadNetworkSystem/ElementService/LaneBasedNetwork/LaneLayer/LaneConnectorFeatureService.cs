@@ -60,6 +60,7 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LaneLayer
 
         private int _connectorID = 0;
         private IFeatureClass _pFeaClsConnector;
+        private IFeatureClass _pFeaClsLane;
 
         /// <summary>
         /// 构造器
@@ -69,6 +70,8 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LaneLayer
         public LaneConnectorFeatureService(IFeatureClass pFeaClsConnector, int connectorID)
         {
             _pFeaClsConnector = pFeaClsConnector;
+            _pFeaClsLane = FeatureClassHelper.GetFeaClsInAccess(_pFeaClsConnector.FeatureDataset.Workspace.PathName,
+                Lane.LaneName);
             _connectorID = connectorID;
         }
 
@@ -79,7 +82,7 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LaneLayer
         public LaneConnector GetLaneConnEty(IFeature targetFea)
         {
             LaneConnector targetLaneEty = new LaneConnector();
-           
+
             if (targetFea != null)
             {
                 targetLaneEty.ConnectorID = _connectorID;
@@ -135,7 +138,7 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LaneLayer
         /// 插入一条车道连接器
         /// </summary>
         /// <param name="updateLaneConnEty"></param>
-        public void InsertLConnector(LaneConnector updateLaneConnEty,IPolyline connLine)
+        public void InsertLConnector(LaneConnector updateLaneConnEty, IPolyline connLine)
         {
             //由fromLaneID和toLaneID判断车道连接器是否存在，存在=true，不存在=false
             bool exitConntectorFlag = false;
@@ -179,9 +182,9 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LaneLayer
         {
             LaneConnector preLaneConnEty = GetLaneConnEty(preLaneConnID);
 
-         
+
             IQueryFilter filter = new QueryFilterClass();
-            filter.WhereClause = String.Format("{0}={1}",ConnectorIDNm, preLaneConnEty.ConnectorID);
+            filter.WhereClause = String.Format("{0}={1}", ConnectorIDNm, preLaneConnEty.ConnectorID);
             IFeatureCursor pFeatureCuror1 = _pFeaClsConnector.Search(filter, false);
             IFeature modifiedFea = pFeatureCuror1.NextFeature();
 
@@ -232,9 +235,9 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LaneLayer
         /// <param name="connecttorID"></param>车道连接器的ID
         public void DeleteConnector(int connecttorID)
         {
-         
+
             IQueryFilter filter = new QueryFilterClass();
-            filter.WhereClause = String.Format("{0}={1}",ConnectorIDNm, connecttorID);
+            filter.WhereClause = String.Format("{0}={1}", ConnectorIDNm, connecttorID);
             IFeatureCursor cursor = _pFeaClsConnector.Update(filter, false);
             IFeature deleteRow = cursor.NextFeature();
 
@@ -248,7 +251,7 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LaneLayer
         /// <param name="nodeEty"></param>
         /// <param name="pFeaClsLink"></param>
         /// <param name="pFeaClsArc"></param>
-        public void CreateConnectorInNode(IFeature nodeFea, IFeatureClass pFeaClsNode,IFeatureClass pFeaClsLink, IFeatureClass pFeaClsArc)
+        public void CreateConnectorInNode(IFeature nodeFea, IFeatureClass pFeaClsNode, IFeatureClass pFeaClsLink, IFeatureClass pFeaClsArc)
         {
             NodeService nodeService = new NodeService(pFeaClsNode, 0, null);
             NodeMaster nodeMaster = nodeService.GetNodeMasterEty(nodeFea);
@@ -321,7 +324,7 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LaneLayer
             List<LaneConnector> toLaneIDs = new List<LaneConnector>();
 
             IQueryFilter LCFilter1 = new QueryFilterClass();
-            LCFilter1.WhereClause = String.Format("{0}={1}",fromLaneIDNm, fromLaneID);
+            LCFilter1.WhereClause = String.Format("{0}={1}", fromLaneIDNm, fromLaneID);
 
             IFeatureCursor LaneConnectorCursor1 = _pFeaClsConnector.Search(LCFilter1, false);
             IFeature LaneConnectorRow1 = LaneConnectorCursor1.NextFeature();
@@ -339,8 +342,88 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LaneLayer
 
             return toLaneIDs;
         }
-        
 
+
+        public Dictionary<int, List<Lane>> GetTurningLaneDictionary(int fromLaneId)
+        {
+
+            Dictionary<int, List<Lane>> turningLanes = new Dictionary<int, List<Lane>>();
+            List<LaneConnector> connectors = GetConnectorByFromLane(fromLaneId);
+
+            List<Lane> leftLanes = null;
+            List<Lane> rightLanes = null;
+            List<Lane> straightLanes = null;
+            List<Lane> uturnLanes = null;
+            foreach (LaneConnector temConnector in connectors)
+            {
+                LaneFeatureService laneFeatureService = new LaneFeatureService(_pFeaClsLane, temConnector.toLaneID);
+                Lane temLane = laneFeatureService.GetEntity(laneFeatureService.GetFeature());
+                if (temConnector.TurningDir.Equals(LaneConnector.TURNING_LEFT))
+                {
+                    if (leftLanes == null)
+                    {
+                        leftLanes = new List<Lane>();
+                    }
+                    leftLanes.Add(temLane);
+                }
+                else if (temConnector.TurningDir.Equals(LaneConnector.TURNING_RIGHT))
+                {
+                    if (rightLanes == null)
+                    {
+                        rightLanes = new List<Lane>();
+                    }
+                    rightLanes.Add(temLane);
+                }
+                else if (temConnector.TurningDir.Equals(LaneConnector.TURNING_STRAIGHT))
+                {
+                    if (straightLanes == null)
+                    {
+                        straightLanes = new List<Lane>();
+                    }
+                    straightLanes.Add(temLane);
+                }
+                else if (temConnector.TurningDir.Equals(LaneConnector.CHANGE_UTURN))
+                {
+                    if (uturnLanes == null)
+                    {
+                        uturnLanes = new List<Lane>();
+                    }
+                    uturnLanes.Add(temLane);
+                }
+                else
+                {
+                    continue;
+                }
+            }
+
+            if (null != leftLanes)
+            {
+                turningLanes.Add(Convert.ToInt32(DataModel.RoadSign.TurnArrow.TURNING_ITEM.左转),
+                    leftLanes);
+            }
+
+            if (null != straightLanes)
+            {
+                turningLanes.Add(Convert.ToInt32(DataModel.RoadSign.TurnArrow.TURNING_ITEM.直行),
+                    straightLanes);
+            }
+
+            if (null != rightLanes)
+            {
+                turningLanes.Add(Convert.ToInt32(DataModel.RoadSign.TurnArrow.TURNING_ITEM.右转),
+                    rightLanes);
+            }
+
+
+            if (null != uturnLanes)
+            {
+                turningLanes.Add(Convert.ToInt32(DataModel.RoadSign.TurnArrow.TURNING_ITEM.右转),
+                    uturnLanes);
+            }
+
+
+            return turningLanes;
+        }
 
         /// <summary>
         /// 默认规则生成两个Arc间的车道连接器

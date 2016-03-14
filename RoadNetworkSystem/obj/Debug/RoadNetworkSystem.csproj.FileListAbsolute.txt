@@ -90,3 +90,4 @@ C:\Users\Administrator\Documents\Visual Studio 2012\Projects\RoadNetworkSystem\R
 C:\Users\Administrator\Documents\Visual Studio 2012\Projects\RoadNetworkSystem\RoadNetworkSystem\RoadNetworkSystem\obj\Debug\RoadNetworkSystem.csproj.GenerateResource.Cache
 C:\Users\Administrator\Documents\Visual Studio 2012\Projects\RoadNetworkSystem\RoadNetworkSystem\RoadNetworkSystem\obj\Debug\RoadNetworkSystem.exe
 C:\Users\Administrator\Documents\Visual Studio 2012\Projects\RoadNetworkSystem\RoadNetworkSystem\RoadNetworkSystem\obj\Debug\RoadNetworkSystem.pdb
+C:\Users\newingming\Documents\Visual Studio 2012\Projects\roadnetwork\RoadNetworkSystem\obj\Debug\RoadNetworkSystem.csprojResolveAssemblyReference.cache

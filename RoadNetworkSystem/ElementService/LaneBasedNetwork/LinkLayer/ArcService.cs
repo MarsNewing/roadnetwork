@@ -394,7 +394,7 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LinkLayer
         /// 找到Arc内部的所有的Lane
         /// </summary>
         /// <returns></returns>
-        public List<Lane> getLaneWithinArc()
+        public List<Lane> getLanesWithinArc()
         {
             List<Lane> lanes = new List<Lane>();
             IFeature pFeatureArc = GetArcFeature();
