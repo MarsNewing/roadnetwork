@@ -59,7 +59,7 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.Connection
                             straightTurnArcs.Add(temArc);
                             break;
                         }
-                    case LaneConnector.CHANGE_UTURN:
+                    case LaneConnector.TURNING_UTURN:
                         {
                             uturnTurnArcs.Add(temArc);
                             break;

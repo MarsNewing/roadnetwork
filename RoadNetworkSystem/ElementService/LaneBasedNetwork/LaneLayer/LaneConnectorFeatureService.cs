@@ -61,6 +61,9 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LaneLayer
         private int _connectorID = 0;
         private IFeatureClass _pFeaClsConnector;
         private IFeatureClass _pFeaClsLane;
+        private IFeatureClass _pFeaClsArc;
+        private IFeatureClass _pFeaClsLink;
+        private IFeatureClass _pFeaClsNode;
 
         /// <summary>
         /// 构造器
@@ -72,6 +75,14 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LaneLayer
             _pFeaClsConnector = pFeaClsConnector;
             _pFeaClsLane = FeatureClassHelper.GetFeaClsInAccess(_pFeaClsConnector.FeatureDataset.Workspace.PathName,
                 Lane.LaneName);
+            _pFeaClsArc = FeatureClassHelper.GetFeaClsInAccess(_pFeaClsConnector.FeatureDataset.Workspace.PathName,
+                Arc.ArcFeatureName);
+
+            _pFeaClsLink = FeatureClassHelper.GetFeaClsInAccess(_pFeaClsConnector.FeatureDataset.Workspace.PathName,
+                Link.LinkName);
+
+            _pFeaClsNode = FeatureClassHelper.GetFeaClsInAccess(_pFeaClsConnector.FeatureDataset.Workspace.PathName,
+                Node.NodeName);
             _connectorID = connectorID;
         }
 
@@ -382,7 +393,7 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LaneLayer
                     }
                     straightLanes.Add(temLane);
                 }
-                else if (temConnector.TurningDir.Equals(LaneConnector.CHANGE_UTURN))
+                else if (temConnector.TurningDir.Equals(LaneConnector.TURNING_UTURN))
                 {
                     if (uturnLanes == null)
                     {
@@ -468,7 +479,7 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LaneLayer
                             createStraightConnectors(pFeaClsLane, fromArcEty, toArcEty,arcLaneConnectorsPosition);
                         } break;
 
-                    case LaneConnector.CHANGE_UTURN:
+                    case LaneConnector.TURNING_UTURN:
                         {
                             if (CREATE_UTURN_FLAG)
                             {
@@ -480,6 +491,99 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LaneLayer
                 }
             }
         }
+
+
+        public void AddDeleteLaneConnection(Lane fromLane,
+            Dictionary<int,List<Lane>> connectedLanes,
+            Dictionary<int,List<Lane>> removedConnectors)
+        {
+            if(fromLane == null ||
+                (connectedLanes == null && 
+                removedConnectors == null))
+            {
+                return;
+            }
+            ArcService arcService = new ArcService(_pFeaClsArc, fromLane.ArcID);
+            Arc fromArc = arcService.GetArcEty(arcService.GetArcFeature());
+
+            
+            Node nextNode = PhysicalConnection.getNextNode(_pFeaClsLink,_pFeaClsArc,_pFeaClsNode,fromArc);
+            NodeService nodeService = new NodeService(_pFeaClsNode,nextNode.ID,null);
+            IFeature nextNodeFeature = nodeService.GetFeature();
+
+            if (connectedLanes != null)
+            {
+                foreach (int turningIndex in Enum.GetValues(typeof(RoadNetworkSystem.DataModel.RoadSign.TurnArrow.TURNING_ITEM)))
+                {
+                    if (!connectedLanes.ContainsKey(turningIndex))
+                    {
+                        continue;
+                    }
+                    foreach (Lane temLane in connectedLanes[turningIndex])
+                    {
+                        LaneConnector laneConnector = new LaneConnector();
+                        laneConnector.fromLaneID = fromLane.LaneID;
+                        laneConnector.fromArcID = fromLane.ArcID;
+                        laneConnector.fromLaneID = fromArc.LinkID;
+                        laneConnector.fromDir = fromArc.FlowDir;
+                        laneConnector.TurningDir = laneConnector.GetTurnDir(turningIndex);
+                        LaneFeatureService laneFeatureService = new LaneFeatureService(_pFeaClsLane,fromLane.LaneID);
+                        IFeature fromLaneFeature = laneFeatureService.GetFeature();
+
+
+                        ArcService arcService1 = new ArcService(_pFeaClsArc, temLane.ArcID);
+                        Arc toArc = arcService1.GetArcEty(arcService1.GetArcFeature());
+                        laneConnector.toLaneID = temLane.LaneID;
+                        laneConnector.toArcID = temLane.ArcID;
+                        laneConnector.toDir = toArc.FlowDir;
+
+                        laneFeatureService = new LaneFeatureService(_pFeaClsLane,temLane.LaneID);
+                        IFeature toLaneFeature = laneFeatureService.GetFeature();
+
+                        bool isStraight = (turningIndex == Convert.ToInt32(RoadNetworkSystem.DataModel.RoadSign.TurnArrow.TURNING_ITEM.直行)?true:false);
+                        IPolyline connectorLine = getConnectorShape(fromLaneFeature.Shape as IPolyline,
+                            toLaneFeature.Shape as IPolyline,
+                            nextNodeFeature.Shape as IPoint,
+                            isStraight);
+
+                        InsertLConnector(laneConnector, connectorLine);
+
+                    }
+                }
+            }
+
+
+            if (removedConnectors != null)
+            {
+                foreach (int turningIndex in Enum.GetValues(typeof(RoadNetworkSystem.DataModel.RoadSign.TurnArrow.TURNING_ITEM)))
+                {
+                    if (!connectedLanes.ContainsKey(turningIndex))
+                    {
+                        continue;
+                    }
+                    foreach (Lane lane in removedConnectors[turningIndex])
+                    {
+                        LaneConnector laneConnector = new LaneConnector();
+                        laneConnector.fromLaneID = fromLane.LaneID;
+                        laneConnector.fromArcID = fromLane.ArcID;
+                        laneConnector.fromLaneID = fromArc.LinkID;
+                        laneConnector.fromDir = fromArc.FlowDir;
+
+
+                        laneConnector.toLaneID = lane.LaneID;
+                        int connectorId = GetConnectorIdByLane(fromLane.LaneID,lane.LaneID);
+                        if(connectorId > 0)
+                        {
+                            DeleteConnector(connectorId);
+                        }
+                    }
+                }
+            }
+            return;
+        }
+
+
+        #region private
 
         /// <summary>
         /// 获取车道连接器起始Arc的到终止Arc，在fromArc中车道连接器的设置leftPosition与rightPosition
@@ -808,7 +912,7 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LaneLayer
 
 
                 LaneConnector connectorEntity = initConnectorEty(0, fromLinkID, toLinkID, fromArcID, toArcID,
-                    fromArcDir, toArcDir, fromLaneID, toLaneID, LaneConnector.CHANGE_UTURN);
+                    fromArcDir, toArcDir, fromLaneID, toLaneID, LaneConnector.TURNING_UTURN);
 
                 InsertLConnector(connectorEntity, bezierLine);
             }
@@ -910,5 +1014,8 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LaneLayer
             return connectorEntity;
         }
 
+
+
+        #endregion private
     }
 }

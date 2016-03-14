@@ -191,6 +191,7 @@ namespace RoadNetworkSystem.WinForm
             btn.Height = height;
             btn.Text = text;
             btn.Width = width;
+            btn.AutoSize = true;
             btn.Dock = style;
             ctrlCol.Add(btn);
         }

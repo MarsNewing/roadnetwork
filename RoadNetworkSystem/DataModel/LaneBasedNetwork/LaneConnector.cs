@@ -7,10 +7,11 @@ namespace RoadNetworkSystem.DataModel.LaneBasedNetwork
     class LaneConnector
     {
         public const string ConnectorName = "LaneConnector";
+
         public const string TURNING_RIGHT = "Right";
         public const string TURNING_LEFT = "Left";
         public const string TURNING_STRAIGHT = "Straight";
-        public const string CHANGE_UTURN = "UTurn";
+        public const string TURNING_UTURN = "UTurn";
 
         public int ConnectorID { get; set; }
         public int fromLaneID { get; set; }
@@ -27,6 +28,33 @@ namespace RoadNetworkSystem.DataModel.LaneBasedNetwork
 
         public int toDir { get; set; }
         public int Other { get; set; }
+
+
+        public string GetTurnDir(int turningIndex)
+        {
+
+            if (turningIndex == Convert.ToInt32(RoadNetworkSystem.DataModel.RoadSign.TurnArrow.TURNING_ITEM.左转))
+            {
+                return TURNING_LEFT;
+            }
+            else if (turningIndex == Convert.ToUInt32(RoadNetworkSystem.DataModel.RoadSign.TurnArrow.TURNING_ITEM.直行))
+            {
+                return TURNING_STRAIGHT;
+            }
+            else if (turningIndex == Convert.ToUInt32(RoadNetworkSystem.DataModel.RoadSign.TurnArrow.TURNING_ITEM.右转))
+            {
+                return TURNING_RIGHT;
+            }
+            else if (turningIndex == Convert.ToUInt32(RoadNetworkSystem.DataModel.RoadSign.TurnArrow.TURNING_ITEM.掉头))
+            {
+                return TURNING_UTURN;
+            }
+            else
+            {
+                return "";
+            }
+
+        }
 
         /// <summary>
         /// 复制实体

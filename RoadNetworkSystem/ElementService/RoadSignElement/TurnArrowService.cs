@@ -331,34 +331,7 @@ namespace RoadNetworkSystem.NetworkElement.RoadSignElement
             int preArrowID = 0;
 
             #region ----------------------------计算导向箭头的偏转角-----------------------------------
-
-            IPolyline laneLine = new PolylineClass();
-            double angle = 0;
-            if (pFeature != null)
-            {
-                laneLine = pFeature.ShapeCopy as IPolyline;
-                
-                double dotaX = laneLine.ToPoint.X - laneLine.FromPoint.X;
-                double dotaY = laneLine.ToPoint.Y - laneLine.FromPoint.Y;
-                
-                if (dotaY == 0 && dotaX > 0)
-                {
-                    angle = 90;
-                }
-                else if (dotaY == 0 && dotaX < 0)
-                {
-                    angle = 270;
-                }
-                else
-                {
-                    double tanValue = dotaX / dotaY;
-                    angle = (Math.Atan(tanValue) * 180 / Math.PI + 360) % 360;
-                    if (dotaY < 0)
-                    {
-                        angle = angle + 180;
-                    }
-                }
-            }
+            double angle = GetTurnArrowAngle(pFeature);
             #endregion ----------------------------计算导向箭头的偏转角-----------------------------------
 
             while (pFeature != null)
@@ -436,6 +409,40 @@ namespace RoadNetworkSystem.NetworkElement.RoadSignElement
 
                 pFeature = cursor.NextFeature();
             }
+        }
+
+
+        public int GetTurnArrowAngle(IFeature pFeature)
+        {
+            IPolyline laneLine = new PolylineClass();
+            double angle = 0;
+            if (pFeature != null)
+            {
+                laneLine = pFeature.ShapeCopy as IPolyline;
+
+                double dotaX = laneLine.ToPoint.X - laneLine.FromPoint.X;
+                double dotaY = laneLine.ToPoint.Y - laneLine.FromPoint.Y;
+
+                if (dotaY == 0 && dotaX > 0)
+                {
+                    angle = 90;
+                }
+                else if (dotaY == 0 && dotaX < 0)
+                {
+                    angle = 270;
+                }
+                else
+                {
+                    double tanValue = dotaX / dotaY;
+                    angle = (Math.Atan(tanValue) * 180 / Math.PI + 360) % 360;
+                    if (dotaY < 0)
+                    {
+                        angle = angle + 180;
+                    }
+                }
+            }
+
+            return Convert.ToInt32(angle);
         }
 
 
