@@ -804,6 +804,8 @@ namespace RoadNetworkSystem.WinForm.RuleSetting
             //更新车道连接器
             LaneConnectorFeatureService laneConnectorService = new LaneConnectorFeatureService(g_frm1.FeaClsConnector, 0);
             laneConnectorService.AddDeleteLaneConnection(g_currentLane,g_connectedLanesMap, g_deletedConnectedLanesMap);
+
+            //更新导向箭头
             TurnArrowService turnArrowService = new TurnArrowService(g_frm1.FeaClsTurnArrow, 0);
             int turnArrowStyleId = turnArrowService.GetArrowStyle(g_frm1.FeaClsConnector, g_currentLane.LaneID);
             TurnArrow turnArrow = new TurnArrow();

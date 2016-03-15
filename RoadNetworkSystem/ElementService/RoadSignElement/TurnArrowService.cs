@@ -1,5 +1,6 @@
 ﻿using ESRI.ArcGIS.Geodatabase;
 using ESRI.ArcGIS.Geometry;
+using RoadNetworkSystem.ADO.Access;
 using RoadNetworkSystem.DataModel.LaneBasedNetwork;
 using RoadNetworkSystem.DataModel.RoadSign;
 using RoadNetworkSystem.GIS;
@@ -7,6 +8,7 @@ using RoadNetworkSystem.NetworkElement.LaneBasedNetwork.Connection;
 using RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LaneLayer;
 using System;
 using System.Collections.Generic;
+using System.Data.OleDb;
 
 namespace RoadNetworkSystem.NetworkElement.RoadSignElement
 {
@@ -43,6 +45,7 @@ namespace RoadNetworkSystem.NetworkElement.RoadSignElement
         #endregion --------------------导向箭头的样式---------------------------
 
         public IFeatureClass FeaClsTurnArrow;
+        private IFeatureClass FeaClsTurnLane;
         public int ArrowID;
         public TurnArrowService(IFeatureClass pFeaClsTurnArrow, int arrowID)
         {
@@ -330,9 +333,8 @@ namespace RoadNetworkSystem.NetworkElement.RoadSignElement
             IFeature pFeature = cursor.NextFeature();
             int preArrowID = 0;
 
-            #region ----------------------------计算导向箭头的偏转角-----------------------------------
             double angle = GetTurnArrowAngle(pFeature);
-            #endregion ----------------------------计算导向箭头的偏转角-----------------------------------
+
 
             while (pFeature != null)
             {
@@ -350,7 +352,7 @@ namespace RoadNetworkSystem.NetworkElement.RoadSignElement
                 }
 
                 //获取导向箭头的位置
-                laneLine = pFeature.ShapeCopy as IPolyline;
+                IPolyline laneLine = pFeature.ShapeCopy as IPolyline;
                 #region +++++++++++++++++++++++++++++++++先生成Lane起始处的导向箭头+++++++++++++++++++++++++++++++++
                 if (ARROWPOSITION > laneLine.Length)
                 {
@@ -443,6 +445,92 @@ namespace RoadNetworkSystem.NetworkElement.RoadSignElement
             }
 
             return Convert.ToInt32(angle);
+        }
+
+
+
+        public void UpdateTurnArrow(int laneId, int styleId)
+        {
+            IQueryFilter filter = new QueryFilterClass();
+            filter.WhereClause = LaneIDNm + "=" + laneId;
+            IFeatureCursor cursor = FeaClsTurnArrow.Search(filter, false);
+            IFeature pFeature = cursor.NextFeature();
+
+
+            IFeature preArrrow = pFeature;
+            while (pFeature != null)
+            {
+                pFeature.set_Value(Convert.ToInt32(pFeature.Fields.FindField(STYLEID_NAME)),
+                    styleId);
+                pFeature.Store();
+                preArrrow = pFeature;
+                pFeature = cursor.NextFeature();
+            }
+
+            //更新上游导向箭头
+            return;
+        }
+
+
+        public void UpdateUpstreamArrow(IFeature lastArrowInNextLane)
+        {
+            if (lastArrowInNextLane == null)
+            {
+                return;
+            }
+            TurnArrow arrow = GetEntity(lastArrowInNextLane);
+            if (arrow == null)
+            {
+                return;
+            }
+
+            if (arrow.PrecedeArrows == "")
+            {
+                return;
+            }
+
+            string[] precedeArrowArray = arrow.PrecedeArrows.Split('\\');
+
+            foreach(string temArrowId in precedeArrowArray)
+            {
+                int id = Convert.ToInt32(temArrowId);
+                if (id <= 0)
+                {
+                    continue;
+                }
+
+            }
+        }
+
+
+        List<IFeature> getNextArrows(int arrowId)
+        {
+            List<IFeature> arrows = new List<IFeature>();
+
+            OleDbConnection connection = AccessHelper.OpenConnection(FeaClsTurnArrow.FeatureDataset.Workspace.PathName);
+            string sql = "Select * from "+TurnArrow.TurnArrowName+
+                " Where "+ PrecedeArrowsNm +" Like "+ arrowId;
+            OleDbCommand cmd = new OleDbCommand(sql, connection);
+            OleDbDataReader reader = cmd.ExecuteReader();
+            while (reader.Read())
+            {
+                string precedeArrows = Convert.ToString(reader[PrecedeArrowsNm]);
+
+                int objectID = Convert.ToInt32(reader["OBJECTID"]);
+                
+                if (precedeArrows.Contains(arrowId.ToString()))
+                {
+                    IFeature temArrowFeature =  FeaClsTurnArrow.GetFeature(objectID);
+                    if(temArrowFeature == null)
+                    {
+                        continue;
+                    }
+                    arrows.Add(temArrowFeature);
+                }
+            }
+
+
+            return arrows;
         }
 
 
