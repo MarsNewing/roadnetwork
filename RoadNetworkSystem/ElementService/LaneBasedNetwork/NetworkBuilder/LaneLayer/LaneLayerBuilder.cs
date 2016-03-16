@@ -211,14 +211,14 @@ namespace RoadNetworkSystem.NetworkExtraction.LaneBasedNetwork.LaneLayer
                     if (exitArcEtys.Length > 2)
                     {
                         TurnArrowService arrow = new TurnArrowService(_pFeaClsTurnArrow, 0);
-                        arrow.createExitArcArrow(_pFeaClsLane, exitArcEty.ArcID);
+                        arrow.CreateExitArcArrow(_pFeaClsLane, exitArcEty.ArcID);
                     }
                 }
                 if (exitArcEtys.Length > 2)
                 {
                     //更新入口段的导向箭头，暂且生成两排
                     TurnArrowService arrow1 = new TurnArrowService(_pFeaClsTurnArrow, 0);
-                    arrow1.createEntranceArcArrow(_pFeaClsNode, _pFeaClsLink, _pFeaClsArc, _pFeaClsLane, _pFeaClsConnector, arcEty.ArcID);
+                    arrow1.CreateEntranceArcArrow(arcEty.ArcID);
                 }
 
             }
@@ -258,7 +258,7 @@ namespace RoadNetworkSystem.NetworkExtraction.LaneBasedNetwork.LaneLayer
 
                         //更新入口段的导向箭头，暂且生成两排
                         TurnArrowService arrow1 = new TurnArrowService(_pFeaClsTurnArrow, 0);
-                        arrow1.createEntranceArcArrow(_pFeaClsNode, _pFeaClsLink, _pFeaClsArc, _pFeaClsLane, _pFeaClsConnector, entranceArcEty.ArcID);
+                        arrow1.CreateEntranceArcArrow(entranceArcEty.ArcID);
 
                     }
                 }
@@ -268,7 +268,7 @@ namespace RoadNetworkSystem.NetworkExtraction.LaneBasedNetwork.LaneLayer
 
                     //出口车道的导向箭头生成一排直行即可
                     TurnArrowService arrow = new TurnArrowService(_pFeaClsTurnArrow, 0);
-                    arrow.createExitArcArrow(_pFeaClsLane, arcEty.ArcID);
+                    arrow.CreateExitArcArrow(_pFeaClsLane, arcEty.ArcID);
                 }
             }
         }

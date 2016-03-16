@@ -813,6 +813,8 @@ namespace RoadNetworkSystem.WinForm.RuleSetting
             turnArrow.StyleID = turnArrowStyleId;
             turnArrow.ANGLE = turnArrowService.GetTurnArrowAngle(g_currentLaneFeature);
             turnArrow.LaneID = g_currentLane.LaneID;
+
+            turnArrowService.UpdateTurnArrowInLane(g_currentLane.LaneID, turnArrowStyleId);
         }
 
     }
