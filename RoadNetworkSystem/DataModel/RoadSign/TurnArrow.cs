@@ -6,6 +6,17 @@ namespace RoadNetworkSystem.DataModel.RoadSign
 {
     class TurnArrow
     {
+        /// <summary>
+        /// 指示具体方向的ArrowType
+        /// </summary>
+        public const int ARROW_TYPE_REAL_DIRECTION = 1;
+
+        /// <summary>
+        /// 指示前方方向的ArrowType
+        /// </summary>
+        public const int ARROW_TYPE_GENERAL_DIRECTION = 0;
+
+
         public enum TURNING_ITEM
         {
             左转,

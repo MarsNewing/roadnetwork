@@ -138,6 +138,13 @@ namespace RoadNetworkSystem.GIS
  
         }
 
+        /// <summary>
+        /// 从参考线段中截取一段线段
+        /// </summary>
+        /// <param name="line"></param>参考线段
+        /// <param name="fCut"></param>截取线段起点 距离 参考线段起点的距离，负值表示延长
+        /// <param name="tCut"></param>截取线段重点 距离 参考线段重点的距离，负值表示延长
+        /// <returns></returns>
         public static IPolyline CreateLine(IPolyline line, double fCut, double tCut)
         {
 

@@ -60,6 +60,21 @@ namespace RoadNetworkSystem.WinForm.RuleSetting
         }
 
 
+        void init()
+        {
+            g_turningLanesWithinArc = new List<Lane>();
+            g_currentLane = new Lane();
+            g_currentArc = new Arc();
+            
+            g_nextNode = new Node();
+            g_nextNodeFeature = null;
+            g_currentLaneFeature = null;
+
+            g_connElementMap = new Dictionary<CheckBox, IElement>();
+            g_connectedLanesMap = new Dictionary<int, List<Lane>>();
+            g_deletedConnectedLanesMap = new Dictionary<int, List<Lane>>();
+        }
+
         /// <summary>
         /// 设置导向箭头的界面
         /// </summary>
@@ -813,6 +828,13 @@ namespace RoadNetworkSystem.WinForm.RuleSetting
             turnArrow.StyleID = turnArrowStyleId;
             turnArrow.ANGLE = turnArrowService.GetTurnArrowAngle(g_currentLaneFeature);
             turnArrow.LaneID = g_currentLane.LaneID;
+            turnArrowService.UpdateTurnArrowInLane(g_currentLane.LaneID, turnArrowStyleId);
+
+
+
+            init();
+
+            LayoutTurnarrowRule();
         }
 
     }

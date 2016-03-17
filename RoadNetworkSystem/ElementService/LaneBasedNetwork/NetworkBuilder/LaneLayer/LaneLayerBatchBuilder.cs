@@ -194,7 +194,7 @@ namespace RoadNetworkSystem.ElementService.LaneBasedNetwork.NetworkBuilder.LaneL
 
                 //更新入口段的导向箭头，暂且生成两排
                 TurnArrowService arrow1 = new TurnArrowService(_pFeaClsTurnArrow, 0);
-                arrow1.createEntranceArcArrow(_pFeaClsNode, _pFeaClsLink, _pFeaClsArc, _pFeaClsLane, _pFeaClsConnector, arcCursor.ArcID);
+                arrow1.CreateEntranceArcArrow(arcCursor.ArcID);
                 
                 //生成Surface
                 SurfaceService surface = new SurfaceService(_pFeaClsSurface, 0);

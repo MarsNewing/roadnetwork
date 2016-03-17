@@ -524,7 +524,7 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LaneLayer
                         LaneConnector laneConnector = new LaneConnector();
                         laneConnector.fromLaneID = fromLane.LaneID;
                         laneConnector.fromArcID = fromLane.ArcID;
-                        laneConnector.fromLaneID = fromArc.LinkID;
+                        laneConnector.fromLinkID = fromArc.LinkID;
                         laneConnector.fromDir = fromArc.FlowDir;
                         laneConnector.TurningDir = laneConnector.GetTurnDir(turningIndex);
                         LaneFeatureService laneFeatureService = new LaneFeatureService(_pFeaClsLane,fromLane.LaneID);
@@ -536,6 +536,7 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LaneLayer
                         laneConnector.toLaneID = temLane.LaneID;
                         laneConnector.toArcID = temLane.ArcID;
                         laneConnector.toDir = toArc.FlowDir;
+                        laneConnector.toLinkID = toArc.LinkID;
 
                         laneFeatureService = new LaneFeatureService(_pFeaClsLane,temLane.LaneID);
                         IFeature toLaneFeature = laneFeatureService.GetFeature();
@@ -557,7 +558,7 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LaneLayer
             {
                 foreach (int turningIndex in Enum.GetValues(typeof(RoadNetworkSystem.DataModel.RoadSign.TurnArrow.TURNING_ITEM)))
                 {
-                    if (!connectedLanes.ContainsKey(turningIndex))
+                    if (!removedConnectors.ContainsKey(turningIndex))
                     {
                         continue;
                     }
