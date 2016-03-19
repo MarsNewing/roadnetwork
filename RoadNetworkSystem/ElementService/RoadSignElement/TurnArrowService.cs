@@ -5,10 +5,11 @@ using RoadNetworkSystem.DataModel.LaneBasedNetwork;
 using RoadNetworkSystem.DataModel.RoadSign;
 using RoadNetworkSystem.GIS;
 using RoadNetworkSystem.GIS.GeoDatabase.Dataset;
+using RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LaneLayer;
+using System;
 using RoadNetworkSystem.GIS.Geometry;
 using RoadNetworkSystem.NetworkElement.LaneBasedNetwork.Connection;
 using RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LaneLayer;
-using System;
 using System.Collections.Generic;
 using System.Data.OleDb;
 
@@ -380,6 +381,7 @@ namespace RoadNetworkSystem.NetworkElement.RoadSignElement
             }
         }
 
+
         /// <summary>
         /// 为车道创建导向箭头
         /// </summary>
@@ -421,21 +423,9 @@ namespace RoadNetworkSystem.NetworkElement.RoadSignElement
             List<string> turnDirs = LogicalConnection.GetLaneLeadTurnDir(pFeaClsNode, pFeaClsLink,
                 pFeaClsArc, pFeaClsConnector, laneEty);
 
-
+            
             int preArrowID = 0;
-            //TurnArrow arrowEty = new TurnArrow();
-            //arrowEty.ArcID = laneEty.ArcID;
-            //arrowEty.ANGLE = angle;
-            //arrowEty.ArrowType = TurnArrow.ARROW_TYPE_GENERAL_DIRECTION;
-            //arrowEty.LaneID = laneID;
-            //arrowEty.Other = 0;
-            //arrowEty.PrecedeArrows = preArrowID.ToString(); ;
-            //arrowEty.Serial = 1;
-            //arrowEty.StyleID = GetArrowStyleByDir(turnDirs);
-
-            //IFeature arrowFea = CreateArrow(arrowEty, arrowPnt1);
-            //preArrowID = Convert.ToInt32(arrowFea.get_Value(FeaClsTurnArrow.FindField(ArrowIDNm)));
-
+            
             #endregion +++++++++++++++++++++++++++++++++先生成Lane起始处的导向箭头+++++++++++++++++++++++++++++++++
 
             #region +++++++++++++++++++++++++++++++++ 生成Lane末端的导向箭头 +++++++++++++++++++++++++++++++++
@@ -450,6 +440,7 @@ namespace RoadNetworkSystem.NetworkElement.RoadSignElement
             for (int i = 0; i < arrowCountInEnd; i++)
             {
                 int toPosition = Convert.ToInt32(ARROWPOSITION + (laneLine.Length - 2 * ARROWPOSITION) * i / (arrowCountInEnd - 1));
+
                 IPoint arrowPnt2 = LineHelper.CreateLine(laneLine, 0, toPosition).ToPoint;
 
                 TurnArrow arrowEty = new TurnArrow();
@@ -547,12 +538,14 @@ namespace RoadNetworkSystem.NetworkElement.RoadSignElement
         }
 
 
+
         private void setArrowAsGeneralDireation(IFeature arrowFeature)
         {
             if (arrowFeature == null)
             {
                 return;
             }
+
             arrowFeature.set_Value(arrowFeature.Fields.FindField(STYLEID_NAME), straightStyle);
             arrowFeature.set_Value(arrowFeature.Fields.FindField(ArrowTypeNm), TurnArrow.ARROW_TYPE_GENERAL_DIRECTION);
             arrowFeature.Store();
@@ -684,6 +677,28 @@ namespace RoadNetworkSystem.NetworkElement.RoadSignElement
             else NewStyleID = 0;
             return NewStyleID;
         }
+
+
+
+
+        //private int getStyleIdByTurningDir(bool leftFlag,
+        //    bool rightFlag,
+        //    bool straightFlag,
+        //    bool uturnFlag)
+        //{
+        //    int NewStyleID = 0;
+        //    if (uturnFlag == true && straightFlag == true) NewStyleID = uturnStraStyle;
+        //    else if (uturnFlag == true && leftFlag == true) NewStyleID = uturnLeftStyle;
+        //    else if (uturnFlag == true) NewStyleID = uturnStyle;
+        //    else if (leftFlag == true && rightFlag == true) NewStyleID = leftRightStyle;
+        //    else if (straightFlag == true && rightFlag == true) NewStyleID = straRightStyle;
+        //    else if (rightFlag == true) NewStyleID = rightStyle;
+        //    else if (straightFlag == true && leftFlag == true) NewStyleID = straLeftStyle;
+        //    else if (leftFlag == true) NewStyleID = leftStyle;
+        //    else if (straightFlag == true) NewStyleID = straightStyle;
+        //    else NewStyleID = 0;
+        //    return NewStyleID;
+        //}
 
         private int getStyleIdByStyleIds(List<int> styleIds)
         {
