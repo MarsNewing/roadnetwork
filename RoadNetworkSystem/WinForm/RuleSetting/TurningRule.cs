@@ -73,6 +73,8 @@ namespace RoadNetworkSystem.WinForm.RuleSetting
             g_connElementMap = new Dictionary<CheckBox, IElement>();
             g_connectedLanesMap = new Dictionary<int, List<Lane>>();
             g_deletedConnectedLanesMap = new Dictionary<int, List<Lane>>();
+            //刷新地图
+            GeoDisplayHelper.Refresh(g_frm1.axMapControl1);
         }
 
         /// <summary>
@@ -829,6 +831,7 @@ namespace RoadNetworkSystem.WinForm.RuleSetting
             turnArrow.ANGLE = turnArrowService.GetTurnArrowAngle(g_currentLaneFeature);
             turnArrow.LaneID = g_currentLane.LaneID;
             turnArrowService.UpdateTurnArrowInLane(g_currentLane.LaneID, turnArrowStyleId);
+
             init();
             LayoutTurnarrowRule();
 

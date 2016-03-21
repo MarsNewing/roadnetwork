@@ -521,7 +521,7 @@ namespace RoadNetworkSystem.NetworkElement.RoadSignElement
             while (pFeature != null)
             {
                 TurnArrow temTurnArrow = GetEntity(pFeature);
-                if (temTurnArrow.ArrowType == TurnArrow.ARROW_TYPE_GENERAL_DIRECTION)
+                if (temTurnArrow.ArrowType == TurnArrow.ARROW_TYPE_GENERAL_DIRECTION && temTurnArrow.StyleID == straightStyle) 
                 {
                     break;
                 }
