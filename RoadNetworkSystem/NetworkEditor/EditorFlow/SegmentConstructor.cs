@@ -92,10 +92,10 @@ namespace RoadNetworkSystem.NetworkEditor.EditorFlow
             _oppArcEty = null;
 
             //保存Link
-            IFeature crtLinkFea = saveLink(fNodeFea,tNodeFea, linkRoadType, linkRoadNm, linkFlowDir, linkLine);
+            _crtLinkFea = saveLink(fNodeFea,tNodeFea, linkRoadType, linkRoadNm, linkFlowDir, linkLine);
 
             //更新FTNode的属性2，并更新_fNodeEty和_tNodeEty
-            updateFTNode(fNodeFea, tNodeFea);
+            updateFTNode(ref fNodeFea, ref tNodeFea);
             if (linkFlowDir == Link.FLOWDIR_DOUBLE || linkFlowDir == Link.FLOWDIR_SAME)
             {
                 saveArc(linkFlowDir, 1, sameLaneNum, linkLine);
@@ -122,7 +122,7 @@ namespace RoadNetworkSystem.NetworkEditor.EditorFlow
                     laneLayerFactory.CreateArcTopology(_crtLinkFea, fNodeFea, tNodeFea, _oppArcEty);
                 }
 
-                laneLayerFactory.UpdateCenterLine(_sameArcEty.LinkID);
+                laneLayerFactory.UpdateCenterLine(_crtLinkFea,_sameArcEty,_oppArcEty);
 
             }
             catch (Exception ex)
@@ -131,7 +131,7 @@ namespace RoadNetworkSystem.NetworkEditor.EditorFlow
             }
         }
 
-        private void updateFTNode(IFeature fNodeFea, IFeature tNodeFea)
+        private void updateFTNode(ref IFeature fNodeFea,ref IFeature tNodeFea)
         {
             //保存FNode属性2
             NodeService node = new NodeService(_pFeaClsNode, 0, null);

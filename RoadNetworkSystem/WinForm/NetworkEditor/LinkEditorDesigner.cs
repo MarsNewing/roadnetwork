@@ -16,7 +16,7 @@ namespace RoadNetworkSystem.WinForm.NetworkEditor
         private static Form1 _frm1;
         private const double LANEWEIDTH = 3.5;
         private const int LANE_NUM_DEFUAL = 3;
-        private const bool IS_ONE_WAY = true;
+        private const bool IS_ONE_WAY = false;
         
         //左上角
         private const int LEFTX = 10;
@@ -222,7 +222,7 @@ namespace RoadNetworkSystem.WinForm.NetworkEditor
 
 
 
-        #region----------------------事件相应--------------------------
+        #region----------------------事件响应------------------------
 
         static void button_Save_Click(object sender, EventArgs e)
         {
@@ -377,6 +377,14 @@ namespace RoadNetworkSystem.WinForm.NetworkEditor
             {
                 _frm1.upDown_link_OppLaneMun.Enabled = true;
                 _frm1.groupBox_Link_BasicAtrr.Enabled = true;
+                if (_frm1.checkBox_link_SameFlow.Checked == true)
+                {
+                    _flowDir = Link.FLOWDIR_DOUBLE;
+                }
+                else
+                {
+                    _flowDir = Link.FLOWDIR_OPPOSITION;
+                }
             }
         }
 
@@ -385,7 +393,7 @@ namespace RoadNetworkSystem.WinForm.NetworkEditor
             if (_frm1.checkBox_link_SameFlow.Checked == false)
             {
                 _frm1.upDown_link_SameLaneMun.Enabled = false;
-                _flowDir = -1;
+                _flowDir = Link.FLOWDIR_OPPOSITION;
                 if (_frm1.checkBox_link_SameFlow.Checked == false)
                 {
 
@@ -395,11 +403,19 @@ namespace RoadNetworkSystem.WinForm.NetworkEditor
                         _frm1.groupBox_Link_BasicAtrr.Enabled = false;
                     }
                 }
+
             }
             else
             {
                 _frm1.upDown_link_SameLaneMun.Enabled = true;
-
+                if (_frm1.checkBox_link_OppFlow.Checked == true)
+                {
+                    _flowDir = Link.FLOWDIR_DOUBLE;
+                }
+                else
+                {
+                    _flowDir = Link.FLOWDIR_SAME;
+                }
             }
         }
 

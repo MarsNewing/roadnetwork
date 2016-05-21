@@ -357,6 +357,11 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LinkLayer
             cursor = pFeaClsLane.Search(filter, false);
             IFeature pFeatureLane = cursor.NextFeature();
 
+            if (pFeatureLane == null)
+            {
+                return Lane.LANE_WEIDTH * serial;
+            }
+
             //当前车道的宽度
             double curWidth = 0;
             double cursorIndex = Lane.LEFT_POSITION;

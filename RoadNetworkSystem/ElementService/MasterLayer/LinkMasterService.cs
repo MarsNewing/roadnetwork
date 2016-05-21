@@ -102,6 +102,10 @@ namespace RoadNetworkSystem.NetworkElement.MasterLayer
 
         public LinkMaster GetEntity(IFeature feaLink)
         {
+            //if (feaLink == null)
+            //{
+            //    return null;
+            //}
             LinkMaster segEty = new LinkMaster();
             //try
             //{

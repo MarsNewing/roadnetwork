@@ -138,6 +138,7 @@ namespace RoadNetworkSystem.NetworkElement.MasterLayer
                 else
                 {
                     crtPntFeat.set_Value(FeaClsNode.FindField(NodeIDNm), crtPntFeat.OID);
+                    Id = crtPntFeat.OID;
                 }
             if (FeaClsNode.FindField(CompositeTypeNm) >= 0)
                 crtPntFeat.set_Value(FeaClsNode.FindField(CompositeTypeNm), nodeMasterEty.CompositeType);
@@ -153,6 +154,12 @@ namespace RoadNetworkSystem.NetworkElement.MasterLayer
         public void CreateAdjData(LinkMasterService seg)
         {
             IFeature pFeatureNode = GetFeature();
+            if (pFeatureNode == null)
+            {
+                MessageBox.Show("Link为空"+seg.Id.ToString());
+                return;
+
+            }
 
 
             //获取相邻LInk的信息（ID, 领接点的坐标）

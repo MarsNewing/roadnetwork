@@ -106,6 +106,105 @@ namespace RoadNetworkSystem.NetworkExtraction.LaneBasedNetwork.DatabaseManager
         }
 
 
+        #region  ------------------------ 交通组织中断点 ------------------------------
+        public static IFeatureClass CreateBreackPointClass(IFeatureDataset feaDS)
+        {
+
+            if (feaDS == null)
+            {
+                return null;
+            }
+            else
+            {
+                IFeatureWorkspace pFeatWorkspace = feaDS.Workspace as IFeatureWorkspace;
+                if (DatasetHelper.ExistDataset(pFeatWorkspace, BreakPoint.BreakPointName))
+                {
+                    return pFeatWorkspace.OpenFeatureClass(BreakPoint.BreakPointName);
+                }
+
+                IFields breackPointFields = new FieldsClass();
+                IFieldsEdit pFieldsEdit = breackPointFields as IFieldsEdit;
+
+                try
+                {
+                    IFieldEdit pFieldEdit = FeatureClassHelper.CreateField(BreakPoint.BreakPointIDName, esriFieldType.esriFieldTypeInteger, 50, 0, "", true, true);
+                    pFieldsEdit.AddField(pFieldEdit);
+
+                   
+                    IFeatureClass pNodeClass = FeatureClassHelper.CreateFeatureClass(feaDS, 
+                        BreakPoint.BreakPointName,
+                        esriGeometryType.esriGeometryPoint, 
+                        breackPointFields, 
+                        BreakPoint.BreakPointIDName);
+                    return pNodeClass;
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.ToString());
+                    return null;
+                }
+            }
+        }
+
+        public static ITable CreateLaneNumChangeTable(IWorkspace2 workspace)
+        {
+            if (workspace == null)
+            {
+                return null;
+            }
+            else
+            {
+                IFeatureWorkspace pFeaWs = workspace as IFeatureWorkspace;
+
+                if (DatasetHelper.ExistDataset(pFeaWs, LaneNumChange.LaneNumChangeName))
+                {
+                    return pFeaWs.OpenTable(LaneNumChange.LaneNumChangeName);
+                }
+
+                IFields fields = new FieldsClass();
+                IFieldsEdit pFieldsEdit = fields as IFieldsEdit;
+
+                IFieldEdit pFieldEdit = FeatureClassHelper.CreateField(LaneNumChange.FlowDir_Name,
+                    esriFieldType.esriFieldTypeInteger, 
+                    50, 0, "", true, true);
+                pFieldsEdit.AddField(pFieldEdit);
+                pFieldEdit = FeatureClassHelper.CreateField(LaneNumChange.FromBreakPointID_Name,
+                    esriFieldType.esriFieldTypeInteger,
+                    50, 0, "", true, true);
+                pFieldsEdit.AddField(pFieldEdit);
+                pFieldEdit = FeatureClassHelper.CreateField(LaneNumChange.DoneFlag_Name,
+                    esriFieldType.esriFieldTypeInteger,
+                    50, 0, "", true, true);
+                pFieldsEdit.AddField(pFieldEdit);
+
+
+                pFieldEdit = FeatureClassHelper.CreateField(LaneNumChange.LaneNumChangeID_Name,
+                    esriFieldType.esriFieldTypeInteger,
+                    50, 0, "", true, true);
+                pFieldsEdit.AddField(pFieldEdit);
+                pFieldEdit = FeatureClassHelper.CreateField(LaneNumChange.LaneNum_Name,
+                    esriFieldType.esriFieldTypeInteger,
+                    50, 0, "", true, true);
+                pFieldsEdit.AddField(pFieldEdit);
+                pFieldEdit = FeatureClassHelper.CreateField(LaneNumChange.SegmentID_Name,
+                    esriFieldType.esriFieldTypeInteger,
+                    50, 0, "", true, true);
+                pFieldsEdit.AddField(pFieldEdit);
+
+                pFieldEdit = FeatureClassHelper.CreateField(LaneNumChange.ToBreakPointID_Name,
+                    esriFieldType.esriFieldTypeInteger,
+                    50, 0, "", true, true);
+                pFieldsEdit.AddField(pFieldEdit);
+                
+                ITable pLaneNumChangeTable = DataTableHelper.CreateTable(workspace, 
+                    LaneNumChange.LaneNumChangeName,
+                    fields);
+                return pLaneNumChangeTable;
+            }
+        }
+
+        #endregion
+
         #region --------------创建RoadSegment图层-------------------------
 
         public static IFeatureClass CreateSegmentNodeClass(IFeatureDataset feaDS)

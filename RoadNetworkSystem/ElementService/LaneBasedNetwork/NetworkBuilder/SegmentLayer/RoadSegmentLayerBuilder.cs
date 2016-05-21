@@ -146,6 +146,10 @@ namespace RoadNetworkSystem.NetworkExtraction.LaneBasedNetwork.SegmentLayer
                 Road rdEty = new Road();
                 RoadService road = new RoadService(_pFeaClsRoad, 0);
                 rdEty = road.GetEntity(pFeature);
+                if (rdEty.RoadID == 120057)
+                {
+                    int test = 1;
+                }
                 //Road的几何
                 IPolyline roadLine = pFeature.Shape as IPolyline;
                 IPointCollection col=new Polyline();
@@ -155,7 +159,7 @@ namespace RoadNetworkSystem.NetworkExtraction.LaneBasedNetwork.SegmentLayer
                 segCol.AddPoint(col.Point[0]);
 
                 #region 更新Road的第一点的ID；
-                string key1 = String.Format("{0}_{1}", col.Point[0].X, col.Point[0].Y);
+                string key1 = NodeInfor.ParsePoint2String(col.Point[0]);
                 
                 try
                 {
@@ -188,7 +192,7 @@ namespace RoadNetworkSystem.NetworkExtraction.LaneBasedNetwork.SegmentLayer
                 {
                     IPoint pnt=col.Point[i];
                     segCol.AddPoint(pnt);
-                    string key = String.Format("{0}_{1}", pnt.X, pnt.Y);
+                    string key = NodeInfor.ParsePoint2String(pnt);
                     NodeInfor temNodeInfor = hstNode[key] as NodeInfor;
 
 

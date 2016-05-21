@@ -35,6 +35,9 @@ namespace RoadNetworkSystem.NetworkExtraction.LaneBasedNetwork.LaneLayer
         IFeatureClass _pFeaClsStopLine;
         Dictionary<int, int> roadLateralLaneNumPair;
 
+
+        const int MIN_UNCUT_LINK_LENGTH = 40;
+
         public LaneLayerBuilder(Dictionary<string, IFeatureClass> feaClsDic)
         {
             _pFeaClsArc = feaClsDic[Arc.ArcFeatureName];
@@ -94,7 +97,7 @@ namespace RoadNetworkSystem.NetworkExtraction.LaneBasedNetwork.LaneLayer
                 CreateArcTopology(linkFea, fNodeFeature, tNodeFeature, oppositionArc);
             }
 
-            UpdateCenterLine(link.ID);
+            UpdateCenterLine(linkFea,sameArc,oppositionArc);
         }
 
         public void CreateArcTopology(IFeature linkFea, IFeature fNodeFea, 
@@ -119,13 +122,12 @@ namespace RoadNetworkSystem.NetworkExtraction.LaneBasedNetwork.LaneLayer
             //根据adjLinks,判断要不要截头截尾
             PreNodeCutInforService preNodeCutInforService = new PreNodeCutInforService(_pFeaClsLink, _pFeaClsArc);
             PreNodeCutInfor samePreNodeCutInfor = preNodeCutInforService.GetPreNodeCutInfor(fNode, arc, link);
+            PreNodeCutInfor oppPreNodeCutInfor = preNodeCutInforService.GetPreNodeCutInfor(tNode, arc, link);
 
-            if (arc.ArcID == 70)
-            {
-                int test = 0;
-            }
             NextNodeCutInforService nextNodeCutInforService = new NextNodeCutInforService(_pFeaClsLink, _pFeaClsArc);
             NextNodeCutInfor sameNextNodeCutInfor = nextNodeCutInforService.GetNextNodeCutInfor(tNode, arc, link);
+
+            NextNodeCutInfor oppNextNodeCutInfor = nextNodeCutInforService.GetNextNodeCutInfor(fNode, arc, link);
             //  2.-----------------------创建与Link同向的车道、边界线、Kerb----------------------------------------
 
 
@@ -136,16 +138,31 @@ namespace RoadNetworkSystem.NetworkExtraction.LaneBasedNetwork.LaneLayer
 
             //  3.-----------------------更新同向Arc的上游Arc----------------------------------------
             //相同方向的Arc的上游Arc存在，则更新
-            if (samePreNodeCutInfor.preArcEty != null)
+            if (arc.FlowDir == Link.FLOWDIR_SAME &&
+                samePreNodeCutInfor.preArcEty != null)
             {
                 updateArc(samePreNodeCutInfor.preArcEty);
             }
+
+            if (arc.FlowDir == Link.FLOWDIR_OPPOSITION &&
+                oppPreNodeCutInfor.preArcEty != null)
+            {
+                updateArc(oppPreNodeCutInfor.preArcEty);
+            }
             //  4.-----------------------更新同向Arc的下游Arc----------------------------------------
             //相同方向的Arc的上游Arc存在，则更新
-            if (sameNextNodeCutInfor.nextArcEty != null)
+            if (arc.FlowDir == Link.FLOWDIR_SAME &&
+                sameNextNodeCutInfor.nextArcEty != null)
             {
                 updateArc(sameNextNodeCutInfor.nextArcEty);
             }
+
+            if (arc.FlowDir == Link.FLOWDIR_OPPOSITION &&
+                oppNextNodeCutInfor.nextArcEty != null)
+            {
+                updateArc(oppNextNodeCutInfor.nextArcEty);
+            }
+            
 
             //添加同向的车道为fromlane的连接器,TNode是入口交叉口
             updateConnetorAndArrow(tNode, tNodeFea.ShapeCopy as IPoint, arc, true);
@@ -159,7 +176,15 @@ namespace RoadNetworkSystem.NetworkExtraction.LaneBasedNetwork.LaneLayer
             IPolygon gon = new PolygonClass();
             string str = "";
             Surface surfaceEty = new Surface();
-            surface.CrateSurfaceShape(_pFeaClsKerb, sameNextNodeCutInfor, tNodeFea, fNodeFea, ref gon, ref str);
+            if (arc.FlowDir == Link.FLOWDIR_SAME)
+            {
+                surface.CrateSurfaceShape(_pFeaClsKerb, sameNextNodeCutInfor, tNodeFea, fNodeFea, ref gon, ref str);
+            }
+            else
+            {
+                surface.CrateSurfaceShape(_pFeaClsKerb, oppNextNodeCutInfor,  fNodeFea, tNodeFea, ref gon, ref str);
+            }
+            
 
             surfaceEty.ArcID = arc.ArcID;
             surfaceEty.ControlIDs = str;
@@ -285,17 +310,7 @@ namespace RoadNetworkSystem.NetworkExtraction.LaneBasedNetwork.LaneLayer
         public void CreateLaneTopo(IFeature linkFea, int linkFlowDir, Arc arcEty, PreNodeCutInfor preNodeCutInfor,
             NextNodeCutInfor nextNodeCutInfor)
         {
-
-            if (arcEty.ArcID == 1071)
-            {
-                int test = 0;
-            }
-
-            if (arcEty.ArcID == 1061)
-            {
-                int test = 0;
-            }
-
+            
             LinkService linkService = new LinkService(_pFeaClsLink, 0);
             LinkMaster linkMstr = linkService.GetEntity(linkFea);
             Link link = new Link();
@@ -440,11 +455,25 @@ namespace RoadNetworkSystem.NetworkExtraction.LaneBasedNetwork.LaneLayer
                 double nextCut = 0;
 
 
+                if (arcEty.ArcID == 5440)
+                {
+                    int test = 0;
+                }
+
                 #region ++++++++++++++++++++++++2.2 根据类型判断截取的大小++++++++++++++++++++++++
                 if (preNodeCutInfor.cutType == 1)
                 {
                     ArcService preArc = new ArcService(_pFeaClsArc, preNodeCutInfor.preArcEty.ArcID);
-                    double preLanesWidth = preArc.GetLanesWidth(_pFeaClsLane, i);
+                    double preLanesWidth = 0;
+                    if (!preNodeCutInfor.preNodeEty.IsTwoLegsNode())
+                    {
+                        preLanesWidth = preArc.GetLanesWidth(_pFeaClsLane, preNodeCutInfor.preArcEty.LaneNum);
+                    }
+                    else
+                    {
+                        preLanesWidth = preArc.GetLanesWidth(_pFeaClsLane, i);
+                    }
+                    
                     preCut = CutHelper.getCutDefualt(curWidth, preLanesWidth, preNodeCutInfor.clockAngle);
                 }
                 else if (preNodeCutInfor.cutType == 2)
@@ -459,7 +488,15 @@ namespace RoadNetworkSystem.NetworkExtraction.LaneBasedNetwork.LaneLayer
                 if (nextNodeCutInfor.cutType == 1)
                 {
                     ArcService nextArc = new ArcService(_pFeaClsArc, nextNodeCutInfor.nextArcEty.ArcID);
-                    double nextLanesWidth = nextArc.GetLanesWidth(_pFeaClsLane, i);
+                    double nextLanesWidth = 0;
+                    if (!nextNodeCutInfor.nextNodeEty.IsTwoLegsNode())
+                    {
+                        nextLanesWidth = nextArc.GetLanesWidth(_pFeaClsLane, nextNodeCutInfor.nextArcEty.LaneNum);
+                    }
+                    else
+                    {
+                        nextLanesWidth = nextArc.GetLanesWidth(_pFeaClsLane, i);
+                    }
                     nextCut = CutHelper.getCutDefualt(curWidth, nextLanesWidth, nextNodeCutInfor.antiClockAngle);
                 }
                 else if (nextNodeCutInfor.cutType == 2)
@@ -473,7 +510,7 @@ namespace RoadNetworkSystem.NetworkExtraction.LaneBasedNetwork.LaneLayer
 
                 if (preCut > 0)
                 {
-                    preCut = 1.5 * preCut;
+                    preCut = 1.2 * preCut;
 
                 }
                 else
@@ -483,7 +520,7 @@ namespace RoadNetworkSystem.NetworkExtraction.LaneBasedNetwork.LaneLayer
 
                 if (nextCut > 0)
                 {
-                    nextCut = 1.5 * nextCut;
+                    nextCut = 1.2 * nextCut;
 
                 }
                 else
@@ -516,22 +553,62 @@ namespace RoadNetworkSystem.NetworkExtraction.LaneBasedNetwork.LaneLayer
 
                 #region ++++++++++++++++++++++++2.3 获取Lane和Boundary的几何++++++++++++++++++++++++
 
+
+                if (arcEty.ArcID == 80)
+                {
+                    int test = 0;
+                }
+
                 IPolyline laneLine = null;
                 IPolyline boundryLine = null;
                 if (arcEty.FlowDir == 1)
                 {
-                    laneLine = LineHelper.CreateLineByLRS(refLinkLine, arcEty.FlowDir * laneOffset,
-                        refLinkLine.Length * ArcService.ARC_CUT_PERCENTAGE, refLinkLine.Length * ArcService.ARC_CUT_PERCENTAGE);
-                    boundryLine = LineHelper.CreateLineByLRS(refLinkLine, arcEty.FlowDir * curWidth, preCut, nextCut);
+                    //    laneLine = LineHelper.CreateLineByLRS(refLinkLine, arcEty.FlowDir * laneOffset,
+                    //        refLinkLine.Length * ArcService.ARC_CUT_PERCENTAGE, refLinkLine.Length * ArcService.ARC_CUT_PERCENTAGE);
+                    
+                    if (refLinkLine.Length < MIN_UNCUT_LINK_LENGTH)
+                    {
+                        laneLine = LineHelper.CreateLineByLRS(refLinkLine, arcEty.FlowDir * laneOffset, 0, 0);
+                        boundryLine = LineHelper.CreateLineByLRS(refLinkLine, arcEty.FlowDir * curWidth, 0, 0);
+                    }
+                    else
+                    {
+                        laneLine = LineHelper.CreateLineByLRS(refLinkLine, arcEty.FlowDir * laneOffset,
+                        preCut + 5, nextCut + 5);
+                        boundryLine = LineHelper.CreateLineByLRS(refLinkLine, arcEty.FlowDir * curWidth, preCut, nextCut);
+                    }
+                    if (i == arcEty.LaneNum)
+                    {
+                        createBoundaryForTwoLegs(preNodeCutInfor, nextNodeCutInfor,ref boundryLine);
+                    }
                 }
 
                 else
                 {
-                    laneLine = LineHelper.CreateLineByLRS(refLinkLine, arcEty.FlowDir * laneOffset,
-                        refLinkLine.Length * ArcService.ARC_CUT_PERCENTAGE, refLinkLine.Length * ArcService.ARC_CUT_PERCENTAGE);
-                    laneLine.ReverseOrientation();
+                    //laneLine = LineHelper.CreateLineByLRS(refLinkLine, arcEty.FlowDir * laneOffset,
+                    //    refLinkLine.Length * ArcService.ARC_CUT_PERCENTAGE, refLinkLine.Length * ArcService.ARC_CUT_PERCENTAGE);
 
-                    boundryLine = LineHelper.CreateLineByLRS(refLinkLine, arcEty.FlowDir * curWidth, nextCut, preCut);
+                    if (refLinkLine.Length < MIN_UNCUT_LINK_LENGTH)
+                    {
+                        laneLine = LineHelper.CreateLineByLRS(refLinkLine, arcEty.FlowDir * laneOffset, 0, 0);
+                        laneLine.ReverseOrientation();
+                        boundryLine = LineHelper.CreateLineByLRS(refLinkLine, arcEty.FlowDir * curWidth, 0, 0);
+                    }
+                    else
+                    {
+
+                        laneLine = LineHelper.CreateLineByLRS(refLinkLine, arcEty.FlowDir * laneOffset,
+                            nextCut + 5, preCut + 5);
+                        laneLine.ReverseOrientation();
+
+                        boundryLine = LineHelper.CreateLineByLRS(refLinkLine, arcEty.FlowDir * curWidth, nextCut, preCut);
+                    }
+
+
+                    if (i == arcEty.LaneNum)
+                    {
+                        createBoundaryForTwoLegs(preNodeCutInfor, nextNodeCutInfor, ref boundryLine);
+                    }
                 }
                 #endregion ++++++++++++++++++++++++2.3 获取Lane和Boundary的几何++++++++++++++++++++++++
 
@@ -648,6 +725,7 @@ namespace RoadNetworkSystem.NetworkExtraction.LaneBasedNetwork.LaneLayer
                     //编号0、1的kerb
                     if (i == arcEty.LaneNum - Lane.rightPositionOffset)
                     {
+                        
                         KerbService kerb = new KerbService(_pFeaClsKerb, 0);
                         Kerb kerbEty0 = new Kerb();
                         Kerb kerbEty1 = new Kerb();
@@ -743,6 +821,30 @@ namespace RoadNetworkSystem.NetworkExtraction.LaneBasedNetwork.LaneLayer
             #endregion ----------------------------2 生成Arc的Lane、Boundary、StopLine、Kerb--------------------------------------------------
         }
 
+        private void createBoundaryForTwoLegs(PreNodeCutInfor preNodeCutInfor,
+            NextNodeCutInfor nextNodeCutInfor,
+            ref IPolyline boundryLine)
+        {
+            //为展宽流出现阶段
+            int preCutTolerance = 0;
+            if (preNodeCutInfor.preNodeEty.IsTwoLegsNode())
+            {
+                preCutTolerance = 5;
+            }
+
+            int nextCutTolerance = 0;
+            if (nextNodeCutInfor.nextNodeEty.IsTwoLegsNode())
+            {
+                nextCutTolerance = 5;
+            }
+
+            if (preCutTolerance != 0 || nextCutTolerance != 0)
+            {
+                boundryLine = LineHelper.CreateLineByLRS(boundryLine, 0, preCutTolerance, nextCutTolerance);
+            }
+
+        }
+
         /// <summary>
         /// 更新Arc所有的拓扑，用于当前Arc变化后，更新上游或下游的Arc
         /// </summary>
@@ -803,7 +905,7 @@ namespace RoadNetworkSystem.NetworkExtraction.LaneBasedNetwork.LaneLayer
                 IPolygon gon = new PolygonClass();
                 string str = "";
 
-                if (linkEty.FlowDir == Link.FLOWDIR_SAME || (linkEty.FlowDir == Link.FLOWDIR_DOUBLE && arcEty.FlowDir == 1))
+                if (linkEty.FlowDir == Link.FLOWDIR_SAME || (linkEty.FlowDir == Link.FLOWDIR_DOUBLE && arcEty.FlowDir == Link.FLOWDIR_SAME))
                 {
                     surface.CrateSurfaceShape(_pFeaClsKerb, nextNodeCutInfor, tNodeFea, fNodeFea, ref gon, ref str);
                 }
@@ -823,7 +925,20 @@ namespace RoadNetworkSystem.NetworkExtraction.LaneBasedNetwork.LaneLayer
                     surface.CreateSurface(surfaceEty, gon);
                 }
                 //那就更新CenterLine
-                UpdateCenterLine(arcEty.LinkID);
+                if (arcEty.FlowDir == Link.FLOWDIR_SAME)
+                {
+                    ArcService arcService = new ArcService(_pFeaClsArc, 0);
+                    Arc oppArc = arcService.GetOppositionArc(arcEty.LinkID);
+                    UpdateCenterLine(linkFea, arcEty, oppArc);
+                }
+                else
+                {
+
+                    ArcService arcService = new ArcService(_pFeaClsArc, 0);
+                    Arc sameArc = arcService.GetOppositionArc(arcEty.LinkID);
+                    UpdateCenterLine(linkFea, sameArc, arcEty);
+                }
+                
 
                 //那就更新车道连接器吧
 
@@ -849,137 +964,22 @@ namespace RoadNetworkSystem.NetworkExtraction.LaneBasedNetwork.LaneLayer
         }
 
 
-        public void UpdateCenterLine(int linkID)
+        public void UpdateCenterLine(IFeature linkFeature,Arc sameArc,Arc oppArc)
         {
-            int sameArcID = 0;
-            IPoint sameKerb3 = null;
-            int oppArcID = 0;
-            IPoint oppKerb3 = null;
+            BoundaryService boundaryService = new BoundaryService(_pFeaClsBoundary, 0);
 
-            IFeature pArcFea = null;
+            IPolyline cneterLine = boundaryService.GetCenterLineShape(linkFeature,
+                sameArc,
+                oppArc,
+                _pFeaClsLane,
+                _pFeaClsKerb);
 
-            LinkService link = new LinkService(_pFeaClsLink, linkID);
-
-            IFeature pFeatureLink = link.GetFeature();
-            LinkMaster linkMaster = link.GetEntity(pFeatureLink);
-            Link linkEty = new Link();
-            linkEty = linkEty.Copy(linkMaster);
-
-            IQueryFilter filter = new QueryFilterClass();
-            filter.WhereClause = link.IDNm + " = " + linkID;
-            IFeatureCursor cursor = _pFeaClsArc.Search(filter, false);
-            pArcFea = cursor.NextFeature();
-
-            //中心线是否被删除掉了，true 删除了；false 没被删除
-            bool centerLiuneDltFlag = false;
-
-            while (pArcFea != null)
-            {
-                int flowDir = Convert.ToInt32(pArcFea.get_Value(_pFeaClsArc.FindField(Arc.FlowDirNm)));
-                if (flowDir == 1)
-                {
-                    sameArcID = Convert.ToInt32(pArcFea.get_Value(_pFeaClsArc.FindField(Arc.ArcIDNm)));
-
-
-                    if (centerLiuneDltFlag == false)
-                    {
-                        //删除旧的CenterLine
-                        LaneFeatureService lane = new LaneFeatureService(_pFeaClsLane, 0);
-                        IFeature laneFea = lane.QueryFeatureBuRule(sameArcID, 0);
-                        if (laneFea == null)
-                        {
-                            pArcFea = cursor.NextFeature();
-                            continue;
-                        }
-                        int centerLineID = Convert.ToInt32(laneFea.get_Value(_pFeaClsLane.FindField(Lane.LeftBoundaryIDNm)));
-                        BoundaryService boun = new BoundaryService(_pFeaClsBoundary, centerLineID);
-                        IFeature bounFea = boun.GetFeature();
-                        if (bounFea != null)
-                        {
-                            bounFea.Delete();
-                            centerLiuneDltFlag = true;
-                        }
-                        else
-                        {
-                            centerLiuneDltFlag = true;
-                        }
-                    }
-
-                    if (linkEty.FlowDir == Link.FLOWDIR_DOUBLE || linkEty.FlowDir == Link.FLOWDIR_SAME)
-                    {
-                        KerbService kerb = new KerbService(_pFeaClsKerb, 0);
-                        IFeature kerb3 = kerb.GetKerbByArcAndSerial(sameArcID, 3);
-                        sameKerb3 = kerb3.ShapeCopy as IPoint;
-                    }
-
-                }
-                else
-                {
-                    if (linkEty.FlowDir == Link.FLOWDIR_DOUBLE || linkEty.FlowDir == Link.FLOWDIR_OPPOSITION)
-                    {
-
-                        oppArcID = Convert.ToInt32(pArcFea.get_Value(_pFeaClsArc.FindField(Arc.ArcIDNm)));
-                        KerbService kerb = new KerbService(_pFeaClsKerb, 0);
-                        IFeature kerb3 = kerb.GetKerbByArcAndSerial(oppArcID, 3);
-                        if (kerb3 == null)
-                        {
-                            pArcFea = cursor.NextFeature();
-                            continue;
-                        }
-                        oppKerb3 = kerb3.ShapeCopy as IPoint;
-
-                        if (centerLiuneDltFlag == false)
-                        {
-                            //删除旧的CenterLine
-                            LaneFeatureService lane = new LaneFeatureService(_pFeaClsLane, 0);
-                            IFeature laneFea = lane.QueryFeatureBuRule(oppArcID, Lane.LEFT_POSITION);
-                            int centerLineID = Convert.ToInt32(laneFea.get_Value(_pFeaClsLane.FindField(Lane.LeftBoundaryIDNm)));
-                            BoundaryService boun = new BoundaryService(_pFeaClsBoundary, centerLineID);
-                            IFeature bounFea = boun.GetFeature();
-                            if (bounFea != null)
-                            {
-                                bounFea.Delete();
-                                centerLiuneDltFlag = true;
-                            }
-                            else
-                            {
-                                centerLiuneDltFlag = true;
-                            }
-                        }
-                    }
-
-
-                }
-                pArcFea = cursor.NextFeature();
-            }
-            System.GC.Collect();
-            System.GC.WaitForPendingFinalizers();
-            System.Runtime.InteropServices.Marshal.ReleaseComObject(cursor);
-            //System.Runtime.InteropServices.Marshal.ReleaseComObject(cursor);
-
-            IPointCollection col = new PolylineClass();
-            if (linkEty.FlowDir != Link.FLOWDIR_DOUBLE)
-            {
-                col.AddPoint((pFeatureLink.Shape as IPolyline).FromPoint);
-                col.AddPoint((pFeatureLink.Shape as IPolyline).ToPoint);
-            }
-            else
-            {
-                if (oppKerb3 != null)
-                {
-                    col.AddPoint(oppKerb3);
-                }
-                if (sameKerb3 != null)
-                {
-                    col.AddPoint(sameKerb3);
-                }
-            }
-
-            IPolyline cneterLine = col as IPolyline;
             Boundary bounEty = new Boundary();
             bounEty.BoundaryID = 0;
             bounEty.Dir = 1;
-            if (linkEty.FlowDir != 0)
+
+            int linkFlowDir = Convert.ToInt32(linkFeature.get_Value(linkFeature.Fields.FindField("FlowDir")));
+            if (linkFlowDir != Link.FLOWDIR_DOUBLE)
             {
                 bounEty.StyleID = Boundary.OUTSIDEBOUNSTYLE;
             }
@@ -998,21 +998,19 @@ namespace RoadNetworkSystem.NetworkExtraction.LaneBasedNetwork.LaneLayer
             LaneFeatureService lane1 = new LaneFeatureService(_pFeaClsLane, 0);
 
             //更新车道的LeftBoundaryID
-            IFeature sameLane = lane1.QueryFeatureBuRule(sameArcID, 0);
+            IFeature sameLane = lane1.QueryFeatureBuRule(sameArc.ArcID, 0);
             if (sameLane != null)
             {
                 sameLane.set_Value(_pFeaClsLane.FindField(Lane.LeftBoundaryIDNm), bounID);
                 sameLane.Store();
             }
 
-
-            IFeature oppLane = lane1.QueryFeatureBuRule(oppArcID, 0);
+            IFeature oppLane = lane1.QueryFeatureBuRule(oppArc.ArcID, 0);
             if (oppLane != null)
             {
                 oppLane.set_Value(_pFeaClsLane.FindField(Lane.LeftBoundaryIDNm), bounID);
                 oppLane.Store();
             }
-
 
         }
 

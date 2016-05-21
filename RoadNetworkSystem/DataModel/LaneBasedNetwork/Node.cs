@@ -34,5 +34,19 @@ namespace RoadNetworkSystem.DataModel.LaneBasedNetwork
 
             return Node;
         }
+
+
+        public bool IsTwoLegsNode()
+        {
+            string[] strs = AdjIDs.Split('\\');
+            if (strs.Length == 2)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
     }
 }

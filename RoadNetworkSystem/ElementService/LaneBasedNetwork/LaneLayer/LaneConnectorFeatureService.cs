@@ -48,16 +48,26 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LaneLayer
 
         struct ArcLaneConnectorsPosition
         {
+
+            /*
+
+                ----------------------------            ----------------------------
+                ----fromLaneLeftPosition----  ------>   ----------------------------
+                ----fromLaneRightPosition---  ------>   ----------------------------
+                ----------------------------            ----------------------------
+
+            */
+
+            /// <summary>
+            /// 一个方向的车道连接器，在起始Arc中，最左侧的车道的Position
+            /// </summary>
             public int fromLaneLeftPosition;
+
+            /// <summary>
+            /// 一个方向的车道连接器，在起始Arc中，最右侧的车道的Position
+            /// </summary>
             public int fromLaneRightPosition;
         }
-
-        struct LeftRightPositionPair
-        {
-            int leftPosition;
-            int rightPosition;
-        }
-
         private int _connectorID = 0;
         private IFeatureClass _pFeaClsConnector;
         private IFeatureClass _pFeaClsLane;
@@ -459,7 +469,7 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LaneLayer
                 IFeatureClass pFeaClsArc = (pFeaClsLane.FeatureDataset.Workspace as IFeatureWorkspace).OpenFeatureClass(Arc.ArcFeatureName);
 
 
-
+                //
                 ArcLaneConnectorsPosition arcLaneConnectorsPosition = getArcLanePosition(pFeaClsLink, pFeaClsArc, pFeaClsNode,
                     fromArcEty, toArcEty);
 
@@ -650,7 +660,9 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LaneLayer
 
                 if (arcLaneConnectorsPosition.fromLaneLeftPosition > 0 && arcLaneConnectorsPosition.fromLaneRightPosition > 0)
                 {
-                    if (rightTurnArcs.Count == 0 && straightTurnArcs.Count == 0)
+                    if ((rightTurnArcs.Count == 0 && straightTurnArcs.Count == 0||
+                        (rightTurnArcs.Count == 0 && leftTurnArcs.Count == 0))||
+                        rightTurnArcs.Count == 0 && leftTurnArcs.Count == 0)
                     {
                         arcLaneConnectorsPosition.fromLaneRightPosition = fromArc.LaneNum - Lane.rightPositionOffset;
                     }
@@ -700,7 +712,9 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LaneLayer
                 }
                 if (arcLaneConnectorsPosition.fromLaneLeftPosition > 0 && arcLaneConnectorsPosition.fromLaneRightPosition > 0)
                 {
-                    if (leftTurnArcs.Count == 0 && straightTurnArcs.Count == 0)
+                    if ((rightTurnArcs.Count == 0 && straightTurnArcs.Count == 0 ||
+                        (rightTurnArcs.Count == 0 && leftTurnArcs.Count == 0)) ||
+                        rightTurnArcs.Count == 0 && leftTurnArcs.Count == 0)
                     {
                         arcLaneConnectorsPosition.fromLaneLeftPosition = Lane.LEFT_POSITION;
                     }

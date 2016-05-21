@@ -12,6 +12,7 @@ using RoadNetworkSystem.ADO.Access;
 using RoadNetworkSystem.DataModel.LaneBasedNetwork;
 using RoadNetworkSystem.DataModel.Road;
 using RoadNetworkSystem.DataModel.RoadSign;
+using RoadNetworkSystem.ElementService.LaneBasedNetwork.LinkLayer;
 using RoadNetworkSystem.GIS;
 using RoadNetworkSystem.GIS.Interactive;
 using RoadNetworkSystem.NetworkEditor;
@@ -142,11 +143,7 @@ namespace RoadNetworkSystem
         public OleDbConnection Conn;
 
         private IWorkspaceFactory pWsf;
-        /// <summary>
-        /// 数据库中的要素数据集
-        /// </summary>
-        public IFeatureDataset FeaDs;
-
+        
 
             #region 要素类
             public IFeatureClass FeaClsRoad;
@@ -785,7 +782,7 @@ namespace RoadNetworkSystem
                                     SlctRoadIndex_EditTool += 1;
                                     richTextBox_Tool_FirstFea.Text = text;
 
-                                    GeoDisplayHelper.HightLine(axMapControl1, FirstRoadFea.Shape as IPolyline, 255, 0, 0, 10, esriSimpleLineStyle.esriSLSSolid);
+                                    GeoDisplayHelper.HightLine(axMapControl1, FirstRoadFea.Shape as IPolyline, 255, 0, 0, 3, esriSimpleLineStyle.esriSLSSolid);
                                     
                                 }
                                 else if (SlctRoadIndex_EditTool == 1)
@@ -799,7 +796,7 @@ namespace RoadNetworkSystem
                                         "道路类型:" + System.Enum.GetName(typeof(Link.道路类型), o).ToString();
                                     richTextBox_Tool_SecondFea.Text = text;
                                     SlctRoadIndex_EditTool = 0;
-                                    GeoDisplayHelper.HightLine(axMapControl1, SecondRoadFea.Shape as IPolyline, 0, 255, 0, 10, esriSimpleLineStyle.esriSLSSolid);
+                                    GeoDisplayHelper.HightLine(axMapControl1, SecondRoadFea.Shape as IPolyline, 0, 255, 0, 3, esriSimpleLineStyle.esriSLSSolid);
                                 }
                             }
 
@@ -1153,7 +1150,7 @@ namespace RoadNetworkSystem
                                     {
                                         #region %%%%%%%%%%%%%%%%%%%%%%%%%%%%用红色线表示第一条Road%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-                                        GeoDisplayHelper.HightLine(axMapControl1, FirstRoadFea.Shape as IPolyline, 255, 0, 0, 50, esriSimpleLineStyle.esriSLSDashDotDot);
+                                        GeoDisplayHelper.HightLine(axMapControl1, FirstRoadFea.Shape as IPolyline, 255, 0, 0, 5, esriSimpleLineStyle.esriSLSDashDotDot);
 
                                         #endregion %%%%%%%%%%%%%%%%%%%%%%%%%%%%用红色线表示第一条Road%%%%%%%%%%%%%%%%%%%%%%%%%%
                                     }
@@ -1180,7 +1177,7 @@ namespace RoadNetworkSystem
                                     #region %%%%%%%%%%%%%%%%%%%%%%%%%%%%用蓝色线表示第二条Road%%%%%%%%%%%%%%%%%%%%%%%%%%
                                     SecondRoadFea = pFeature;
 
-                                    GeoDisplayHelper.HightLine(axMapControl1, SecondRoadFea.Shape as IPolyline, 0, 0, 255, 50, esriSimpleLineStyle.esriSLSSolid);
+                                    GeoDisplayHelper.HightLine(axMapControl1, SecondRoadFea.Shape as IPolyline, 0, 0, 255, 5, esriSimpleLineStyle.esriSLSSolid);
 
 
 
@@ -1361,31 +1358,33 @@ namespace RoadNetworkSystem
             {
                 System.Collections.Generic.List<string> layerNames = new System.Collections.Generic.List<string>();
                 layerNames.Add(Road.RoadNm);
-                LayerHelper.LoadMapLayer(axMapControl1, layerNames);
+                //LayerHelper.LoadMapLayer(axMapControl1, layerNames);
             }
-        }
-
-
-
-
-        private void 中心线到仿真路网ToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            _functionFlag = Convert.ToInt32(FunEnum.NetworkExtraction_Road2BasicNetwork);
-            Road2BasicRoadNetwork road2BasicRoadNetwork = new Road2BasicRoadNetwork(this);
-            road2BasicRoadNetwork.Convert2BasicRoadNetwork();
         }
 
         private void 数据库ToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            IFeatureDataset feaDS = Wsp.get_Datasets(esriDatasetType.esriDTFeatureDataset).Next() as IFeatureDataset;
-            DatabaseDesigner.CreateBASE_FAC_LDT(feaDS);
-            DatabaseDesigner.CreateBASE_FAC_WDT(feaDS);
-            DatabaseDesigner.CreateBASE_FAC_VDT(feaDS);
 
-            DatabaseDesigner.CreateBASE_Float_LDT(Wsp as IWorkspace2);
-            DatabaseDesigner.CreateBASE_Float_VDT(Wsp as IWorkspace2);
-            DatabaseDesigner.CreateBASE_Float_WDT(Wsp as IWorkspace2);
+            //DatabaseDesigner.CreateBreackPointClass((Wsp as IFeatureWorkspace).OpenFeatureDataset("Ming"));
+            //DatabaseDesigner.CreateLaneNumChangeTable(Wsp as IWorkspace2);
+
+
+            LaneNumChangeService laneNumChangeService = new LaneNumChangeService(Conn);
+            laneNumChangeService.CreateLaneNumChangesFromSegment(FeaClsSegment);
+            //DatabaseDesigner.CreateBASE_FAC_LDT(feaDS);
+            //DatabaseDesigner.CreateBASE_FAC_WDT(feaDS);
+            //DatabaseDesigner.CreateBASE_FAC_VDT(feaDS);
+
+            //DatabaseDesigner.CreateBASE_Float_LDT(Wsp as IWorkspace2);
+            //DatabaseDesigner.CreateBASE_Float_VDT(Wsp as IWorkspace2);
+            //DatabaseDesigner.CreateBASE_Float_WDT(Wsp as IWorkspace2);
         }
 
+        private void 路段路网到车道路网ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Segment2BasicRoadNetwork segment2BasicRoadNetwork = new Segment2BasicRoadNetwork(this);
+            segment2BasicRoadNetwork.Convert2BasicRoadNetwork();
+
+        }
     }
 }

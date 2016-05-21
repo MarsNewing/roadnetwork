@@ -31,7 +31,7 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.RoadSegmentLayer
 
                 _id = rsNodeID;
 
-                base.NodeIDNm = "SegmentNodeID";
+                base.NodeIDNm = "SegNodeID";
                 base.CompositeTypeNm = "CompositeType";
                 base.NodeTypeNm = "NodeType";
 

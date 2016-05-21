@@ -21,9 +21,9 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.RoadSegmentLayer
             _pFeaClsRoadSegment = pFeaClsRoadSegment;
             _id = Id;
             
-            base.IDNm = "RoadSegmentID";
-            base.FNodeIDNm = "FSegmentNodeID";
-            base.TNodeIDNm = "TSegmentNodeID";
+            base.IDNm = "SegmentID";
+            base.FNodeIDNm = "FSegNodeID";
+            base.TNodeIDNm = "TSegNodeID";
 
             base.RoadTypeNm = "RoadType";
             base.FlowDirNm = "FlowDir";

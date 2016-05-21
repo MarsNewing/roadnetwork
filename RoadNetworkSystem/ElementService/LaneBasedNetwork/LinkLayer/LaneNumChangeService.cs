@@ -1,6 +1,9 @@
 ﻿using ESRI.ArcGIS.Geodatabase;
 using ESRI.ArcGIS.Geometry;
 using RoadNetworkSystem.DataModel.LaneBasedNetwork;
+using RoadNetworkSystem.DataModel.Road;
+using RoadNetworkSystem.NetworkElement.LaneBasedNetwork.RoadSegmentLayer;
+using RoadNetworkSystem.NetworkElement.RoadLayer;
 using System;
 using System.Collections.Generic;
 using System.Data.OleDb;
@@ -70,7 +73,7 @@ namespace RoadNetworkSystem.ElementService.LaneBasedNetwork.LinkLayer
         /// <param name="fromBreakPointId"></param>
         /// <param name="toBreakPointId"></param>
         /// <returns></returns>
-        public LaneNumChange GetOppositeDirectionLaneNumChange(int roadId,int oppositionDir,int fromBreakPointId, int toBreakPointId)
+        public LaneNumChange GetOppositeDirectionLaneNumChange(int segmentId,int oppositionDir,int fromBreakPointId, int toBreakPointId)
         {
             string sql;
             if (fromBreakPointId > 0 && toBreakPointId > 0)
@@ -84,7 +87,7 @@ namespace RoadNetworkSystem.ElementService.LaneBasedNetwork.LinkLayer
             else if (fromBreakPointId > 0)
             {
                 sql = "Select * from " + LaneNumChange.LaneNumChangeName +
-                " where " + LaneNumChange.RoadID_Name + " = " + roadId +
+                " where " + LaneNumChange.SegmentID_Name + " = " + segmentId +
                 " and  " + LaneNumChange.ToBreakPointID_Name + " = " + fromBreakPointId +
                 " and  " + LaneNumChange.FlowDir_Name + " = " + oppositionDir +
                 " and  " + LaneNumChange.DoneFlag_Name + " = " + LaneNumChange.DONEFLAG_UNDO;
@@ -93,14 +96,14 @@ namespace RoadNetworkSystem.ElementService.LaneBasedNetwork.LinkLayer
             {
                 sql = "Select * from " + LaneNumChange.LaneNumChangeName +
                 " where " + LaneNumChange.FromBreakPointID_Name + " = " + toBreakPointId +
-                " and  " + LaneNumChange.RoadID_Name + " = " + roadId +
+                " and  " + LaneNumChange.SegmentID_Name + " = " + segmentId +
                 " and  " + LaneNumChange.FlowDir_Name + " = " + oppositionDir +
                 " and  " + LaneNumChange.DoneFlag_Name + " = " + LaneNumChange.DONEFLAG_UNDO;
             }
             else
             {
                 sql = "Select * from " + LaneNumChange.LaneNumChangeName +
-                " where " + LaneNumChange.RoadID_Name + " = " + roadId +
+                " where " + LaneNumChange.SegmentID_Name + " = " + segmentId +
                 " and  " + LaneNumChange.FlowDir_Name + " = " + oppositionDir +
                 " and  " + LaneNumChange.DoneFlag_Name + " = " + LaneNumChange.DONEFLAG_UNDO;
             }
@@ -115,11 +118,21 @@ namespace RoadNetworkSystem.ElementService.LaneBasedNetwork.LinkLayer
                 LaneNumChange laneNumChange = new LaneNumChange();
 
                 laneNumChange.LaneNumChangeID = Convert.ToInt32(reader[LaneNumChange.LaneNumChangeID_Name]);
-                laneNumChange.FromBreakPointID = fromBreakPointId;
-                laneNumChange.ToBreakPointID = toBreakPointId;
+                if (reader[LaneNumChange.ToBreakPointID_Name] != DBNull.Value)
+                {
+                    laneNumChange.ToBreakPointID = Convert.ToInt32(reader[LaneNumChange.ToBreakPointID_Name]);
+                }
+
+                if (reader[LaneNumChange.FromBreakPointID_Name] != DBNull.Value)
+                {
+                    laneNumChange.FromBreakPointID = Convert.ToInt32(reader[LaneNumChange.FromBreakPointID_Name]);
+                }
+                
+                
+                
                 laneNumChange.LaneNum = laneNum;
                 laneNumChange.DoneFlag = done;
-                laneNumChange.RoadID = roadId;
+                laneNumChange.SegmentID = segmentId;
 
                 laneNumChange.FlowDir = flowDir;
                 reader.Close();
@@ -183,5 +196,60 @@ namespace RoadNetworkSystem.ElementService.LaneBasedNetwork.LinkLayer
             cmd.Dispose();
         }
 
+
+
+        public void CreateLaneNumChangesFromSegment(IFeatureClass FeaClsSegment)
+        {
+            IQueryFilter filter = new QueryFilterClass();
+            filter.WhereClause = "";
+
+            IFeatureCursor cursor = FeaClsSegment.Search(filter, false);
+            IFeature pFeature = cursor.NextFeature();
+            int laneNumChangeId = 1;
+            while (pFeature != null)
+            {
+                
+                SegmentService segmentService = new SegmentService(FeaClsSegment, 0);
+                LinkMaster linkMaster = segmentService.GetEntity(pFeature);
+                int segmentId = linkMaster.ID;
+                int laneNum = RoadService.GetRoadLaneNumDefault(linkMaster.RoadType);
+                string sql = "Insert into " + LaneNumChange.LaneNumChangeName +
+                    " (" + LaneNumChange.LaneNumChangeID_Name + "," +
+                    LaneNumChange.FlowDir_Name +        "," +
+                    LaneNumChange.DoneFlag_Name +       "," +
+                    LaneNumChange.LaneNum_Name +        "," +
+                    LaneNumChange.SegmentID_Name +        
+                    ")" + " Values (" +
+                    laneNumChangeId +               "," +
+                    1 +                             "," +
+                    LaneNumChange.DONEFLAG_UNDO +   "," +
+                    laneNum +                       "," +
+                    segmentId +                        ")";
+
+                OleDbCommand cmd = new OleDbCommand(sql,_conn);
+                cmd.ExecuteNonQuery();
+                cmd.Dispose();
+
+                laneNumChangeId++;
+
+                sql = "Insert into " + LaneNumChange.LaneNumChangeName +
+                    " (" + LaneNumChange.LaneNumChangeID_Name + "," +
+                    LaneNumChange.FlowDir_Name + "," +
+                    LaneNumChange.DoneFlag_Name + "," +
+                    LaneNumChange.LaneNum_Name + "," +
+                    LaneNumChange.SegmentID_Name +
+                    ")" + " Values (" +
+                    laneNumChangeId + "," +
+                    -1 + "," +
+                    LaneNumChange.DONEFLAG_UNDO + "," +
+                    laneNum + "," +
+                    segmentId + ")";
+                cmd = new OleDbCommand(sql, _conn);
+                cmd.ExecuteNonQuery();
+                cmd.Dispose();
+                laneNumChangeId++;
+                pFeature = cursor.NextFeature();
+            }
+        }
     }
 }

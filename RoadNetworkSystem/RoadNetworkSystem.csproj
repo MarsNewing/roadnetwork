@@ -175,7 +175,7 @@
     <Compile Include="ElementService\LaneBasedNetwork\NetworkBuilder\SegmentLayer\RoadSegmentLayerBuilder.cs" />
     <Compile Include="NetworkExtraction\LinkMasterExtraction\LinkMasterLayerFactory.cs" />
     <Compile Include="NetworkExtraction\LinkMasterExtraction\NodeInfor.cs" />
-    <Compile Include="NetworkExtraction\Road2BasicRoadNetwork\Road2BasicRoadNetwork.cs" />
+    <Compile Include="NetworkExtraction\Road2BasicRoadNetwork\Segment2BasicRoadNetwork.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TrafficRule\RuleService.cs" />

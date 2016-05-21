@@ -12,7 +12,7 @@ namespace RoadNetworkSystem.NetworkEditor
 {
     class CutHelper
     {
-        const int tolerance = 10;
+        const int tolerance = 15;
         public static double getCutDefualt(double curWidth, double adjWidth, double angel)
         {
             double cut = 0.0;

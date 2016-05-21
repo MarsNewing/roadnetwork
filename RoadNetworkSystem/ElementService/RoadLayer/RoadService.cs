@@ -1,4 +1,5 @@
 ﻿using ESRI.ArcGIS.Geodatabase;
+using RoadNetworkSystem.DataModel.LaneBasedNetwork;
 using RoadNetworkSystem.DataModel.Road;
 using System;
 using System.Collections.Generic;
@@ -44,6 +45,29 @@ namespace RoadNetworkSystem.NetworkElement.RoadLayer
             }
         }
 
+
+        public static int GetRoadLaneNumDefault(int roadType)
+        {
+
+            int laneNum = 0;
+            if (roadType < (int)Link.道路类型.次干道)
+            {
+                laneNum = 3;
+            }
+            else if (roadType == (int)Link.道路类型.次干道)
+            {
+                laneNum = 2;
+            }
+            else if (roadType >= (int)Link.道路类型.支路)
+            {
+                laneNum = 1;
+            }
+            else
+            {
+                laneNum = 0;
+            }
+            return laneNum;
+        }
         public Road GetEntity(IFeature FeaRoad)
         {
             Road rsEty = new Road();

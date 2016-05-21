@@ -128,8 +128,16 @@ namespace RoadNetworkSystem.GIS.GeoDatabase.WorkSpace
 
                     // Load the feature class
                     IFeatureDataConverter fctofc = new FeatureDataConverterClass();
-                    IEnumInvalidObject enumErrors = fctofc.ConvertFeatureClass(sourceFeatureClassName, queryFilter,
-                        feadsName, targetFeatureClassName, geometryDef, targetFeatureClassFields, "", 1000, 0);
+                    try
+                    {
+
+                        IEnumInvalidObject enumErrors = fctofc.ConvertFeatureClass(sourceFeatureClassName, queryFilter,
+                            feadsName, targetFeatureClassName, geometryDef, targetFeatureClassFields, "", 1000, 0);
+                    }
+                    catch(Exception ex)
+                    {
+                        MessageBox.Show(ex.ToString());
+                    }
                     break;
                 }
             }

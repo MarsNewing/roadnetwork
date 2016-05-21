@@ -81,7 +81,7 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LaneLayer
 
         public IFeature QueryFeatureBuRule(int arcID,int serial)
         {
-
+             
             string readStr = String.Format("select * from Lane where ArcID = {0} and [Position] = {1}", arcID, serial);
 
             

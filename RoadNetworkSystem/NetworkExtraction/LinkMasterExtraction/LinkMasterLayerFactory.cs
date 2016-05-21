@@ -135,8 +135,9 @@ namespace RoadNetworkSystem.NetworkExtraction.LinkMasterExtraction
                 {
                     pPt = pPtCol.get_Point(i);
 
+
                     //坐标
-                    sPt = string.Format("{0}_{1}", pPt.X, pPt.Y);
+                    sPt = NodeInfor.ParsePoint2String(pPt);
 
                     //若该节点为道路的起点或终点，也算作交叉口
                     if (i == 0 || i == pPtCol.PointCount - 1)
@@ -247,7 +248,7 @@ namespace RoadNetworkSystem.NetworkExtraction.LinkMasterExtraction
                 {
                     pPt = pPtCol.get_Point(i);
                     //作为Key
-                    sPt = string.Format("{0}_{1}", pPt.X, pPt.Y);
+                    sPt = NodeInfor.ParsePoint2String(pPt);
 
                     #region -------------------判断节点是否已经添加到列表-----------------------
                     //如果不再列表中，添加
@@ -300,7 +301,7 @@ namespace RoadNetworkSystem.NetworkExtraction.LinkMasterExtraction
             {
                 foreach (NodeInfor item in NodeInforList)
                 {
-                    string key = item.Point.X.ToString() + "_" + item.Point.Y.ToString();
+                    string key = NodeInfor.ParsePoint2String(item.Point);
                     if (hstJunction.ContainsKey(key))
                     {
 

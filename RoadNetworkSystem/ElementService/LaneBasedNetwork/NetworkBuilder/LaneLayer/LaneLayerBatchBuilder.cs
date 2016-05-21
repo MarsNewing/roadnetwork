@@ -90,12 +90,28 @@ namespace RoadNetworkSystem.ElementService.LaneBasedNetwork.NetworkBuilder.LaneL
                 NodeMaster tNodeMstr = nodeService.GetNodeMasterEty(tNodeFeature);
                 Node tNode = new Node();
                 tNode = tNode.Copy(tNodeMstr);
-                
-                PreNodeCutInforService preNodeCutInforService = new PreNodeCutInforService(_pFeaClsLink, _pFeaClsArc);
-                PreNodeCutInfor preNodeCutInfor = preNodeCutInforService.GetPreNodeCutInfor(fNode, arcCursor, link);
 
+                if (arcCursor.ArcID == 51)
+                {
+                    int test = 0;
+                }
+
+                PreNodeCutInforService preNodeCutInforService = new PreNodeCutInforService(_pFeaClsLink, _pFeaClsArc);
                 NextNodeCutInforService nextNodeCutInforService = new NextNodeCutInforService(_pFeaClsLink, _pFeaClsArc);
-                NextNodeCutInfor nextNodeCutInfor = nextNodeCutInforService.GetNextNodeCutInfor(tNode, arcCursor, link);
+                PreNodeCutInfor preNodeCutInfor;
+                NextNodeCutInfor nextNodeCutInfor;
+                if (arcCursor.FlowDir == Link.FLOWDIR_SAME)
+                {
+                    preNodeCutInfor = preNodeCutInforService.GetPreNodeCutInfor(fNode, arcCursor, link);
+                    nextNodeCutInfor = nextNodeCutInforService.GetNextNodeCutInfor(tNode, arcCursor, link);
+                }
+                else
+                {
+                    preNodeCutInfor = preNodeCutInforService.GetPreNodeCutInfor(tNode, arcCursor, link);
+                    nextNodeCutInfor = nextNodeCutInforService.GetNextNodeCutInfor(fNode, arcCursor, link);
+                }
+
+
 
                 //生成Lane、Kerb、Boundary、StopLine
                 LaneLayerBuilder laneLayerBuilder = new LaneLayerBuilder(_feaClsDic);
@@ -121,7 +137,7 @@ namespace RoadNetworkSystem.ElementService.LaneBasedNetwork.NetworkBuilder.LaneL
                 ArcService arcService = new ArcService(_pFeaClsArc, 0);
                 Arc arcCursor = arcService.GetArcEty(arcFeaCursor);
 
-                if (arcCursor.ArcID == 290)
+                if (arcCursor.ArcID == 61|| arcCursor.ArcID == 51)
                 {
                     int test = 0;
                 }
@@ -213,10 +229,24 @@ namespace RoadNetworkSystem.ElementService.LaneBasedNetwork.NetworkBuilder.LaneL
                 }
 
 
+                Arc sameArc;
+                Arc oppArc;
                 //生产道路中间分隔线
-                LaneLayerBuilder laneLayerBuilder = new LaneLayerBuilder(_feaClsDic);
-                laneLayerBuilder.UpdateCenterLine(arcCursor.LinkID);
+                if (arcCursor.FlowDir == Link.FLOWDIR_SAME)
+                {
+                    sameArc = arcCursor;
+                    ArcService temArcService = new ArcService(_pFeaClsArc, 0);
+                    oppArc = temArcService.GetOppositionArc(sameArc.LinkID);
+                }
+                else
+                {
+                    oppArc = arcCursor;
+                    ArcService temArcService = new ArcService(_pFeaClsArc, 0);
+                    sameArc = temArcService.GetOppositionArc(oppArc.LinkID);
+                }
 
+                LaneLayerBuilder laneLayerBuilder = new LaneLayerBuilder(_feaClsDic);
+                laneLayerBuilder.UpdateCenterLine(linkFea,sameArc,oppArc);
                 arcFeaCursor = cursor.NextFeature();
                 
             }

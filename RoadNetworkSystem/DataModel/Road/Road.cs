@@ -19,7 +19,7 @@ namespace RoadNetworkSystem.DataModel.Road
 
         public int Other { get; set; }
 
-
+        public const string RoadIDName = "RoadID";
         public const string RoadTypeName = "RoadType";
         public const string RoadNameName = "RoadName";
 

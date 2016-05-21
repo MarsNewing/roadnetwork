@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ESRI.ArcGIS.Geometry;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -37,5 +38,11 @@ namespace RoadNetworkSystem.NetworkExtraction.LinkMasterExtraction
         /// 结点的ID
         /// </summary>
         public int NodeID { get; set; }
+
+
+        public static string ParsePoint2String(IPoint pnt)
+        {
+            return pnt.X.ToString("F4") + "_" + pnt.Y.ToString("F4");
+        }
     }
 }

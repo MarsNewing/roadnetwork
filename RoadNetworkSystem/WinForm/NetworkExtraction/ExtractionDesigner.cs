@@ -646,23 +646,26 @@ namespace RoadNetworkSystem.WinForm.NetworkExtraction
             {
                 case (int)CopyFeatureClassAndTable.CopyForGuideSignAndSegmentNetowrk:
                     {
+                        try
+                        {
+                            GeodatabaseHelper.CopyFeaClsToDataset(((IDataset)_frm1.FeaClsRoad).Workspace, pFeaDataset,
+                                _frm1.FeaClsRoad.AliasName, "Road");
+                            _frm1.UpdateGeoDatabase(pFeaDataset.Workspace.PathName);
+                            break;
+                        }
+                        catch (Exception ex)
+                        {
+                            
+                            break;
+                        }
                         //Copy road featureclass to the new geodatabase
-                        GeodatabaseHelper.CopyFeaClsToDataset(((IDataset)_frm1.FeaClsRoad).Workspace, pFeaDataset,
-                            _frm1.FeaClsRoad.AliasName, "Road");
-                        _frm1.UpdateGeoDatabase(pFeaDataset.Workspace.PathName);
-                        break;
+                        
                     }
 
                 case (int)CopyFeatureClassAndTable.CopyForRoad2BasicNetwork:
                     {
                         GeodatabaseHelper.CopyFeaClsToDataset(((IDataset)_frm1.FeaClsRoad).Workspace, pFeaDataset,
                             _frm1.FeaClsRoad.AliasName,Road.RoadNm);
-
-                        GeodatabaseHelper.CopyFeaClsToDataset(((IDataset)_frm1.FeaClsRoad).Workspace, pFeaDataset,
-                            BreakPoint.BreakPointName, BreakPoint.BreakPointName);
-                        
-                        GeodatabaseHelper.CopyDatatable2Workspace(((IDataset)_frm1.FeaClsRoad).Workspace, pFeaDataset.Workspace,
-                            LaneNumChange.LaneNumChangeName, LaneNumChange.LaneNumChangeName);
 
                         _frm1.UpdateGeoDatabase(pFeaDataset.Workspace.PathName);
                         break;
@@ -689,7 +692,6 @@ namespace RoadNetworkSystem.WinForm.NetworkExtraction
                     SegmentLayerBuilder segFactory = new SegmentLayerBuilder(_frm1);
                     segFactory.AssembleSegmentLayer(forbidddonBreakRoads, _ruleList);
 
-
                 }
                 else if (_frm1.comBox_extraction_function.SelectedIndex == (int)ExtractionType.指路标志路网)
                 {
@@ -703,9 +705,12 @@ namespace RoadNetworkSystem.WinForm.NetworkExtraction
                     segFactory.AssembleSegmentLayer(forbidddonBreakRoads, _ruleList);
                     //为避免打开conn后，数据库被独占，这样会导致在创建拓扑的时候的报错
                     //因此在创建完拓扑后，在更新Connection
-                    _frm1.UpdateOleDbConnection(_frm1.MdbPath);
-                    Road2BasicRoadNetwork road2BasicRoadNetwork = new Road2BasicRoadNetwork(_frm1);
-                    road2BasicRoadNetwork.Convert2BasicRoadNetwork();
+
+                    //
+                    MessageBox.Show("已生成路段路网，请在ArcGIS,标注交通组织中断点");
+                    //_frm1.UpdateOleDbConnection(_frm1.MdbPath);
+                    //Segment2BasicRoadNetwork road2BasicRoadNetwork = new Segment2BasicRoadNetwork(_frm1);
+                    //road2BasicRoadNetwork.Convert2BasicRoadNetwork();
                 }
                 //删除所有的标注
                 IGraphicsContainer graphicsCon = _frm1.axMapControl1.ActiveView as IGraphicsContainer;
