@@ -20,6 +20,24 @@ namespace RoadNetworkSystem.NetworkElement.RoadSignElement
             SurfaceID = surfaceID;
         }
 
+        /// <summary>
+        /// 删除Arc对应的Surface
+        /// </summary>
+        /// <param name="arcId"></param>
+        public void DeleteSurfaceInArc(int arcId)
+        {
+            IFeatureCursor curseorSurface;
+            IQueryFilter filterSurface = new QueryFilterClass();
+            filterSurface.WhereClause = Surface.ArcIDNm + " = " + arcId;
+            curseorSurface = FeaClsSurface.Search(filterSurface, false);
+            IFeature pFeaSurface = curseorSurface.NextFeature();
+            while (pFeaSurface != null)
+            {
+                pFeaSurface.Delete();
+                pFeaSurface = curseorSurface.NextFeature();
+            }
+        }
+
         public Surface GetEntity(IFeature pFeature)
         {
             Surface surfaceEty = new Surface();

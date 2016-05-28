@@ -1,5 +1,6 @@
 ﻿using ESRI.ArcGIS.Carto;
 using ESRI.ArcGIS.Geodatabase;
+using ESRI.ArcGIS.Geometry;
 using RoadNetworkSystem.DataModel.LaneBasedNetwork;
 using RoadNetworkSystem.DataModel.RoadSign;
 using RoadNetworkSystem.GIS;
@@ -209,16 +210,11 @@ namespace RoadNetworkSystem.WinForm.NetworkEditor
 
             if (_frm1.CrttLinkFea != null)
             {
-                SegmentConstructor segContruct = new SegmentConstructor(feaClsDic, _frm1.FNodeFea, _frm1.TNodeFea);
-                segContruct.SplitLink(_frm1.CrttLinkFea);
+                LinkConstructor segContruct = new LinkConstructor(feaClsDic);
+                segContruct.SplitLink(_frm1.CrttLinkFea,
+                    (_frm1.CrttLinkFea.Shape as IPolyline).Length/2);
             }
         }
-
-        #region -----------------------拓扑更新--------------------------------
-
-      
-
-        #endregion -----------------------拓扑更新--------------------------------
 
 
 
@@ -243,7 +239,7 @@ namespace RoadNetworkSystem.WinForm.NetworkEditor
 
                 feaClsDic.Add(Surface.SurfaceName, _frm1.FeaClsSurface);
 
-                SegmentConstructor segContruct = new SegmentConstructor(feaClsDic,_frm1.FNodeFea, _frm1.TNodeFea);
+                LinkConstructor segContruct = new LinkConstructor(feaClsDic);
                 int roadType=_frm1.comboBox_Layer.SelectedIndex + 1;
                 string roadName=_frm1.textBox_link_roadNm.Text;
                 int sameLaneNum=Convert.ToInt32(_frm1.upDown_link_SameLaneMun.Value);

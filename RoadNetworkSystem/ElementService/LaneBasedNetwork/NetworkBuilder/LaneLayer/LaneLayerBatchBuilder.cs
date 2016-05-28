@@ -115,7 +115,7 @@ namespace RoadNetworkSystem.ElementService.LaneBasedNetwork.NetworkBuilder.LaneL
 
                 //生成Lane、Kerb、Boundary、StopLine
                 LaneLayerBuilder laneLayerBuilder = new LaneLayerBuilder(_feaClsDic);
-                laneLayerBuilder.CreateLaneTopo(linkFea, link.FlowDir, arcCursor, preNodeCutInfor, nextNodeCutInfor);
+                laneLayerBuilder.CreateLaneTopologyInArc(linkFea, link.FlowDir, arcCursor, preNodeCutInfor, nextNodeCutInfor);
                 
                 arcFeaCursor = cursor.NextFeature();
 

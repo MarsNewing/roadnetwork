@@ -126,7 +126,7 @@
     <Compile Include="GISUtility\MapLayer\LayerHelper.cs" />
     <Compile Include="NetworkEditor\CutHelper.cs" />
     <Compile Include="NetworkEditor\EditorDatabase\EditorDatabaseDesigner.cs" />
-    <Compile Include="NetworkEditor\EditorFlow\SegmentConstructor.cs" />
+    <Compile Include="NetworkEditor\EditorFlow\LinkConstructor.cs" />
     <Compile Include="NetworkEditor\FeaPair.cs" />
     <Compile Include="ElementService\GuideSignNetwork\Arc1Service.cs" />
     <Compile Include="ElementService\GuideSignNetwork\Node1Service.cs" />

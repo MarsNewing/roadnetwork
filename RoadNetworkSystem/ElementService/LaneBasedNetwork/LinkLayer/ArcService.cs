@@ -4,6 +4,7 @@ using RoadNetworkSystem.ADO.Access;
 using RoadNetworkSystem.DataModel.LaneBasedNetwork;
 using RoadNetworkSystem.GIS;
 using RoadNetworkSystem.GIS.GeoDatabase.Dataset;
+using RoadNetworkSystem.NetworkElement.LaneBasedNetwork.Connection;
 using RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LaneLayer;
 using System;
 using System.Collections.Generic;
@@ -17,7 +18,7 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LinkLayer
     {
 
         public const double ARC_CUT_PERCENTAGE = 0.05;
-        
+
 
         public struct StrctCrtArc
         {
@@ -63,48 +64,96 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LinkLayer
         }
 
 
+        public static int GetArcID(int linkId, int dir)
+        {
+            if (dir == Link.FLOWDIR_SAME)
+            {
+                return linkId * 10;
+            }
+            else
+            {
+                return linkId * 10 + 1;
+            }
+        }
+
+        /// <summary>
+        /// 从Link创建出Arc
+        /// </summary>
+        /// <param name="link"></param>
+        /// <param name="arcFlowDir"></param>
+        /// <param name="laneNum"></param>
+        /// <param name="linkLine"></param>
+        /// <returns></returns>
+        public Arc CreateArcFromLink(int linkId,
+            int arcFlowDir,
+            int laneNum,
+            IPolyline linkLine)
+        {
+            Arc arcEty = new Arc();
+            #region ++++++++++++++++++++++++++保存Arc+++++++++++++++++++++++++++++++
+            arcEty.ArcID = 0;
+            arcEty.LinkID = linkId;
+            arcEty.FlowDir = arcFlowDir;
+            arcEty.LaneNum = laneNum;
+            arcEty.Other = 0;
+
+
+            IPolyline arcLine = LineHelper.CreateLineByLRS(linkLine,
+                Lane.LANE_WEIDTH * arcEty.FlowDir * arcEty.LaneNum / 2,
+                linkLine.Length*ARC_CUT_PERCENTAGE,
+                linkLine.Length * ARC_CUT_PERCENTAGE);
+
+            //获取截头截尾的距离
+            ArcService arc = new ArcService(FeaClsArc, 0);
+
+            if (arcFlowDir == Link.FLOWDIR_SAME)
+            {
+                IFeature sameArcFea = arc.CreateArc(arcEty, arcLine);
+                return arc.GetArcEty(sameArcFea);
+            }
+            else
+            {
+                arcLine.ReverseOrientation();
+                IFeature oppArcFea = arc.CreateArc(arcEty, arcLine);
+                return arc.GetArcEty(oppArcFea);
+            }
+            #endregion ++++++++++++++++++++++++++保存Arc+++++++++++++++++++++++++++++++
+        }
+
+
         /// <summary>
         /// 生成一个Arc
         /// </summary>
-        /// <param name="arcEty"></param>
+        /// <param name="arc"></param>
         /// <param name="line"></param>
-        public IFeature CreateArc(Arc arcEty, IPolyline line)
+        public IFeature CreateArc(Arc arc, IPolyline line)
         {
             IFeature newFea = FeaClsArc.CreateFeature();
             if (ArcID > 0)
             {
                 if (FeaClsArc.FindField(Arc.ArcIDNm) >= 0)
-                    newFea.set_Value(FeaClsArc.FindField(Arc.ArcIDNm), arcEty.ArcID);
+                    newFea.set_Value(FeaClsArc.FindField(Arc.ArcIDNm), arc.ArcID);
             }
             else
             {
                 if (FeaClsArc.FindField(Arc.ArcIDNm) >= 0)
                 {
-                    int arcId;
-                    if (arcEty.FlowDir == Link.FLOWDIR_SAME)
-                    {
-                        arcId = arcEty.LinkID * 10;
-                    }
-                    else
-                    {
-                        arcId = arcEty.LinkID * 10 + 1;
-                    }
+                    int arcId = GetArcID(arc.LinkID,arc.FlowDir);                    
                     newFea.set_Value(FeaClsArc.FindField(Arc.ArcIDNm), arcId);
                 }
-                
             }
           
             if (FeaClsArc.FindField(Arc.FlowDirNm) >= 0)
-                newFea.set_Value(FeaClsArc.FindField(Arc.FlowDirNm), arcEty.FlowDir);
+                newFea.set_Value(FeaClsArc.FindField(Arc.FlowDirNm), arc.FlowDir);
 
             if (FeaClsArc.FindField(Arc.LaneNumNm) >= 0)
-                newFea.set_Value(FeaClsArc.FindField(Arc.LaneNumNm), arcEty.LaneNum);
+                newFea.set_Value(FeaClsArc.FindField(Arc.LaneNumNm), arc.LaneNum);
 
             if (FeaClsArc.FindField(Arc.LinkIDNm) >= 0)
-                newFea.set_Value(FeaClsArc.FindField(Arc.LinkIDNm), arcEty.LinkID);
+                newFea.set_Value(FeaClsArc.FindField(Arc.LinkIDNm), arc.LinkID);
 
             if (FeaClsArc.FindField(Arc.OtherNm) >= 0)
-                newFea.set_Value(FeaClsArc.FindField(Arc.OtherNm), arcEty.Other);
+                newFea.set_Value(FeaClsArc.FindField(Arc.OtherNm), arc.Other);
             newFea.Shape = line;
             newFea.Store();
 
@@ -201,6 +250,9 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LinkLayer
             return arcEty;
         }
 
+
+        
+
         /// <summary>
         /// 判断是否存在要素
         /// </summary>
@@ -228,95 +280,55 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LinkLayer
         /// <param name="ArcDir"></param>
         /// <param name="storeArcID"></param>
         /// <param name="storeLaneNum"></param>
-        public IFeature GetArcInfo(int linkID, int ArcDir)
+        public IFeature GetRequiredDirArcFeature(int linkID, int ArcDir)
         {
-            IWorkspace pWs = (FeaClsArc as IDataset).Workspace;
-            string mdbPath = pWs.PathName;
+            IQueryFilter filter = new QueryFilterClass();
+            filter.WhereClause = Arc.LinkIDNm + "=" + linkID;
 
-            string readStr = String.Format("select * from {0} where LinkID = {1} and FlowDir = {2}", "Arc", linkID, ArcDir);
-            OleDbCommand readCmd = new OleDbCommand();
-            readCmd.CommandText = readStr;
-            readCmd.Connection = _conn;
-            OleDbDataReader read;
-            read = readCmd.ExecuteReader();
-            IFeature featureArc = null;
-            while (read.Read())
+            IFeatureCursor cursor = FeaClsArc.Search(filter, false);
+            IFeature temArcFea = cursor.NextFeature();
+            while(temArcFea!=null)
             {
-                ArcID = Convert.ToInt32(read["ArcID"]);
-                break;
+                int temDir = Convert.ToInt32(temArcFea.get_Value(temArcFea.Fields.FindField(Arc.FlowDirNm)));
+                if (temDir == ArcDir)
+                {
+                    return temArcFea;
+                }
+
+                temArcFea = cursor.NextFeature();
             }
-            read.Close();
-            featureArc = GetArcFeature();
-            return featureArc;
+            return null;
         }
 
-        public IFeature QueryArcFeatureByRule(string QueryStr)
+        public Arc GetRequiredDirArc(int linkId, int arcDir)
         {
-            
-
-
-            string sql = "Select * from " + Arc.ArcFeatureName + " where " + QueryStr;
-            OleDbCommand cmd = new OleDbCommand(sql,_conn);
-            OleDbDataReader readrer = cmd.ExecuteReader();
-            if (readrer.Read())
-            {
-                int oid = Convert.ToInt32(readrer["OBJECTID"]);
-                readrer.Close();
-                readrer.Dispose();
-                cmd.Dispose();
-                return FeaClsArc.GetFeature(oid);
-            }
-            else 
-            {
-                readrer.Close();
-                readrer.Dispose();
-                cmd.Dispose();
-                return null;
-            }
+            IFeature arcFea = GetRequiredDirArcFeature(linkId, arcDir);
+            return GetArcEty(arcFea);
+                 
         }
-
 
         public Arc GetSameArc(int linkId)
         {
-            string queryStr = String.Format("{0} = {1} and {2} = {3}", Arc.LinkIDNm, linkId, Arc.FlowDirNm, Link.FLOWDIR_SAME);
-            return GetArcEtyByRule(queryStr);
+            return GetRequiredDirArc(linkId, Link.FLOWDIR_SAME);
         }
 
         public Arc GetOppositionArc(int linkId)
         {
-            string queryStr = String.Format("{0} = {1} and {2} = {3}", Arc.LinkIDNm, linkId, Arc.FlowDirNm, Link.FLOWDIR_OPPOSITION);
-            return GetArcEtyByRule(queryStr);
+            return GetRequiredDirArc(linkId, Link.FLOWDIR_OPPOSITION);
         }
-
-
-        public Arc GetArcEtyByRule(string QueryStr)
-        {
-            IFeature pFeature = QueryArcFeatureByRule(QueryStr);
-            Arc arcEty = new Arc();
-            arcEty = GetArcEty(pFeature);
-            return arcEty;
-        }
+        
 
         /// <summary>
         /// 删除一个Arc实体
         /// </summary>
         /// <param name="arcID"></param>
-        public void DeleteArcFea()
+        public void DeleteArcFea(int arcId)
         {
-            IDataset pDataset = FeaClsArc as IDataset;
-            IWorkspace pWS = pDataset.Workspace;
-            IWorkspaceEdit pWorkspaceEdit = pWS as IWorkspaceEdit;
-            pWorkspaceEdit.StartEditing(false);
-            pWorkspaceEdit.StartEditOperation();
             IQueryFilter filter = new QueryFilterClass();
-            filter.WhereClause = String.Format("{0}={1}",Arc.ArcIDNm ,ArcID);
+            filter.WhereClause = String.Format("{0}={1}",Arc.ArcIDNm , arcId);
             IFeatureCursor pFeatureCuror = FeaClsArc.Update(filter, false);
             IFeature arcFeature = pFeatureCuror.NextFeature();
-
-            pFeatureCuror.DeleteFeature();
-
-            pWorkspaceEdit.StopEditOperation();
-            pWorkspaceEdit.StopEditing(true);
+            arcFeature.Delete();
         }
 
         public double GetArcWidth(IFeatureClass pFeaClsLane)

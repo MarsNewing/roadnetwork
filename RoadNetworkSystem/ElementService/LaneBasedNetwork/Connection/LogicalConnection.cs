@@ -241,7 +241,7 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.Connection
             //通过LinkID和FlowDir,查询Arc
 
 
-            return arc.GetArcInfo(exitLinkEty.ID, nextArcFlowDir);
+            return arc.GetRequiredDirArcFeature(exitLinkEty.ID, nextArcFlowDir);
 
              
         }
@@ -473,9 +473,23 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.Connection
             //string queryStr = Arc.LinkIDNm + "=" + preLinkEty.ID + "AND" + Arc.FlowDirNm + "=" + preArcFlowDir;
             //nextArcFeature = arc.QueryArcFeatureByRule(queryStr);
 
-            return arc.GetArcInfo(entranceLinkEty.ID, preArcFlowDir);
+            return arc.GetRequiredDirArcFeature(entranceLinkEty.ID, preArcFlowDir);
         }
 
+
+        public static bool IsArcEntranceInJunction(IFeatureClass pFeaClsArc,
+            IFeatureClass pFeaClsLink, IFeatureClass pFeaClsNode, Arc arc)
+        {
+            Node nextNode = PhysicalConnection.getNextNode(pFeaClsLink, pFeaClsArc, pFeaClsNode, arc);
+            if (nextNode.AdjIDs.Split('\\').Length > 2)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
 
         public static Arc[] GetNodeEntranceArcs(IFeatureClass pFeaClsLink,
             IFeatureClass pFeaClsArc,
@@ -713,6 +727,9 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.Connection
             }
             return _turnDirInNode;
         }
+
+
+
 
         private static List<int> linkIDs = new List<int>();
         /// <summary>

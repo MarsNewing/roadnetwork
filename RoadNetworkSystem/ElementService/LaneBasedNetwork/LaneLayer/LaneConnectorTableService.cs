@@ -265,12 +265,10 @@ namespace RoadNetworkSystem.NetworkElement.LaneBasedNetwork.LaneLayer
             ArcService arc = new ArcService(pFeaClsArc, -1);
 
             Arc fromArcEity = new Arc();
-            string queryStr = String.Format("{0} = {1} and {2} = {3}", Arc.LinkIDNm, fromLink._linkId, Arc.FlowDirNm, fromArcDir);
-            fromArcEity = arc.GetArcEtyByRule(queryStr);
+            fromArcEity = arc.GetRequiredDirArc(fromLink._linkId, fromArcDir);
 
             Arc toArcEity = new Arc();
-            queryStr = String.Format("{0} = {1} and {2} = {3}", Arc.LinkIDNm, toLink._linkId, Arc.FlowDirNm, toArcDir);
-            toArcEity = arc.GetArcEtyByRule(queryStr);
+            toArcEity = arc.GetRequiredDirArc(toLink._linkId,toArcDir);
 
             string TurningDir = LogicalConnection.GetTurningDir(fromLink, toLink);
             switch (TurningDir)

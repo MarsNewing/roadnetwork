@@ -139,6 +139,11 @@ namespace RoadNetworkSystem.ElementService.LaneBasedNetwork.NetworkBuilder
             }
             else
             {
+
+                if (curArcEty.ArcID == 7470)
+                {
+                    int test = 0;
+                }
                 nextNodeCurInfor.nextNodeEty = nextNodeEty;
                 nextNodeCurInfor.curArcID = curArcEty.ArcID;
                 nextNodeCurInfor.nextArcEty = null;

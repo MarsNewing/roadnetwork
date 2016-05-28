@@ -14,6 +14,9 @@ namespace RoadNetworkSystem.NetworkElement.RoadSignElement
         public IFeatureClass FeaClsKerb;
         public int KerbID;
         private static OleDbConnection _conn;
+
+
+
         public KerbService(IFeatureClass pFeaClsKerb, int kerbID)
         {
             FeaClsKerb = pFeaClsKerb;
@@ -40,6 +43,26 @@ namespace RoadNetworkSystem.NetworkElement.RoadSignElement
                     bounEty.Other = Convert.ToInt32(pFeature.get_Value(FeaClsKerb.FindField(Kerb.OtherNm)));
             }
             return bounEty;
+        }
+
+
+        public void DeleteKerbsInArc(int arcId)
+        {
+            IFeatureCursor curseorKerb;
+            IQueryFilter filterKerb = new QueryFilterClass();
+            filterKerb.WhereClause = Kerb.ArcIDNm + " = " + arcId;
+            
+            curseorKerb = FeaClsKerb.Search(filterKerb, false);
+            IFeature pFeaKerb = curseorKerb.NextFeature();
+            while (pFeaKerb != null)
+            {
+                pFeaKerb.Delete();
+                pFeaKerb = curseorKerb.NextFeature();
+            }
+
+            System.GC.Collect();
+            System.GC.WaitForPendingFinalizers();
+            System.Runtime.InteropServices.Marshal.ReleaseComObject(curseorKerb);
         }
 
         public IFeature CreateKerb(Kerb kerbEty, IPoint pnt)
